@@ -1,6 +1,7 @@
 package de.jbee.util;
 
 import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 
@@ -67,14 +68,22 @@ public final class Collection {
 		return array == null || array.length == 0;
 	}
 
-	public static <T> T[] asArray( ICluster<T> list, Class<T> elementType ) {
-		if ( list.isEmpty() ) {
+	public static <T> T[] asArray( ICluster<T> cluster, Class<T> elementType ) {
+		if ( cluster.isEmpty() ) {
 			return null;
 		}
-		final T[] res = newArray( elementType, list.size() );
-		final Iterator<T> iter = list.iterator();
+		final T[] res = newArray( elementType, cluster.size() );
+		final Iterator<T> iter = cluster.iterator();
 		for ( int i = 0; i < res.length; i++ ) {
 			res[i] = iter.next();
+		}
+		return res;
+	}
+
+	public static <T> java.util.Collection<T> asCollection( ICluster<T> cluster ) {
+		ArrayList<T> res = new ArrayList<T>( cluster.size() );
+		for ( T e : cluster ) {
+			res.add( e );
 		}
 		return res;
 	}

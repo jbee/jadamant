@@ -86,6 +86,10 @@ public final class List {
 		return new ImmutableList<T>( list );
 	}
 
+	public static <T> IList<T> readonlyX( T... list ) {
+		return readonly( list );
+	}
+
 	public static <T> IList<T> readonly( T[] list ) {
 		return list == null || list.length == 0
 			? List.<T> empty()
