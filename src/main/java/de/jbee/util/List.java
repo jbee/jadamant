@@ -86,7 +86,7 @@ public final class List {
 		return new ImmutableList<T>( list );
 	}
 
-	public static <T> IList<T> readonlyX( T... list ) {
+	public static <T> IList<T> readonly1( T... list ) {
 		return readonly( list );
 	}
 
