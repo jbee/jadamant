@@ -6,6 +6,7 @@ public class SpecificString<T extends SpecificString<T>>
 		implements Comparable<T>, CharSequence, Serializable {
 
 	private static final long serialVersionUID = 1L;
+	protected static final String SEPARATOR = "-";
 
 	protected final String value;
 
