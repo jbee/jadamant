@@ -227,4 +227,8 @@ public abstract class ExtendingList<T, E extends IList<T>>
 		return List.mutable( list );
 	}
 
+	@Override
+	public T[] toArray( Class<T> elementType ) {
+		return Collection.asArray( this, elementType );
+	}
 }

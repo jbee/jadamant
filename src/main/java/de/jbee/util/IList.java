@@ -113,4 +113,6 @@ public interface IList<T>
 			throws IndexOutOfBoundsException;
 
 	IMutableList<T> mutable();
+
+	T[] toArray( Class<T> elementType );
 }
