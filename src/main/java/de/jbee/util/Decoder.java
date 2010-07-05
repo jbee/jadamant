@@ -36,17 +36,18 @@ public final class Decoder {
 		INSTANCES.put( Pattern.class, d );
 	}
 
-	static <T> void register( IDecoder<T> decoder, Class<? super T> type ) {
+	public static <T> void register( IDecoder<T> decoder, Class<? super T> type ) {
 		INSTANCES.put( type, decoder );
 	}
 
-	static <T> void register( IDecoder<T> decoder, Class<? super T> first, Class<? super T> second ) {
+	public static <T> void register( IDecoder<T> decoder, Class<? super T> first,
+			Class<? super T> second ) {
 		register( decoder, first );
 		register( decoder, second );
 	}
 
-	static <T> void register( IDecoder<T> decoder, Class<? super T> first, Class<? super T> second,
-			Class<? super T> thrid ) {
+	public static <T> void register( IDecoder<T> decoder, Class<? super T> first,
+			Class<? super T> second, Class<? super T> thrid ) {
 		register( decoder, first );
 		register( decoder, second );
 		register( decoder, thrid );
