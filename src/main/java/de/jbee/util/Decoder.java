@@ -293,7 +293,9 @@ public final class Decoder {
 		try {
 			return decoder.decode( value );
 		} catch ( final RuntimeException e ) {
-			errorOut.write( "Error during decode of value `" + value + "`" );
+			if ( errorOut != null ) {
+				errorOut.write( "Error during decode of value `" + value + "`" );
+			}
 			return errorValue;
 		}
 	}
