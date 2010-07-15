@@ -4,6 +4,12 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+/**
+ * Acts as a Service Locator for {@link IDecoder}s. The target type of decoding is used as key for
+ * the locator.
+ * 
+ * @author Jan Bernitt (jan.bernitt@gmx.de)
+ */
 public final class Decoder {
 
 	private static final IDecoder<?> UNSUPPORTED = new UnsupportedDecoder();
