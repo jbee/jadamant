@@ -83,7 +83,9 @@ public final class List {
 	}
 
 	public static <T> IList<T> readonly( java.util.List<T> list ) {
-		return new ImmutableList<T>( list );
+		return list == null || list.isEmpty()
+			? List.<T> empty()
+			: new ImmutableList<T>( list );
 	}
 
 	public static <T> IList<T> readonly1( T... list ) {
