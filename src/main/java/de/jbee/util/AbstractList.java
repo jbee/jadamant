@@ -93,6 +93,11 @@ public abstract class AbstractList<T, M extends Iterable<T>>
 	}
 
 	@Override
+	public IList<T> prepand( T e ) {
+		throw new UnsupportedOperationException( "Not now" );
+	}
+
+	@Override
 	public IList<T> delete( int index ) {
 		validate( index );
 		return drop( Range.between( index, index ) );

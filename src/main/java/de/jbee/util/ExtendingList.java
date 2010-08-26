@@ -36,6 +36,11 @@ public abstract class ExtendingList<T, E extends IList<T>>
 	}
 
 	@Override
+	public IList<T> prepand( T e ) {
+		return extend( list.prepand( e ) );
+	}
+
+	@Override
 	public E delete( int index )
 			throws IndexOutOfBoundsException {
 		return extend( getCollection().delete( index ) );

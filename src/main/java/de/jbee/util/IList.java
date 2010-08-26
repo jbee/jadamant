@@ -15,7 +15,7 @@ import java.util.Comparator;
  *            Element-Type
  */
 public interface IList<T>
-		extends IBag<T, IList<T>>, IFoldable<T>, Serializable {
+		extends ISequence<T>, IBag<T, IList<T>>, IFoldable<T>, Serializable {
 
 	boolean isPrefixOf( IList<T> other );
 
@@ -33,21 +33,6 @@ public interface IList<T>
 	 * returns an in-order list of indices
 	 */
 	NumberList<Integer> elemIndicesBy( IEquality<? super T> equality, T e );
-
-	T at( int index )
-			throws IndexOutOfBoundsException;
-
-	T at( int index, T outOffBoundsValue );
-
-	T head()
-			throws IndexOutOfBoundsException;
-
-	T head( T emptyValue );
-
-	T last()
-			throws IndexOutOfBoundsException;
-
-	T last( T emptyValue );
 
 	IList<T> concat( IList<T> other );
 
@@ -80,7 +65,11 @@ public interface IList<T>
 	 */
 	IList<T> takeWhile( ICondition<? super T> stopCondition );
 
+	@Override
 	IList<T> tail();
+
+	@Override
+	IList<T> prepand( T e );
 
 	/**
 	 * inserts separator between the elements of its list argument
