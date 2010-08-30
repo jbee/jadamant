@@ -8,6 +8,7 @@ package de.jbee.util;
  * 
  * Modifying operation have to leave the called instance unchanged (immutable behaviour).
  * 
+ * 
  * @author Jan Bernitt (jan.bernitt@gmx.de)
  * 
  * @param <T>
