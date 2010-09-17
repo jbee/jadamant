@@ -26,8 +26,12 @@ public final class VList<T> {
 	 * The empty {@link VList}. It contains a single null element so that the {@link #elements} stay
 	 * unchanged since they seamed to be filled with data (the {@link #NULL} reference).
 	 */
-	private static final VList<?> EMPTY = new VList<Object>( 0, new Object[] { NULL }, null, 0, 0 );
+	private static final VList<?> EMPTY = new VList<Object>( 0, 0, new Object[] { NULL }, null, 0 );
 
+	/**
+	 * The offset from index 0 of this {@link #elements}
+	 */
+	final int offset;
 	/**
 	 * The total count of the elements contains in the list (including all those of all tail-lists)
 	 */
@@ -46,24 +50,19 @@ public final class VList<T> {
 	 * The amount of elements used from the direct {@link #tail} list {@link #elements}.
 	 */
 	final int tailUse;
-	/**
-	 * The offset from index 0 of the {@link #tail}s {@link #elements} where used by this start of a
-	 * list.
-	 */
-	final int tailOffset;
 
-	VList( int count, Object[] elements, VList<T> tail, int tailOffset, int tailUse ) {
+	VList( int offset, int count, Object[] elements, VList<T> tail, int tailUse ) {
 		super();
 		this.tail = tail;
 		this.tailUse = tailUse;
-		this.tailOffset = tailOffset;
+		this.offset = offset;
 		this.count = count;
 		this.elements = elements;
 	}
 
 	public VList<T> tail() {
 		return elementsUsed() > 1
-			? new VList<T>( count - 1, elements, tail, tailOffset, tailUse )
+			? new VList<T>( offset, count - 1, elements, tail, tailUse )
 			: tail;
 	}
 
@@ -132,7 +131,7 @@ public final class VList<T> {
 	}
 
 	private VList<T> extended( Object[] elements, VList<T> tail, int tailUsed ) {
-		return new VList<T>( count + 1, elements, tail, tailOffset, tailUsed );
+		return new VList<T>( offset, count + 1, elements, tail, tailUsed );
 	}
 
 	private Object[] copyAndSet( int index, Object e, int length ) {
