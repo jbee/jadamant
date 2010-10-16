@@ -43,8 +43,9 @@ public final class List {
 
 		@Override
 		public IMutableList<T> append( ICluster<T> cluster ) {
+			ArrayList<T> list = getCollection();
 			for ( T e : cluster ) {
-				getCollection().add( e );
+				list.add( e );
 			}
 			return this;
 		}

@@ -11,6 +11,10 @@ public final class ListMap {
 		// util
 	}
 
+	public static <K, V> IListMap<K, V> empty() {
+		return new ClassicListMap<K, V>();
+	}
+
 	static final class ClassicListMap<K, V>
 			implements IListMap<K, V> {
 
