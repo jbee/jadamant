@@ -123,6 +123,14 @@ public class Fulfills {
 			: new AndCondition<T>( left, right );
 	}
 
+	public static <T> ICondition<T> equalTo( T reference ) {
+		return equality( Equal.equals(), reference );
+	}
+
+	public static <T> ICondition<T> differentTo( T reference ) {
+		return not( equalTo( reference ) );
+	}
+
 	public static <T> ICondition<T> equality( IEquality<? super T> equality, T reference ) {
 		return new EqualityCondition<T>( equality, reference );
 	}

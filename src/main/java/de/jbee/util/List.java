@@ -41,6 +41,14 @@ public final class List {
 			return this;
 		}
 
+		@Override
+		public IMutableList<T> append( ICluster<T> cluster ) {
+			for ( T e : cluster ) {
+				getCollection().add( e );
+			}
+			return this;
+		}
+
 	}
 
 	static final class ReverseIterator<T>

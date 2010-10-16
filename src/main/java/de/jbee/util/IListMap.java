@@ -7,5 +7,13 @@ public interface IListMap<K, V>
 
 	IListMap<K, V> append( K key, V value );
 
+	IListMap<K, V> appendEach( V value );
+
+	IListMap<K, V> appendEach( ICondition<? super K> keyCondition, V value );
+
 	ISet<K> keys();
+
+	IList<V> merge();
+
+	int size();
 }

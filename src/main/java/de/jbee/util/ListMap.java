@@ -3,6 +3,7 @@ package de.jbee.util;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 public final class ListMap {
 
@@ -62,6 +63,38 @@ public final class ListMap {
 			};
 		}
 
+		@Override
+		public IListMap<K, V> appendEach( V value ) {
+			return appendEach( Fulfills.always(), value );
+		}
+
+		@Override
+		public IListMap<K, V> appendEach( ICondition<? super K> keyCondition, V value ) {
+			for ( Entry<K, IMutableList<V>> e : lists.entrySet() ) {
+				if ( keyCondition.fulfilledBy( e.getKey() ) ) {
+					e.getValue().append( value );
+				}
+			}
+			return this;
+		}
+
+		@Override
+		public IList<V> merge() {
+			IMutableList<V> res = List.mutable( size() );
+			for ( IMutableList<V> l : lists.values() ) {
+				res.append( l );
+			}
+			return res.immutable();
+		}
+
+		@Override
+		public int size() {
+			int c = 0;
+			for ( IMutableList<V> l : lists.values() ) {
+				c += l.size();
+			}
+			return c;
+		}
 	}
 
 }
