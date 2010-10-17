@@ -99,6 +99,11 @@ public final class ListMap {
 			}
 			return c;
 		}
+
+		@Override
+		public String toString() {
+			return lists.toString();
+		}
 	}
 
 }

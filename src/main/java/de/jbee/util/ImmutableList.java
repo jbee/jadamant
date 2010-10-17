@@ -99,4 +99,9 @@ final class ImmutableList<T>
 	public String toString() {
 		return list.toString();
 	}
+
+	@Override
+	public ICompareableList<T> comparedBy( Comparator<T> comparator ) {
+		return new CompareableList<T>( this, comparator );
+	}
 }

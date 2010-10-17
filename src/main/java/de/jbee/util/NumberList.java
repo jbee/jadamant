@@ -1,12 +1,18 @@
 package de.jbee.util;
 
+import java.util.Comparator;
+
 public class NumberList<N extends Number & Comparable<N>>
-		extends ComparableList<N, NumberList<N>> {
+		extends ComparatorList<N, NumberList<N>> {
 
 	private static final long serialVersionUID = 1L;
 
 	NumberList( IList<N> list ) {
-		super( list );
+		this( list, Collection.<N> comparator() );
+	}
+
+	private NumberList( IList<N> list, Comparator<N> comparator ) {
+		super( list, comparator );
 	}
 
 	@Override
@@ -20,5 +26,10 @@ public class NumberList<N extends Number & Comparable<N>>
 
 	public Conditional<NumberList<N>> split( N at ) {
 		return extend( split( at, Collection.<N> comparator() ) );
+	}
+
+	@Override
+	public NumberList<N> comparedBy( Comparator<N> comparator ) {
+		return new NumberList<N>( getCollection(), comparator );
 	}
 }

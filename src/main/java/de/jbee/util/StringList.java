@@ -1,17 +1,28 @@
 package de.jbee.util;
 
+import java.util.Comparator;
+
 public class StringList
-		extends ComparableList<String, StringList> {
+		extends ComparatorList<String, StringList> {
 
 	private static final long serialVersionUID = 1L;
 
 	StringList( IList<String> list ) {
-		super( list );
+		this( list, Collection.<String> comparator() );
+	}
+
+	private StringList( IList<String> list, Comparator<String> comparator ) {
+		super( list, comparator );
 	}
 
 	@Override
 	protected StringList extend( IList<String> list ) {
 		return new StringList( list );
+	}
+
+	@Override
+	public StringList comparedBy( Comparator<String> comparator ) {
+		return new StringList( getCollection(), comparator );
 	}
 
 	/**

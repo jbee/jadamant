@@ -104,4 +104,6 @@ public interface IList<T>
 	IMutableList<T> mutable();
 
 	T[] toArray( Class<T> elementType );
+
+	ICompareableList<T> comparedBy( Comparator<T> comparator );
 }
