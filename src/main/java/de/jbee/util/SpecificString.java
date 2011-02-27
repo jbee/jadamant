@@ -41,6 +41,9 @@ public class SpecificString<T extends SpecificString<T>>
 
 	@Override
 	public boolean equals( Object obj ) {
+		if ( this == obj ) {
+			return true;
+		}
 		if ( obj != null && obj.getClass() == getClass() ) {
 			return ( (SpecificString<?>) obj ).value.equals( value );
 		}

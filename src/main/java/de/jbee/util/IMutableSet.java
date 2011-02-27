@@ -6,4 +6,6 @@ public interface IMutableSet<T>
 	IMutableSet<T> add( T e );
 
 	ISet<T> immutable();
+
+	boolean isIn( T e );
 }

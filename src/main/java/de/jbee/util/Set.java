@@ -30,6 +30,11 @@ public final class Set {
 		public ISet<T> immutable() {
 			return readonly( Set.clone( getCollection() ) );
 		}
+
+		@Override
+		public boolean isIn( T e ) {
+			return getCollection().contains( e );
+		}
 	}
 
 	private static final ISet<?> EMPTY = new ImmutableSet<Object>( Collections.emptySet() );
