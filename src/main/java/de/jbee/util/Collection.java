@@ -96,4 +96,16 @@ public final class Collection {
 	public static <T extends Comparable<T>> Comparator<T> comparator() {
 		return new CompareableComparator<T>();
 	}
+
+	public static String[] toString( ICluster<?> cluster ) {
+		if ( cluster.isEmpty() ) {
+			return new String[0];
+		}
+		String[] res = new String[cluster.size()];
+		int i = 0;
+		for ( Object e : cluster ) {
+			res[i++] = String.valueOf( e );
+		}
+		return res;
+	}
 }
