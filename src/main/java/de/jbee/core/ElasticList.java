@@ -16,7 +16,11 @@ public final class ElasticList {
 		return reverse( ElasticList.<E> emptyForPrepanding() );
 	}
 
+	@SuppressWarnings ( "synthetic-access" )
 	public static <E> IElasticList<E> reverse( IElasticList<E> beingReversed ) {
+		if ( beingReversed instanceof ReversingList<?> ) {
+			return ( (ReversingList<E>) beingReversed ).list;
+		}
 		return new ReversingList<E>( beingReversed );
 	}
 
@@ -70,7 +74,7 @@ public final class ElasticList {
 
 	}
 
-	private final static class EmptyList<E>
+	final static class EmptyList<E>
 			implements IElasticList<E> {
 
 		@Override
