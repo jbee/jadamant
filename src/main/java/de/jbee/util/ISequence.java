@@ -1,5 +1,8 @@
 package de.jbee.util;
 
+import de.jbee.core.IIndexAccessible;
+import de.jbee.core.IPrepandable;
+
 /**
  * All collections build out of ordered elements are {@link ISequence}s.
  * 
@@ -14,10 +17,7 @@ package de.jbee.util;
  * @param <T>
  */
 public interface ISequence<T>
-		extends ICluster<T> {
-
-	T at( int index )
-			throws IndexOutOfBoundsException;
+		extends ICluster<T>, IIndexAccessible<T>, IPrepandable<T> {
 
 	T at( int index, T outOffBoundsValue );
 
@@ -33,5 +33,4 @@ public interface ISequence<T>
 
 	ISequence<T> tail();
 
-	ISequence<T> prepand( T e );
 }

@@ -73,7 +73,7 @@ public final class VList<T> {
 			: count - tail.count;
 	}
 
-	private int maxLevelElements() {
+	private int maxStackElements() {
 		int res = 1;
 		VList<T> cur = tail;
 		while ( cur != null ) {
@@ -114,7 +114,7 @@ public final class VList<T> {
 	}
 
 	private VList<T> grow( int index, Object e ) {
-		final int max = maxLevelElements();
+		final int max = maxStackElements();
 		final int halveMax = max >> 1;
 		final int twiceMax = max << 1;
 		int length = elements.length >> 2; // same as div 4
