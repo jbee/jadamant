@@ -29,8 +29,8 @@ public interface IElasticList<E>
 
 	IElasticList<E> takeR( int ending );
 
-	//TODO IElasticList<E> dropL(int beginning);
+	IElasticList<E> dropL( int beginning );
 
-	//TODO IElasticList<E> dropR(int ending);
+	IElasticList<E> dropR( int ending );
 
 }

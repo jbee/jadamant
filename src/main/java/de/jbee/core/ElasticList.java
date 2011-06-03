@@ -89,6 +89,16 @@ public final class ElasticList {
 		}
 
 		@Override
+		public IElasticList<E> dropL( int beginning ) {
+			return this;
+		}
+
+		@Override
+		public IElasticList<E> dropR( int ending ) {
+			return this;
+		}
+
+		@Override
 		public E at( int index )
 				throws IndexOutOfBoundsException {
 			throw outOfBounds( index );
@@ -151,6 +161,9 @@ public final class ElasticList {
 
 		@Override
 		public IElasticList<E> takeL( int beginning ) {
+			if ( beginning <= 0 ) {
+				return empty();
+			}
 			if ( beginning >= size ) {
 				return this;
 			}
@@ -166,6 +179,9 @@ public final class ElasticList {
 
 		@Override
 		public IElasticList<E> takeR( int ending ) {
+			if ( ending <= 0 ) {
+				return empty();
+			}
 			if ( ending >= size ) {
 				return this;
 			}
@@ -280,6 +296,16 @@ public final class ElasticList {
 		}
 
 		@Override
+		public IElasticList<E> dropL( int beginning ) {
+			return reverseViewOf( list.dropR( beginning ) );
+		}
+
+		@Override
+		public IElasticList<E> dropR( int ending ) {
+			return reverseViewOf( list.dropL( ending ) );
+		}
+
+		@Override
 		public int size() {
 			return list.size();
 		}
@@ -313,6 +339,16 @@ public final class ElasticList {
 			this.size = size;
 			this.stack = stack;
 			this.tail = tail;
+		}
+
+		@Override
+		public IElasticList<E> dropL( int beginning ) {
+			return takeR( size - beginning );
+		}
+
+		@Override
+		public IElasticList<E> dropR( int ending ) {
+			return takeL( size - ending );
 		}
 
 		@Override
