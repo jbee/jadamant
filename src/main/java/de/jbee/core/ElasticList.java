@@ -1,6 +1,5 @@
 package de.jbee.core;
 
-import java.util.Arrays;
 import java.util.Iterator;
 
 public final class ElasticList {
@@ -191,7 +190,7 @@ public final class ElasticList {
 			}
 			final int tailSize = tail.size();
 			if ( ending > tailSize ) {
-				return new BranchVList<E>( size - ( ending - tailSize ), stack, tail );
+				return new BranchVList<E>( ending, stack, tail );
 			}
 			return tail.takeR( ending );
 		}
@@ -403,7 +402,14 @@ public final class ElasticList {
 
 		@Override
 		public String toString() {
-			return Arrays.toString( stack ) + "..." + tail.toString();
+			StringBuilder b = new StringBuilder();
+			for ( int i = 0; i < size; i++ ) {
+				b.append( ',' );
+				b.append( String.valueOf( at( i ) ) );
+			}
+			return "[" + ( b.length() == 0
+				? ""
+				: b.substring( 1 ) ) + "]";
 		}
 
 		/**

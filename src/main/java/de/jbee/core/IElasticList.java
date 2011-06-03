@@ -9,8 +9,16 @@ public interface IElasticList<E>
 	 * override inherited methods with extending return types
 	 */
 
+	/**
+	 * Expect this to be the fastest way to add elements. Almost O(1) in every case.
+	 */
 	IElasticList<E> prepand( E e );
 
+	/**
+	 * Expect this to be much slower than {@link #prepand(Object)}. Only use this when
+	 * {@link ElasticList#reverse(IElasticList)} a list so a <code>append</code> is in fact a
+	 * <code> prepand</code>.
+	 */
 	IElasticList<E> append( E e );
 
 	/*

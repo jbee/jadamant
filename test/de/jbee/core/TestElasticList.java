@@ -1,34 +1,12 @@
 package de.jbee.core;
 
-import static org.hamcrest.core.Is.is;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.junit.Assert.assertThat;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import org.junit.Test;
 
 public class TestElasticList {
-
-	@Test
-	public void testPrepandArrayList() {
-		List<Integer> l = new ArrayList<Integer>();
-		for ( int i = 1; i < 100; i++ ) {
-			l.add( 0, i );
-			assertThat( i, is( l.size() ) );
-			for ( int j = 0; j < i; j++ ) {
-				assertThat( i - j, is( l.get( j ) ) );
-			}
-		}
-	}
-
-	@Test
-	public void testPlainPrepandArrayList() {
-		List<Integer> l = new ArrayList<Integer>();
-		for ( int i = 1; i < 10000; i++ ) {
-			l.add( 0, i );
-		}
-	}
 
 	@Test
 	public void testPrepand() {
@@ -43,15 +21,7 @@ public class TestElasticList {
 	}
 
 	@Test
-	public void testPlainPrepand() {
-		IElasticList<Integer> l = ElasticList.emptyForPrepanding();
-		for ( int i = 1; i < 10000; i++ ) {
-			l = l.prepand( i );
-		}
-	}
-
-	@Test
-	public void testAppendThroughReverse() {
+	public void testPrepandThroughReversingAppend() {
 		IElasticList<Integer> l = ElasticList.emptyForAppending();
 		for ( int i = 1; i < 100; i++ ) {
 			l = l.append( i );
@@ -59,6 +29,36 @@ public class TestElasticList {
 			for ( int j = 0; j < i; j++ ) {
 				assertThat( j + 1, is( l.at( j ) ) );
 			}
+		}
+	}
+
+	@Test
+	public void testTakeR() {
+		IElasticList<Integer> l = ElasticList.emptyForPrepanding();
+		IElasticList<Integer> stack1 = null;
+		IElasticList<Integer> stack2 = null;
+		IElasticList<Integer> stack3 = null;
+		for ( int i = 1; i < 30; i++ ) {
+			l = l.prepand( i );
+			if ( i == 14 ) {
+				stack3 = l;
+			}
+			if ( i == 6 ) {
+				stack2 = l;
+			}
+			if ( i == 2 ) {
+				stack1 = l;
+			}
+		}
+		assertThat( stack1, sameInstance( l.takeR( 2 ) ) );
+		assertThat( stack2, sameInstance( l.takeR( 6 ) ) );
+		assertThat( stack3, sameInstance( l.takeR( 14 ) ) );
+		assertThat( l, sameInstance( l.takeR( 30 ) ) );
+		assertThat( l, sameInstance( l.takeR( 31 ) ) );
+		for ( int i = 1; i < 30; i++ ) {
+			IElasticList<Integer> taken = l.takeR( i );
+			assertThat( i, is( taken.at( 0 ) ) );
+			assertThat( i, is( taken.size() ) );
 		}
 	}
 
