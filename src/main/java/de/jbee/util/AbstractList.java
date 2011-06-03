@@ -100,7 +100,7 @@ public abstract class AbstractList<T, M extends Iterable<T>>
 	@Override
 	public IList<T> delete( int index ) {
 		validate( index );
-		return drop( Range.between( index, index ) );
+		return drop( Range.between( index, index + 1 ) );
 	}
 
 	@Override
@@ -120,10 +120,10 @@ public abstract class AbstractList<T, M extends Iterable<T>>
 		if ( start >= size ) {
 			return this;
 		}
-		if ( start == 0 ) {
-			return takeR( size - start );
-		}
 		final int end = indexRange.end().intValue();
+		if ( start == 0 ) {
+			return takeR( size - end );
+		}
 		if ( end >= size ) {
 			return takeL( start );
 		}
