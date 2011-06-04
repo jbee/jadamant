@@ -43,6 +43,11 @@ public class TestElasticList {
 		assertThat( stack1, sameInstance( l.takeR( 2 ) ) );
 		assertThat( stack2, sameInstance( l.takeR( 6 ) ) );
 		assertThat( stack3, sameInstance( l.takeR( 14 ) ) );
+		verifyTakeR( l );
+	}
+
+	private void verifyTakeR( IElasticList<Integer> l ) {
+		final int size = l.size();
 		assertThat( l, sameInstance( l.takeR( size ) ) );
 		assertThat( l, sameInstance( l.takeR( size + 1 ) ) );
 		assertThat( l, not( sameInstance( l.takeR( size - 1 ) ) ) );
@@ -60,6 +65,11 @@ public class TestElasticList {
 		for ( int i = 1; i <= size; i++ ) {
 			l = l.prepand( i );
 		}
+		verifyTakeL( l );
+	}
+
+	private void verifyTakeL( IElasticList<Integer> l ) {
+		final int size = l.size();
 		assertThat( l, sameInstance( l.takeL( size ) ) );
 		assertThat( l, sameInstance( l.takeL( size + 1 ) ) );
 		assertThat( l, not( sameInstance( l.takeL( size - 1 ) ) ) );
@@ -79,6 +89,11 @@ public class TestElasticList {
 		for ( int i = 1; i <= size; i++ ) {
 			l = l.prepand( i );
 		}
+		verifyDropR( l );
+	}
+
+	private void verifyDropR( IElasticList<Integer> l ) {
+		final int size = l.size();
 		assertThat( 0, is( l.dropR( size ).size() ) );
 		assertThat( 0, is( l.dropR( size + 1 ).size() ) );
 		assertThat( 1, is( l.dropR( size - 1 ).size() ) );
@@ -98,6 +113,11 @@ public class TestElasticList {
 		for ( int i = 1; i <= size; i++ ) {
 			l = l.prepand( i );
 		}
+		verifyDropL( l );
+	}
+
+	private void verifyDropL( IElasticList<Integer> l ) {
+		final int size = l.size();
 		assertThat( 0, is( l.dropL( size ).size() ) );
 		assertThat( 0, is( l.dropL( size + 1 ).size() ) );
 		assertThat( 1, is( l.dropL( size - 1 ).size() ) );
