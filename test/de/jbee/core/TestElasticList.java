@@ -1,6 +1,7 @@
 package de.jbee.core;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.junit.Assert.assertThat;
 
@@ -38,7 +39,8 @@ public class TestElasticList {
 		IElasticList<Integer> stack1 = null;
 		IElasticList<Integer> stack2 = null;
 		IElasticList<Integer> stack3 = null;
-		for ( int i = 1; i < 30; i++ ) {
+		final int end = 30;
+		for ( int i = 1; i <= end; i++ ) {
 			l = l.prepand( i );
 			if ( i == 14 ) {
 				stack3 = l;
@@ -53,12 +55,31 @@ public class TestElasticList {
 		assertThat( stack1, sameInstance( l.takeR( 2 ) ) );
 		assertThat( stack2, sameInstance( l.takeR( 6 ) ) );
 		assertThat( stack3, sameInstance( l.takeR( 14 ) ) );
-		assertThat( l, sameInstance( l.takeR( 30 ) ) );
-		assertThat( l, sameInstance( l.takeR( 31 ) ) );
-		for ( int i = 1; i < 30; i++ ) {
+		assertThat( l, sameInstance( l.takeR( end ) ) );
+		assertThat( l, sameInstance( l.takeR( end + 1 ) ) );
+		assertThat( l, not( sameInstance( l.takeR( end - 1 ) ) ) );
+		for ( int i = 1; i < end; i++ ) {
 			IElasticList<Integer> taken = l.takeR( i );
-			assertThat( i, is( taken.at( 0 ) ) );
 			assertThat( i, is( taken.size() ) );
+			assertThat( i, is( taken.at( 0 ) ) );
+		}
+	}
+
+	@Test
+	public void testTakeL() {
+		IElasticList<Integer> l = ElasticList.emptyForPrepanding();
+		final int end = 30;
+		for ( int i = 1; i <= end; i++ ) {
+			l = l.prepand( i );
+		}
+		assertThat( l, sameInstance( l.takeL( end ) ) );
+		assertThat( l, sameInstance( l.takeL( end + 1 ) ) );
+		assertThat( l, not( sameInstance( l.takeL( end - 1 ) ) ) );
+		for ( int i = 1; i < end; i++ ) {
+			IElasticList<Integer> taken = l.takeL( i );
+			assertThat( i, is( taken.size() ) );
+			assertThat( l.at( 0 ), is( taken.at( 0 ) ) );
+			assertThat( l.at( i - 1 ), is( taken.at( i - 1 ) ) );
 		}
 	}
 

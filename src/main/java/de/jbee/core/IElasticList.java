@@ -25,7 +25,11 @@ public interface IElasticList<E>
 	 * additional methods
 	 */
 
-	//TODO IElasticList<E> prepand(Iterable<E> elems);
+	//TODO IElasticList<E> prepand(ICluster<E> elems);
+
+	//TODO IElasticList<E> append(ICluster<E> elems);
+
+	IElasticList<E> concat( IElasticList<E> other );
 
 	IElasticList<E> insert( E e, int index );
 
