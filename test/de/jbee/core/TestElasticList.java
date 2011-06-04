@@ -22,25 +22,13 @@ public class TestElasticList {
 	}
 
 	@Test
-	public void testPrepandThroughReversingAppend() {
-		IElasticList<Integer> l = ElasticList.emptyForAppending();
-		for ( int i = 1; i < 100; i++ ) {
-			l = l.append( i );
-			assertThat( i, is( l.size() ) );
-			for ( int j = 0; j < i; j++ ) {
-				assertThat( j + 1, is( l.at( j ) ) );
-			}
-		}
-	}
-
-	@Test
 	public void testTakeR() {
 		IElasticList<Integer> l = ElasticList.emptyForPrepanding();
 		IElasticList<Integer> stack1 = null;
 		IElasticList<Integer> stack2 = null;
 		IElasticList<Integer> stack3 = null;
-		final int end = 30;
-		for ( int i = 1; i <= end; i++ ) {
+		final int size = 30;
+		for ( int i = 1; i <= size; i++ ) {
 			l = l.prepand( i );
 			if ( i == 14 ) {
 				stack3 = l;
@@ -55,10 +43,10 @@ public class TestElasticList {
 		assertThat( stack1, sameInstance( l.takeR( 2 ) ) );
 		assertThat( stack2, sameInstance( l.takeR( 6 ) ) );
 		assertThat( stack3, sameInstance( l.takeR( 14 ) ) );
-		assertThat( l, sameInstance( l.takeR( end ) ) );
-		assertThat( l, sameInstance( l.takeR( end + 1 ) ) );
-		assertThat( l, not( sameInstance( l.takeR( end - 1 ) ) ) );
-		for ( int i = 1; i < end; i++ ) {
+		assertThat( l, sameInstance( l.takeR( size ) ) );
+		assertThat( l, sameInstance( l.takeR( size + 1 ) ) );
+		assertThat( l, not( sameInstance( l.takeR( size - 1 ) ) ) );
+		for ( int i = 1; i < size; i++ ) {
 			IElasticList<Integer> taken = l.takeR( i );
 			assertThat( i, is( taken.size() ) );
 			assertThat( i, is( taken.at( 0 ) ) );
@@ -68,18 +56,56 @@ public class TestElasticList {
 	@Test
 	public void testTakeL() {
 		IElasticList<Integer> l = ElasticList.emptyForPrepanding();
-		final int end = 30;
-		for ( int i = 1; i <= end; i++ ) {
+		final int size = 30;
+		for ( int i = 1; i <= size; i++ ) {
 			l = l.prepand( i );
 		}
-		assertThat( l, sameInstance( l.takeL( end ) ) );
-		assertThat( l, sameInstance( l.takeL( end + 1 ) ) );
-		assertThat( l, not( sameInstance( l.takeL( end - 1 ) ) ) );
-		for ( int i = 1; i < end; i++ ) {
+		assertThat( l, sameInstance( l.takeL( size ) ) );
+		assertThat( l, sameInstance( l.takeL( size + 1 ) ) );
+		assertThat( l, not( sameInstance( l.takeL( size - 1 ) ) ) );
+		for ( int i = 1; i < size; i++ ) {
 			IElasticList<Integer> taken = l.takeL( i );
 			assertThat( i, is( taken.size() ) );
 			assertThat( l.at( 0 ), is( taken.at( 0 ) ) );
-			assertThat( l.at( i - 1 ), is( taken.at( i - 1 ) ) );
+			int lastIndex = i - 1;
+			assertThat( l.at( lastIndex ), is( taken.at( lastIndex ) ) );
+		}
+	}
+
+	@Test
+	public void testDropR() {
+		IElasticList<Integer> l = ElasticList.emptyForPrepanding();
+		final int size = 30;
+		for ( int i = 1; i <= size; i++ ) {
+			l = l.prepand( i );
+		}
+		assertThat( 0, is( l.dropR( size ).size() ) );
+		assertThat( 0, is( l.dropR( size + 1 ).size() ) );
+		assertThat( 1, is( l.dropR( size - 1 ).size() ) );
+		for ( int i = 1; i < size; i++ ) {
+			IElasticList<Integer> dropped = l.dropR( i );
+			assertThat( size - i, is( dropped.size() ) );
+			assertThat( l.at( 0 ), is( dropped.at( 0 ) ) );
+			int lastIndex = size - i - 1;
+			assertThat( l.at( lastIndex ), is( dropped.at( lastIndex ) ) );
+		}
+	}
+
+	@Test
+	public void testDropL() {
+		IElasticList<Integer> l = ElasticList.emptyForPrepanding();
+		final int size = 30;
+		for ( int i = 1; i <= size; i++ ) {
+			l = l.prepand( i );
+		}
+		assertThat( 0, is( l.dropL( size ).size() ) );
+		assertThat( 0, is( l.dropL( size + 1 ).size() ) );
+		assertThat( 1, is( l.dropL( size - 1 ).size() ) );
+		for ( int i = 1; i < size; i++ ) {
+			IElasticList<Integer> dropped = l.dropL( i );
+			assertThat( size - i, is( dropped.size() ) );
+			assertThat( l.at( 0 ), not( is( dropped.at( 0 ) ) ) );
+			assertThat( l.at( size - 1 ), is( dropped.at( size - i - 1 ) ) );
 		}
 	}
 
