@@ -9,6 +9,46 @@ import org.junit.Test;
 
 public class TestElasticList {
 
+	@Test ( expected = IndexOutOfBoundsException.class )
+	public void testAtOnEmptyListOutOfBoundsException() {
+		IElasticList<Integer> l = ElasticList.emptyForPrepanding();
+		l.at( 0 );
+	}
+
+	@Test ( expected = IndexOutOfBoundsException.class )
+	public void testAtOnOneElementListOutOfBoundsException() {
+		IElasticList<Integer> l = ElasticList.emptyForPrepanding();
+		l = l.prepand( 1 );
+		l.at( 1 );
+	}
+
+	@Test ( expected = IndexOutOfBoundsException.class )
+	public void testAtOnTwoElementListOutOfBoundsException() {
+		IElasticList<Integer> l = ElasticList.emptyForPrepanding();
+		l = l.prepand( 1 ).prepand( 2 );
+		l.at( 2 );
+	}
+
+	@Test
+	public void testDropL() {
+		IElasticList<Integer> l = ElasticList.emptyForPrepanding();
+		final int size = 30;
+		for ( int i = 1; i <= size; i++ ) {
+			l = l.prepand( i );
+		}
+		verifyDropL( l );
+	}
+
+	@Test
+	public void testDropR() {
+		IElasticList<Integer> l = ElasticList.emptyForPrepanding();
+		final int size = 30;
+		for ( int i = 1; i <= size; i++ ) {
+			l = l.prepand( i );
+		}
+		verifyDropR( l );
+	}
+
 	@Test
 	public void testPrepand() {
 		IElasticList<Integer> l = ElasticList.emptyForPrepanding();
@@ -19,6 +59,16 @@ public class TestElasticList {
 				assertThat( i - j, is( l.at( j ) ) );
 			}
 		}
+	}
+
+	@Test
+	public void testTakeL() {
+		IElasticList<Integer> l = ElasticList.emptyForPrepanding();
+		final int size = 30;
+		for ( int i = 1; i <= size; i++ ) {
+			l = l.prepand( i );
+		}
+		verifyTakeL( l );
 	}
 
 	@Test
@@ -46,50 +96,37 @@ public class TestElasticList {
 		verifyTakeR( l );
 	}
 
-	private void verifyTakeR( IElasticList<Integer> l ) {
-		final int size = l.size();
-		assertThat( l, sameInstance( l.takeR( size ) ) );
-		assertThat( l, sameInstance( l.takeR( size + 1 ) ) );
-		assertThat( l, not( sameInstance( l.takeR( size - 1 ) ) ) );
-		for ( int i = 1; i < size; i++ ) {
-			IElasticList<Integer> taken = l.takeR( i );
-			assertThat( i, is( taken.size() ) );
-			assertThat( i, is( taken.at( 0 ) ) );
-		}
-	}
-
 	@Test
-	public void testTakeL() {
+	public void testDelete() {
 		IElasticList<Integer> l = ElasticList.emptyForPrepanding();
-		final int size = 30;
+		final int size = 14;
 		for ( int i = 1; i <= size; i++ ) {
 			l = l.prepand( i );
 		}
-		verifyTakeL( l );
+		for ( int i = 0; i < size; i++ ) {
+			IElasticList<Integer> deleted = l.delete( i );
+			assertThat( l.size() - 1, is( deleted.size() ) );
+			for ( int j = 0; j < deleted.size(); j++ ) {
+				if ( j < i ) {
+					assertThat( l.at( j ), is( deleted.at( j ) ) );
+				} else {
+					assertThat( l.at( j + 1 ), is( deleted.at( j ) ) );
+				}
+			}
+		}
 	}
 
-	private void verifyTakeL( IElasticList<Integer> l ) {
+	private void verifyDropL( IElasticList<Integer> l ) {
 		final int size = l.size();
-		assertThat( l, sameInstance( l.takeL( size ) ) );
-		assertThat( l, sameInstance( l.takeL( size + 1 ) ) );
-		assertThat( l, not( sameInstance( l.takeL( size - 1 ) ) ) );
+		assertThat( 0, is( l.dropL( size ).size() ) );
+		assertThat( 0, is( l.dropL( size + 1 ).size() ) );
+		assertThat( 1, is( l.dropL( size - 1 ).size() ) );
 		for ( int i = 1; i < size; i++ ) {
-			IElasticList<Integer> taken = l.takeL( i );
-			assertThat( i, is( taken.size() ) );
-			assertThat( l.at( 0 ), is( taken.at( 0 ) ) );
-			int lastIndex = i - 1;
-			assertThat( l.at( lastIndex ), is( taken.at( lastIndex ) ) );
+			IElasticList<Integer> dropped = l.dropL( i );
+			assertThat( size - i, is( dropped.size() ) );
+			assertThat( l.at( 0 ), not( is( dropped.at( 0 ) ) ) );
+			assertThat( l.at( size - 1 ), is( dropped.at( size - i - 1 ) ) );
 		}
-	}
-
-	@Test
-	public void testDropR() {
-		IElasticList<Integer> l = ElasticList.emptyForPrepanding();
-		final int size = 30;
-		for ( int i = 1; i <= size; i++ ) {
-			l = l.prepand( i );
-		}
-		verifyDropR( l );
 	}
 
 	private void verifyDropR( IElasticList<Integer> l ) {
@@ -106,47 +143,30 @@ public class TestElasticList {
 		}
 	}
 
-	@Test
-	public void testDropL() {
-		IElasticList<Integer> l = ElasticList.emptyForPrepanding();
-		final int size = 30;
-		for ( int i = 1; i <= size; i++ ) {
-			l = l.prepand( i );
-		}
-		verifyDropL( l );
-	}
-
-	private void verifyDropL( IElasticList<Integer> l ) {
+	private void verifyTakeL( IElasticList<Integer> l ) {
 		final int size = l.size();
-		assertThat( 0, is( l.dropL( size ).size() ) );
-		assertThat( 0, is( l.dropL( size + 1 ).size() ) );
-		assertThat( 1, is( l.dropL( size - 1 ).size() ) );
+		assertThat( l, sameInstance( l.takeL( size ) ) );
+		assertThat( l, sameInstance( l.takeL( size + 1 ) ) );
+		assertThat( l, not( sameInstance( l.takeL( size - 1 ) ) ) );
 		for ( int i = 1; i < size; i++ ) {
-			IElasticList<Integer> dropped = l.dropL( i );
-			assertThat( size - i, is( dropped.size() ) );
-			assertThat( l.at( 0 ), not( is( dropped.at( 0 ) ) ) );
-			assertThat( l.at( size - 1 ), is( dropped.at( size - i - 1 ) ) );
+			IElasticList<Integer> taken = l.takeL( i );
+			assertThat( i, is( taken.size() ) );
+			assertThat( l.at( 0 ), is( taken.at( 0 ) ) );
+			int lastIndex = i - 1;
+			assertThat( l.at( lastIndex ), is( taken.at( lastIndex ) ) );
 		}
 	}
 
-	@Test ( expected = IndexOutOfBoundsException.class )
-	public void testAtOnEmptyListOutOfBoundsException() {
-		IElasticList<Integer> l = ElasticList.emptyForPrepanding();
-		l.at( 0 );
-	}
-
-	@Test ( expected = IndexOutOfBoundsException.class )
-	public void testAtOnOneElementListOutOfBoundsException() {
-		IElasticList<Integer> l = ElasticList.emptyForPrepanding();
-		l = l.prepand( 1 );
-		l.at( 1 );
-	}
-
-	@Test ( expected = IndexOutOfBoundsException.class )
-	public void testAtOnTwoElementListOutOfBoundsException() {
-		IElasticList<Integer> l = ElasticList.emptyForPrepanding();
-		l = l.prepand( 1 ).prepand( 2 );
-		l.at( 2 );
+	private void verifyTakeR( IElasticList<Integer> l ) {
+		final int size = l.size();
+		assertThat( l, sameInstance( l.takeR( size ) ) );
+		assertThat( l, sameInstance( l.takeR( size + 1 ) ) );
+		assertThat( l, not( sameInstance( l.takeR( size - 1 ) ) ) );
+		for ( int i = 1; i < size; i++ ) {
+			IElasticList<Integer> taken = l.takeR( i );
+			assertThat( i, is( taken.size() ) );
+			assertThat( i, is( taken.at( 0 ) ) );
+		}
 	}
 
 }

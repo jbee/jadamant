@@ -29,6 +29,8 @@ public interface IElasticList<E>
 
 	//TODO IElasticList<E> append(ICluster<E> elems);
 
+	//TODO IElasticList<E> cutout( int from, int to );
+
 	IElasticList<E> concat( IElasticList<E> other );
 
 	IElasticList<E> insert( E e, int index );

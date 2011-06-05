@@ -234,6 +234,12 @@ public final class ElasticList {
 		}
 
 		@Override
+		public IElasticList<E> delete( int index ) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
 		public IElasticList<E> prepand( E e ) {
 			// TODO Auto-generated method stub
 			return null;
@@ -276,6 +282,25 @@ public final class ElasticList {
 		public IElasticList<E> concat( IElasticList<E> other ) {
 			// TODO Auto-generated method stub
 			return null;
+		}
+
+		@Override
+		public IElasticList<E> delete( int index ) {
+			final int length = length();
+			if ( index == 0 ) { // first of this stack
+				return length == 1
+					? tail
+					: new BranchVList<E>( size - 1, stack, tail );
+			}
+			if ( index >= length ) { // not in this stack
+				return new MasterVList<E>( size - 1, stack, tail.delete( index - length ) );
+			}
+			if ( index == length - 1 ) { // last of this stack
+				return new BranchVList<E>( size - 1, 1, stack, tail );
+			}
+			// somewhere in between our stack ;(
+			return new BranchVList<E>( size - 1, length - index, stack, new BranchVList<E>( size
+					- index - 1, stack, tail ) );
 		}
 
 		public IElasticList<E> prepand( E e ) {
@@ -391,12 +416,6 @@ public final class ElasticList {
 				return tail.at( index - length );
 			}
 			return element( index, length );
-		}
-
-		@Override
-		public IElasticList<E> delete( int index ) {
-			// TODO Auto-generated method stub
-			return null;
 		}
 
 		@Override
