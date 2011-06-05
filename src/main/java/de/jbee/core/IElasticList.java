@@ -3,7 +3,8 @@ package de.jbee.core;
 import de.jbee.util.ICluster;
 
 public interface IElasticList<E>
-		extends ICluster<E>, IIndexAccessible<E>, IPrepandable<E>, IAppendable<E> {
+		extends ICluster<E>, IIndexAccessible<E>, IPrepandable<E>, IAppendable<E>,
+		IModifiableSequence<E> {
 
 	/*
 	 * override inherited methods with extending return types
@@ -22,22 +23,14 @@ public interface IElasticList<E>
 	IElasticList<E> append( E e );
 
 	/*
-	 * additional methods
+	 * override inherited methods with extending return types
+	 * 
+	 * FROM: IModifiableSequence
 	 */
-
-	//TODO IElasticList<E> prepand(ICluster<E> elems);
-
-	//TODO IElasticList<E> append(ICluster<E> elems);
-
-	//TODO IElasticList<E> cutout( int from, int to );
-
-	IElasticList<E> concat( IElasticList<E> other );
 
 	IElasticList<E> insert( E e, int index );
 
 	IElasticList<E> delete( int index );
-
-	IElasticList<E> tidyUp();
 
 	IElasticList<E> takeL( int beginning );
 
@@ -46,5 +39,21 @@ public interface IElasticList<E>
 	IElasticList<E> dropL( int beginning );
 
 	IElasticList<E> dropR( int ending );
+
+	/*
+	 * additional methods
+	 */
+
+	IElasticList<E> tidyUp();
+
+	//TODO head - tail
+
+	//TODO IElasticList<E> prepand(ICluster<E> elems);
+
+	//TODO IElasticList<E> append(ICluster<E> elems);
+
+	//TODO IElasticList<E> cutout( int from, int to );
+
+	IElasticList<E> concat( IElasticList<E> other );
 
 }
