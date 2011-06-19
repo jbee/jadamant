@@ -5,7 +5,6 @@ import de.jbee.core.list.CoreListTransition;
 import de.jbee.core.list.List;
 import de.jbee.core.list.ListFactory;
 import de.jbee.core.list.ListTransition;
-import de.jbee.core.type.Enum;
 
 /**
  * Provides the basis utilities.
@@ -134,16 +133,6 @@ public final class Core {
 		@Override
 		public <E> List<E> noElements() {
 			return factory.noElements();
-		}
-
-		@Override
-		public <E> List<E> from( E start, Enum<E> type ) {
-			return factory.from( start, type );
-		}
-
-		@Override
-		public <E> List<E> fromTo( E start, E end, Enum<E> type ) {
-			return factory.fromTo( start, end, type );
 		}
 
 	}

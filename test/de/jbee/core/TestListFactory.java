@@ -3,7 +3,6 @@ package de.jbee.core;
 import org.junit.Test;
 
 import de.jbee.core.list.List;
-import de.jbee.core.type.Enumerate;
 
 public class TestListFactory {
 
@@ -19,16 +18,15 @@ public class TestListFactory {
 
 	@Test
 	public void testFromTo() {
-		List<Integer> l = List.with.fromTo( 3, 12, Enumerate.INTEGERS );
+		List<Integer> l = List.numbers.fromTo( 3, 12 );
 		System.out.println( l );
-		List<Integer> l2 = List.with.fromTo( 12, 3, Enumerate.INTEGERS );
+		List<Integer> l2 = List.numbers.fromTo( 12, 3 );
 		System.out.println( l2 );
-		List<Weekday> l3 = List.with.fromTo( Weekday.Monday, Weekday.Friday,
-				Enumerate.type( Weekday.class ) );
-		System.out.println( l3 );
-		List<Weekday> l4 = List.with.fromTo( Weekday.Friday, Weekday.Tuesday,
-				Enumerate.type( Weekday.class ) );
-		System.out.println( l4 );
-
+		//		List<Weekday> l3 = List.with.fromTo( Weekday.Monday, Weekday.Friday,
+		//				Enumerate.type( Weekday.class ) );
+		//		System.out.println( l3 );
+		//		List<Weekday> l4 = List.with.fromTo( Weekday.Friday, Weekday.Tuesday,
+		//				Enumerate.type( Weekday.class ) );
+		//		System.out.println( l4 );
 	}
 }

@@ -16,6 +16,10 @@ public final class CoreList {
 		}
 	}
 
+	static <E> EnumerableListFactory<E> factory( Enum<E> type ) {
+		return new EnumerableStackListFactory<E>( type );
+	}
+
 	static <E> List<E> primary( int size, Object[] stack, List<E> tail ) {
 		return new PrimaryStackList<E>( size, stack, tail );
 	}
@@ -329,25 +333,37 @@ public final class CoreList {
 			return (List<E>) EMPTY;
 		}
 
-		@Override
-		public <E> List<E> from( E start, Enum<E> type ) {
-			return fromTo( start, type.maxBound(), type );
+	}
+
+	static final class EnumerableStackListFactory<E>
+			implements EnumerableListFactory<E> {
+
+		private final Enum<E> type;
+
+		EnumerableStackListFactory( Enum<E> type ) {
+			super();
+			this.type = type;
 		}
 
 		@Override
-		public <E> List<E> fromTo( E start, E end, Enum<E> type ) {
+		public List<E> from( E start ) {
+			return fromTo( start, type.maxBound() );
+		}
+
+		@Override
+		public List<E> fromTo( E start, E end ) {
 			//TODO make sure start and end are in range of type
 			int si = type.toOrdinal( start );
 			int ei = type.toOrdinal( end );
 			if ( si == ei ) { // length 1
-				return this.<E> noElements().prepand( start );
+				return FACTORY.element( start );
 			}
 			int length = Math.abs( si - ei ) + 1;
 			if ( length == 2 ) {
-				return this.<E> noElements().prepand( end ).prepand( start );
+				return FACTORY.element( end ).prepand( start );
 			}
 			int capacity = 2;
-			List<E> res = noElements();
+			List<E> res = FACTORY.noElements();
 			E cur = end;
 			final boolean asc = si < ei;
 			int size = 0;
