@@ -164,6 +164,10 @@ public final class CoreListTransition {
 			return reverseViewOf( list.replaceAt( reverseIndexOf( index ), e ) );
 		}
 
+		@Override
+		public String toString() {
+			return list.toString();
+		}
 	}
 
 }

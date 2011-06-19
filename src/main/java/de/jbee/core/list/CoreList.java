@@ -7,7 +7,7 @@ import de.jbee.core.type.Enum;
 
 public final class CoreList {
 
-	public static final ListFactory FACTORY = new StackListFactory();
+	public static final Lister LISTER = new StackLister();
 	static final List<Object> EMPTY = new EmptyStackList<Object>();
 
 	static void checkNonnull( Object e ) {
@@ -16,8 +16,8 @@ public final class CoreList {
 		}
 	}
 
-	static <E> EnumerableListFactory<E> factory( Enum<E> type ) {
-		return new EnumerableStackListFactory<E>( type );
+	public static <E> EnumLister<E> lister( Enum<E> type ) {
+		return new StackEnumLister<E>( type );
 	}
 
 	static <E> List<E> primary( int size, Object[] stack, List<E> tail ) {
@@ -256,7 +256,7 @@ public final class CoreList {
 		abstract E element( int index, int l );
 
 		final List<E> empty() {
-			return FACTORY.noElements();
+			return LISTER.noElements();
 		}
 
 		/**
@@ -299,8 +299,8 @@ public final class CoreList {
 		}
 	}
 
-	static class StackListFactory
-			implements ListFactory {
+	static class StackLister
+			implements Lister {
 
 		@Override
 		public <E> List<E> element( E e ) {
@@ -335,12 +335,12 @@ public final class CoreList {
 
 	}
 
-	static final class EnumerableStackListFactory<E>
-			implements EnumerableListFactory<E> {
+	static final class StackEnumLister<E>
+			implements EnumLister<E> {
 
 		private final Enum<E> type;
 
-		EnumerableStackListFactory( Enum<E> type ) {
+		StackEnumLister( Enum<E> type ) {
 			super();
 			this.type = type;
 		}
@@ -356,14 +356,14 @@ public final class CoreList {
 			int si = type.toOrdinal( start );
 			int ei = type.toOrdinal( end );
 			if ( si == ei ) { // length 1
-				return FACTORY.element( start );
+				return LISTER.element( start );
 			}
 			int length = Math.abs( si - ei ) + 1;
 			if ( length == 2 ) {
-				return FACTORY.element( end ).prepand( start );
+				return LISTER.element( end ).prepand( start );
 			}
 			int capacity = 2;
-			List<E> res = FACTORY.noElements();
+			List<E> res = LISTER.noElements();
 			E cur = end;
 			final boolean asc = si < ei;
 			int size = 0;

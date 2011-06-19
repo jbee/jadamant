@@ -5,6 +5,9 @@ import static de.jbee.core.Core.I;
 import static de.jbee.core.Core._;
 import static de.jbee.core.list.ListTransition.reverse;
 import static de.jbee.core.list.ListTransition.tail;
+
+import org.junit.Test;
+
 import de.jbee.core.list.List;
 import de.jbee.core.list.ListTransition;
 
@@ -51,8 +54,10 @@ public class ProofList {
 		List<Integer> l4 = List.with.noElements();
 	}
 
+	@Test
 	public void proofListTransitionChaining() {
-		ListTransition merged = $( tail, $( reverse, tail ) );
+		ListTransition dropLR1 = $( tail, $( reverse, tail ) );
+		System.out.println( dropLR1.from( List.numbers.fromTo( 1, 10 ) ) );
 	}
 
 }

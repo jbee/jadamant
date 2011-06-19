@@ -5,7 +5,6 @@ import de.jbee.core.Core;
 import de.jbee.core.IndexAccessible;
 import de.jbee.core.ModifiableSequence;
 import de.jbee.core.Prepandable;
-import de.jbee.core.type.Enumerate;
 import de.jbee.util.ICluster;
 
 /**
@@ -26,13 +25,12 @@ public interface List<E>
 		extends ICluster<E>, IndexAccessible<E>, Prepandable<E>, Appendable<E>,
 		ModifiableSequence<E> {
 
-	ListFactory with = Core.list;
+	Lister with = Core.list;
+	EnumLister<Integer> numbers = Core.numbers;
 
 	ListTransition reverse = ListTransition.reverse;
 
 	ListTransition tail = ListTransition.tail;
-
-	EnumerableListFactory<Integer> numbers = CoreList.factory( Enumerate.INTEGERS );
 
 	/*
 	 * override inherited methods with extending return types

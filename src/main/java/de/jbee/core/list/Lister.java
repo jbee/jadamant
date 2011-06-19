@@ -1,7 +1,7 @@
 package de.jbee.core.list;
 
 
-public interface ListFactory {
+public interface Lister {
 
 	<E> List<E> noElements();
 

@@ -8,6 +8,7 @@ public final class Enumerate {
 	public static final Enum<Integer> INTEGERS = numbers( Integer.MIN_VALUE, Integer.MAX_VALUE );
 	public static final Enum<Integer> NATURALS = numbers( 0, Integer.MAX_VALUE );
 	public static final Enum<Integer> POSITIVES = numbers( 1, Integer.MAX_VALUE );
+	public static final Enum<Integer> NUMERARY = numbers( 0, 9 );
 
 	public static <E extends java.lang.Enum<E>> Enum<E> type( Class<E> type ) {
 		return new EnumerateEnum<E>( type );

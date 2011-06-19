@@ -1,7 +1,7 @@
 package de.jbee.core.list;
 
 
-public interface EnumerableListFactory<E> {
+public interface EnumLister<E> {
 
 	List<E> from( E start );
 

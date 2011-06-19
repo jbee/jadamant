@@ -2,17 +2,18 @@ package de.jbee.core;
 
 import de.jbee.core.list.CoreList;
 import de.jbee.core.list.CoreListTransition;
+import de.jbee.core.list.EnumLister;
 import de.jbee.core.list.List;
-import de.jbee.core.list.ListFactory;
 import de.jbee.core.list.ListTransition;
+import de.jbee.core.list.Lister;
+import de.jbee.core.type.Enumerate;
 
 /**
  * Provides the basis utilities.
  * 
  * <h3>Lists</h3>
  * <p>
- * The {@link ListFactory} creates {@link List} along with a bunch of static factory methods
- * {@link #_()}, {@link #_(Object)}, ...
+ * The {@link Lister} creates {@link List} along with a bunch of static factory methods {@link #_()}, {@link #_(Object)}, ...
  * </p>
  * 
  * @author Jan Bernitt (jan.bernitt@gmx.de)
@@ -24,10 +25,16 @@ public final class Core {
 		throw new UnsupportedOperationException( "util" );
 	}
 
-	public static final ListFactory list = new ProxyListFactory();
+	public static final Lister list = new ProxyLister();
+	public static final EnumLister<Integer> numbers = new ProxyEnumLister<Integer>(
+			CoreList.lister( Enumerate.INTEGERS ) );
 
-	static void setUp( ListFactory factory ) {
-		( (ProxyListFactory) list ).factory = factory;
+	static void setUp( Lister factory ) {
+		( (ProxyLister) list ).factory = factory;
+	}
+
+	static void setUp( EnumLister<Integer> factory ) {
+		( (ProxyEnumLister<Integer>) numbers ).factory = factory;
 	}
 
 	public static List<Integer> I() {
@@ -106,12 +113,34 @@ public final class Core {
 		return CoreListTransition.concat( fst, snd );
 	}
 
-	static final class ProxyListFactory
-			implements ListFactory {
+	static final class ProxyEnumLister<E>
+			implements EnumLister<E> {
 
-		ListFactory factory = CoreList.FACTORY;
+		EnumLister<E> factory;
 
-		ProxyListFactory() {
+		ProxyEnumLister( EnumLister<E> factory ) {
+			super();
+			this.factory = factory;
+		}
+
+		@Override
+		public List<E> from( E start ) {
+			return factory.from( start );
+		}
+
+		@Override
+		public List<E> fromTo( E start, E end ) {
+			return factory.fromTo( start, end );
+		}
+
+	}
+
+	static final class ProxyLister
+			implements Lister {
+
+		Lister factory = CoreList.LISTER;
+
+		ProxyLister() {
 			// hide for singleton
 		}
 

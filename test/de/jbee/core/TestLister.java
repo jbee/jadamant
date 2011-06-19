@@ -4,7 +4,7 @@ import org.junit.Test;
 
 import de.jbee.core.list.List;
 
-public class TestListFactory {
+public class TestLister {
 
 	static enum Weekday {
 		Monday,
