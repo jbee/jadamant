@@ -1,14 +1,21 @@
 package de.jbee.core;
 
+/**
+ * My array util.
+ * 
+ * @author Jan Bernitt (jan.bernitt@gmx.de)
+ */
 public class Array {
 
-	// algo der immer verdoppelt kopiert +ber System.arraycopy
-	// also 1 auf 2, 2 auf 4, 4 auf 8 usw.
+	private Array() {
+		throw new UnsupportedOperationException( "util" );
+	}
+
 	public static void fill( Object[] a, Object value, int start, int length ) {
 		if ( length <= 0 ) {
 			return;
 		}
-		//TODO check if a is bug enough
+		//TODO check if a is big enough
 		a[start] = value;
 		if ( length == 1 ) {
 			return;

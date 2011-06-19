@@ -7,31 +7,33 @@ import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 
-public class TestElasticList {
+import de.jbee.core.list.List;
+
+public class TestList {
 
 	@Test ( expected = IndexOutOfBoundsException.class )
 	public void testAtOnEmptyListOutOfBoundsException() {
-		IElasticList<Integer> l = ElasticList.emptyForPrepanding();
+		List<Integer> l = List.with.noElements();
 		l.at( 0 );
 	}
 
 	@Test ( expected = IndexOutOfBoundsException.class )
 	public void testAtOnOneElementListOutOfBoundsException() {
-		IElasticList<Integer> l = ElasticList.emptyForPrepanding();
+		List<Integer> l = List.with.noElements();
 		l = l.prepand( 1 );
 		l.at( 1 );
 	}
 
 	@Test ( expected = IndexOutOfBoundsException.class )
 	public void testAtOnTwoElementListOutOfBoundsException() {
-		IElasticList<Integer> l = ElasticList.emptyForPrepanding();
+		List<Integer> l = List.with.noElements();
 		l = l.prepand( 1 ).prepand( 2 );
 		l.at( 2 );
 	}
 
 	@Test
 	public void testDropL() {
-		IElasticList<Integer> l = ElasticList.emptyForPrepanding();
+		List<Integer> l = List.with.noElements();
 		final int size = 30;
 		for ( int i = 1; i <= size; i++ ) {
 			l = l.prepand( i );
@@ -41,7 +43,7 @@ public class TestElasticList {
 
 	@Test
 	public void testDropR() {
-		IElasticList<Integer> l = ElasticList.emptyForPrepanding();
+		List<Integer> l = List.with.noElements();
 		final int size = 30;
 		for ( int i = 1; i <= size; i++ ) {
 			l = l.prepand( i );
@@ -51,7 +53,7 @@ public class TestElasticList {
 
 	@Test
 	public void testPrepand() {
-		IElasticList<Integer> l = ElasticList.emptyForPrepanding();
+		List<Integer> l = List.with.noElements();
 		for ( int i = 1; i < 100; i++ ) {
 			l = l.prepand( i );
 			assertThat( i, is( l.size() ) );
@@ -63,7 +65,7 @@ public class TestElasticList {
 
 	@Test
 	public void testTakeL() {
-		IElasticList<Integer> l = ElasticList.emptyForPrepanding();
+		List<Integer> l = List.with.noElements();
 		final int size = 30;
 		for ( int i = 1; i <= size; i++ ) {
 			l = l.prepand( i );
@@ -73,10 +75,10 @@ public class TestElasticList {
 
 	@Test
 	public void testTakeR() {
-		IElasticList<Integer> l = ElasticList.emptyForPrepanding();
-		IElasticList<Integer> stack1 = null;
-		IElasticList<Integer> stack2 = null;
-		IElasticList<Integer> stack3 = null;
+		List<Integer> l = List.with.noElements();
+		List<Integer> stack1 = null;
+		List<Integer> stack2 = null;
+		List<Integer> stack3 = null;
 		final int size = 30;
 		for ( int i = 1; i <= size; i++ ) {
 			l = l.prepand( i );
@@ -98,13 +100,13 @@ public class TestElasticList {
 
 	@Test
 	public void testDelete() {
-		IElasticList<Integer> l = ElasticList.emptyForPrepanding();
+		List<Integer> l = List.with.noElements();
 		final int size = 14;
 		for ( int i = 1; i <= size; i++ ) {
 			l = l.prepand( i );
 		}
 		for ( int i = 0; i < size; i++ ) {
-			IElasticList<Integer> deleted = l.delete( i );
+			List<Integer> deleted = l.deleteAt( i );
 			assertThat( l.size() - 1, is( deleted.size() ) );
 			for ( int j = 0; j < deleted.size(); j++ ) {
 				if ( j < i ) {
@@ -116,26 +118,26 @@ public class TestElasticList {
 		}
 	}
 
-	private void verifyDropL( IElasticList<Integer> l ) {
+	private void verifyDropL( List<Integer> l ) {
 		final int size = l.size();
 		assertThat( 0, is( l.dropL( size ).size() ) );
 		assertThat( 0, is( l.dropL( size + 1 ).size() ) );
 		assertThat( 1, is( l.dropL( size - 1 ).size() ) );
 		for ( int i = 1; i < size; i++ ) {
-			IElasticList<Integer> dropped = l.dropL( i );
+			List<Integer> dropped = l.dropL( i );
 			assertThat( size - i, is( dropped.size() ) );
 			assertThat( l.at( 0 ), not( is( dropped.at( 0 ) ) ) );
 			assertThat( l.at( size - 1 ), is( dropped.at( size - i - 1 ) ) );
 		}
 	}
 
-	private void verifyDropR( IElasticList<Integer> l ) {
+	private void verifyDropR( List<Integer> l ) {
 		final int size = l.size();
 		assertThat( 0, is( l.dropR( size ).size() ) );
 		assertThat( 0, is( l.dropR( size + 1 ).size() ) );
 		assertThat( 1, is( l.dropR( size - 1 ).size() ) );
 		for ( int i = 1; i < size; i++ ) {
-			IElasticList<Integer> dropped = l.dropR( i );
+			List<Integer> dropped = l.dropR( i );
 			assertThat( size - i, is( dropped.size() ) );
 			assertThat( l.at( 0 ), is( dropped.at( 0 ) ) );
 			int lastIndex = size - i - 1;
@@ -143,13 +145,13 @@ public class TestElasticList {
 		}
 	}
 
-	private void verifyTakeL( IElasticList<Integer> l ) {
+	private void verifyTakeL( List<Integer> l ) {
 		final int size = l.size();
 		assertThat( l, sameInstance( l.takeL( size ) ) );
 		assertThat( l, sameInstance( l.takeL( size + 1 ) ) );
 		assertThat( l, not( sameInstance( l.takeL( size - 1 ) ) ) );
 		for ( int i = 1; i < size; i++ ) {
-			IElasticList<Integer> taken = l.takeL( i );
+			List<Integer> taken = l.takeL( i );
 			assertThat( i, is( taken.size() ) );
 			assertThat( l.at( 0 ), is( taken.at( 0 ) ) );
 			int lastIndex = i - 1;
@@ -157,13 +159,13 @@ public class TestElasticList {
 		}
 	}
 
-	private void verifyTakeR( IElasticList<Integer> l ) {
+	private void verifyTakeR( List<Integer> l ) {
 		final int size = l.size();
 		assertThat( l, sameInstance( l.takeR( size ) ) );
 		assertThat( l, sameInstance( l.takeR( size + 1 ) ) );
 		assertThat( l, not( sameInstance( l.takeR( size - 1 ) ) ) );
 		for ( int i = 1; i < size; i++ ) {
-			IElasticList<Integer> taken = l.takeR( i );
+			List<Integer> taken = l.takeR( i );
 			assertThat( i, is( taken.size() ) );
 			assertThat( i, is( taken.at( 0 ) ) );
 		}

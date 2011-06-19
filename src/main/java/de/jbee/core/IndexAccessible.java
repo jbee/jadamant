@@ -1,6 +1,6 @@
 package de.jbee.core;
 
-public interface IIndexAccessible<E> {
+public interface IndexAccessible<E> {
 
 	E at( int index )
 			throws IndexOutOfBoundsException;

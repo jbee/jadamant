@@ -4,15 +4,15 @@ import java.util.Iterator;
 
 public class IndexAccess {
 
-	public static <E> Iterator<E> iterator( IIndexAccessible<E> sequence, int start, int end ) {
+	public static <E> Iterator<E> iterator( IndexAccessible<E> sequence, int start, int end ) {
 		return iterator( sequence, start, end, 1 );
 	}
 
-	public static <E> Iterator<E> reverseIterator( IIndexAccessible<E> sequence, int start, int end ) {
+	public static <E> Iterator<E> reverseIterator( IndexAccessible<E> sequence, int start, int end ) {
 		return iterator( sequence, end, start, -1 );
 	}
 
-	public static <E> Iterator<E> iterator( IIndexAccessible<E> sequence, int start, int end,
+	public static <E> Iterator<E> iterator( IndexAccessible<E> sequence, int start, int end,
 			int increment ) {
 		return new IndexAccessIterator<E>( sequence, start, end, increment );
 	}
@@ -20,13 +20,13 @@ public class IndexAccess {
 	private static final class IndexAccessIterator<E>
 			implements Iterator<E> {
 
-		private final IIndexAccessible<E> sequence;
+		private final IndexAccessible<E> sequence;
 		private final int end;
 		private final int increment;
 
 		private int index;
 
-		IndexAccessIterator( IIndexAccessible<E> sequence, int start, int end, int increment ) {
+		IndexAccessIterator( IndexAccessible<E> sequence, int start, int end, int increment ) {
 			super();
 			this.sequence = sequence;
 			this.index = start;

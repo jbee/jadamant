@@ -1,7 +1,7 @@
 package de.jbee.util;
 
-import de.jbee.core.IIndexAccessible;
-import de.jbee.core.IPrepandable;
+import de.jbee.core.IndexAccessible;
+import de.jbee.core.Prepandable;
 
 /**
  * All collections build out of ordered elements are {@link ISequence}s.
@@ -17,7 +17,7 @@ import de.jbee.core.IPrepandable;
  * @param <T>
  */
 public interface ISequence<T>
-		extends ICluster<T>, IIndexAccessible<T>, IPrepandable<T> {
+		extends ICluster<T>, IndexAccessible<T>, Prepandable<T> {
 
 	T at( int index, T outOffBoundsValue );
 
