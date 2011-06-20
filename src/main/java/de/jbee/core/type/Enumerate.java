@@ -18,8 +18,59 @@ public final class Enumerate {
 		return new EnumerateInteger( minBound, maxBound );
 	}
 
+	public static <T> Enum<T> step( Enum<T> type, T start, int increment ) {
+		return new EnumerateStepwise<T>( type, start, increment );
+	}
+
 	private Enumerate() {
 		throw new UnsupportedOperationException( "util" );
+	}
+
+	static final class EnumerateStepwise<T>
+			implements Enum<T> {
+
+		private final Enum<T> unstepped;
+		private final int increment;
+		private final int offset;
+
+		EnumerateStepwise( Enum<T> unstepped, T start, int increment ) {
+			super();
+			this.unstepped = unstepped;
+			this.increment = increment;
+			this.offset = unstepped.toOrdinal( start ) % increment;
+		}
+
+		@Override
+		public T pred( T value ) {
+			return unstepped.toEnum( unstepped.toOrdinal( value ) - increment );
+		}
+
+		@Override
+		public T succ( T value ) {
+			return unstepped.toEnum( unstepped.toOrdinal( value ) + increment );
+		}
+
+		@Override
+		public T toEnum( int ord ) {
+			return unstepped.toEnum( ( ord * increment ) + offset );
+		}
+
+		@Override
+		public int toOrdinal( T value ) {
+			return ( unstepped.toOrdinal( value ) - offset ) / increment;
+		}
+
+		@Override
+		public T maxBound() {
+			final int max = unstepped.toOrdinal( unstepped.maxBound() );
+			return unstepped.toEnum( max - ( ( max - offset ) % increment ) );
+		}
+
+		@Override
+		public T minBound() {
+			return unstepped.toEnum( offset );
+		}
+
 	}
 
 	static final class EnumerateEnum<E extends java.lang.Enum<E>>

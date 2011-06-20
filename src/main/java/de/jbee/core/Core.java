@@ -109,7 +109,7 @@ public final class Core {
 				e4 ).prepand( e3 ).prepand( e2 ).append( e1 );
 	}
 
-	public static ListTransition $( ListTransition fst, ListTransition snd ) {
+	public static ListTransition ſ( ListTransition fst, ListTransition snd ) {
 		return CoreListTransition.concat( fst, snd );
 	}
 
