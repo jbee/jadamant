@@ -1,9 +1,7 @@
 package de.jbee.core.list;
 
-
 public interface EnumLister<E> {
 
-	List<E> from( E start );
+	List<E> stepwiseFromTo( E start, E end, int increment );
 
-	List<E> fromTo( E start, E end );
 }

@@ -26,7 +26,7 @@ public interface List<E>
 		ModifiableSequence<E> {
 
 	Lister with = Core.list;
-	EnumLister<Integer> numbers = Core.numbers;
+	RichLister<Integer> numbers = Core.numbers;
 
 	ListTransition reverse = ListTransition.reverse;
 

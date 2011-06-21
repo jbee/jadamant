@@ -18,7 +18,7 @@ public final class Enumerate {
 		return new EnumerateInteger( minBound, maxBound );
 	}
 
-	public static <T> Enum<T> step( Enum<T> type, T start, int increment ) {
+	public static <T> Enum<T> stepwise( Enum<T> type, T start, int increment ) {
 		return new EnumerateStepwise<T>( type, start, increment );
 	}
 

@@ -4,9 +4,11 @@ import java.util.Iterator;
 
 import de.jbee.core.IndexAccess;
 import de.jbee.core.type.Enum;
+import de.jbee.core.type.Enumerate;
 
 public final class CoreList {
 
+	public static final EnumListerFactory LISTER_FACTORY = new StackEnumListerFactory();
 	public static final Lister LISTER = new StackLister();
 	static final List<Object> EMPTY = new EmptyStackList<Object>();
 
@@ -14,10 +16,6 @@ public final class CoreList {
 		if ( e == null ) {
 			throw new NullPointerException( "null is not supported as an element of this list" );
 		}
-	}
-
-	public static <E> EnumLister<E> lister( Enum<E> type ) {
-		return new StackEnumLister<E>( type );
 	}
 
 	static <E> List<E> primary( int size, Object[] stack, List<E> tail ) {
@@ -335,6 +333,16 @@ public final class CoreList {
 
 	}
 
+	final static class StackEnumListerFactory
+			implements EnumListerFactory {
+
+		@Override
+		public <E> RichLister<E> listing( Enum<E> type ) {
+			return new RichLister<E>( new StackEnumLister<E>( type ), type );
+		}
+
+	}
+
 	static final class StackEnumLister<E>
 			implements EnumLister<E> {
 
@@ -346,13 +354,21 @@ public final class CoreList {
 		}
 
 		@Override
-		public List<E> from( E start ) {
-			return fromTo( start, type.maxBound() );
+		public List<E> stepwiseFromTo( E start, E end, int increment ) {
+			//TODO make sure start and end are in range of type
+			return ( increment != 1 )
+				? fromTo( start, alignEndToStep( start, end, increment ), Enumerate.stepwise( type,
+						start, increment ) )
+				: fromTo( start, end, type );
 		}
 
-		@Override
-		public List<E> fromTo( E start, E end ) {
-			//TODO make sure start and end are in range of type
+		private E alignEndToStep( E start, E end, int inc ) {
+			int eo = type.toOrdinal( end );
+			return type.toEnum( eo - ( ( eo - type.toOrdinal( start ) ) % inc ) );
+		}
+
+		//FIXME through prepanding start is violated not end in case of stepswise - change
+		private List<E> fromTo( E start, E end, Enum<E> type ) {
 			int si = type.toOrdinal( start );
 			int ei = type.toOrdinal( end );
 			if ( si == ei ) { // length 1

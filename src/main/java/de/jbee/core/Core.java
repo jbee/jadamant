@@ -1,12 +1,15 @@
 package de.jbee.core;
 
+import static de.jbee.core.type.Enumerate.INTEGERS;
 import de.jbee.core.list.CoreList;
 import de.jbee.core.list.CoreListTransition;
 import de.jbee.core.list.EnumLister;
+import de.jbee.core.list.EnumListerFactory;
 import de.jbee.core.list.List;
 import de.jbee.core.list.ListTransition;
 import de.jbee.core.list.Lister;
-import de.jbee.core.type.Enumerate;
+import de.jbee.core.list.RichLister;
+import de.jbee.core.type.Enum;
 
 /**
  * Provides the basis utilities.
@@ -26,15 +29,32 @@ public final class Core {
 	}
 
 	public static final Lister list = new ProxyLister();
-	public static final EnumLister<Integer> numbers = new ProxyEnumLister<Integer>(
-			CoreList.lister( Enumerate.INTEGERS ) );
+	public static final EnumListerFactory lister = new ProxyEnumListerFactory(
+			CoreList.LISTER_FACTORY );
+	private static final ProxyEnumLister<Integer> numbersProxy = new ProxyEnumLister<Integer>(
+			lister.listing( INTEGERS ) );
+	public static final RichLister<Integer> numbers = new RichLister<Integer>( numbersProxy,
+			INTEGERS );
 
-	static void setUp( Lister factory ) {
-		( (ProxyLister) list ).factory = factory;
+	/**
+	 * Change the list implementation used by changing the general list factory.
+	 */
+	static void setUp( Lister lister ) {
+		( (ProxyLister) list ).factory = lister;
 	}
 
-	static void setUp( EnumLister<Integer> factory ) {
-		( (ProxyEnumLister<Integer>) numbers ).factory = factory;
+	/**
+	 * Change the lister used for number lists when created through the general {@link EnumLister}.
+	 */
+	static void setUp( EnumLister<Integer> numberLister ) {
+		numbersProxy.proxied = numberLister;
+	}
+
+	/**
+	 * Change the factory creating new listers for custom {@link Enum}s.
+	 */
+	static void setUp( EnumListerFactory factory ) {
+		( (ProxyEnumListerFactory) lister ).proxied = factory;
 	}
 
 	public static List<Integer> I() {
@@ -113,24 +133,35 @@ public final class Core {
 		return CoreListTransition.concat( fst, snd );
 	}
 
+	static final class ProxyEnumListerFactory
+			implements EnumListerFactory {
+
+		EnumListerFactory proxied;
+
+		ProxyEnumListerFactory( EnumListerFactory proxied ) {
+			super();
+			this.proxied = proxied;
+		}
+
+		@Override
+		public <E> RichLister<E> listing( Enum<E> type ) {
+			return proxied.listing( type );
+		}
+	}
+
 	static final class ProxyEnumLister<E>
 			implements EnumLister<E> {
 
-		EnumLister<E> factory;
+		EnumLister<E> proxied;
 
-		ProxyEnumLister( EnumLister<E> factory ) {
+		ProxyEnumLister( EnumLister<E> proxied ) {
 			super();
-			this.factory = factory;
+			this.proxied = proxied;
 		}
 
 		@Override
-		public List<E> from( E start ) {
-			return factory.from( start );
-		}
-
-		@Override
-		public List<E> fromTo( E start, E end ) {
-			return factory.fromTo( start, end );
+		public List<E> stepwiseFromTo( E start, E end, int increment ) {
+			return proxied.stepwiseFromTo( start, end, increment );
 		}
 
 	}
