@@ -32,7 +32,7 @@ public final class Core {
 	public static final EnumListerFactory lister = new ProxyEnumListerFactory(
 			CoreList.LISTER_FACTORY );
 	private static final ProxyEnumLister<Integer> numbersProxy = new ProxyEnumLister<Integer>(
-			lister.listing( INTEGERS ) );
+			lister.enumerates( INTEGERS ) );
 	public static final RichLister<Integer> numbers = new RichLister<Integer>( numbersProxy,
 			INTEGERS );
 
@@ -144,8 +144,8 @@ public final class Core {
 		}
 
 		@Override
-		public <E> RichLister<E> listing( Enum<E> type ) {
-			return proxied.listing( type );
+		public <E> RichLister<E> enumerates( Enum<E> type ) {
+			return proxied.enumerates( type );
 		}
 	}
 
