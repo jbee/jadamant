@@ -8,7 +8,7 @@ import de.jbee.core.type.Enumerate;
 
 public final class CoreList {
 
-	public static final EnumListerFactory LISTER_FACTORY = new StackEnumListerFactory();
+	public static final EnumeratorFactory LISTER_FACTORY = new StackEnumListerFactory();
 	public static final Lister LISTER = new StackLister();
 	static final List<Object> EMPTY = new EmptyStackList<Object>();
 
@@ -334,17 +334,17 @@ public final class CoreList {
 	}
 
 	final static class StackEnumListerFactory
-			implements EnumListerFactory {
+			implements EnumeratorFactory {
 
 		@Override
-		public <E> RichLister<E> enumerates( Enum<E> type ) {
-			return new RichLister<E>( new StackEnumLister<E>( type ), type );
+		public <E> RichEnumerator<E> enumerates( Enum<E> type ) {
+			return new RichEnumerator<E>( new StackEnumLister<E>( type ), type );
 		}
 
 	}
 
 	static final class StackEnumLister<E>
-			implements EnumLister<E> {
+			implements Enumerator<E> {
 
 		private final Enum<E> type;
 

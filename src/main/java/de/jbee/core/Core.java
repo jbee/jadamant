@@ -3,12 +3,12 @@ package de.jbee.core;
 import static de.jbee.core.type.Enumerate.INTEGERS;
 import de.jbee.core.list.CoreList;
 import de.jbee.core.list.CoreListTransition;
-import de.jbee.core.list.EnumLister;
-import de.jbee.core.list.EnumListerFactory;
+import de.jbee.core.list.Enumerator;
+import de.jbee.core.list.EnumeratorFactory;
 import de.jbee.core.list.List;
 import de.jbee.core.list.ListTransition;
 import de.jbee.core.list.Lister;
-import de.jbee.core.list.RichLister;
+import de.jbee.core.list.RichEnumerator;
 import de.jbee.core.type.Enum;
 
 /**
@@ -29,11 +29,11 @@ public final class Core {
 	}
 
 	public static final Lister list = new ProxyLister();
-	public static final EnumListerFactory lister = new ProxyEnumListerFactory(
+	public static final EnumeratorFactory enumerator = new ProxyEnumeratorFactory(
 			CoreList.LISTER_FACTORY );
-	private static final ProxyEnumLister<Integer> numbersProxy = new ProxyEnumLister<Integer>(
-			lister.enumerates( INTEGERS ) );
-	public static final RichLister<Integer> numbers = new RichLister<Integer>( numbersProxy,
+	private static final ProxyEnumerator<Integer> numbersProxy = new ProxyEnumerator<Integer>(
+			enumerator.enumerates( INTEGERS ) );
+	public static final RichEnumerator<Integer> numbers = new RichEnumerator<Integer>( numbersProxy,
 			INTEGERS );
 
 	/**
@@ -44,17 +44,17 @@ public final class Core {
 	}
 
 	/**
-	 * Change the lister used for number lists when created through the general {@link EnumLister}.
+	 * Change the lister used for number lists when created through the general {@link Enumerator}.
 	 */
-	static void setUp( EnumLister<Integer> numberLister ) {
+	static void setUp( Enumerator<Integer> numberLister ) {
 		numbersProxy.proxied = numberLister;
 	}
 
 	/**
 	 * Change the factory creating new listers for custom {@link Enum}s.
 	 */
-	static void setUp( EnumListerFactory factory ) {
-		( (ProxyEnumListerFactory) lister ).proxied = factory;
+	static void setUp( EnumeratorFactory factory ) {
+		( (ProxyEnumeratorFactory) enumerator ).proxied = factory;
 	}
 
 	public static List<Integer> I() {
@@ -133,28 +133,28 @@ public final class Core {
 		return CoreListTransition.concat( fst, snd );
 	}
 
-	static final class ProxyEnumListerFactory
-			implements EnumListerFactory {
+	static final class ProxyEnumeratorFactory
+			implements EnumeratorFactory {
 
-		EnumListerFactory proxied;
+		EnumeratorFactory proxied;
 
-		ProxyEnumListerFactory( EnumListerFactory proxied ) {
+		ProxyEnumeratorFactory( EnumeratorFactory proxied ) {
 			super();
 			this.proxied = proxied;
 		}
 
 		@Override
-		public <E> RichLister<E> enumerates( Enum<E> type ) {
+		public <E> RichEnumerator<E> enumerates( Enum<E> type ) {
 			return proxied.enumerates( type );
 		}
 	}
 
-	static final class ProxyEnumLister<E>
-			implements EnumLister<E> {
+	static final class ProxyEnumerator<E>
+			implements Enumerator<E> {
 
-		EnumLister<E> proxied;
+		Enumerator<E> proxied;
 
-		ProxyEnumLister( EnumLister<E> proxied ) {
+		ProxyEnumerator( Enumerator<E> proxied ) {
 			super();
 			this.proxied = proxied;
 		}

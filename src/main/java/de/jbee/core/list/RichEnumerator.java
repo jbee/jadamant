@@ -2,13 +2,13 @@ package de.jbee.core.list;
 
 import de.jbee.core.type.Enum;
 
-public final class RichLister<E>
-		implements EnumLister<E> {
+public final class RichEnumerator<E>
+		implements Enumerator<E> {
 
-	private final EnumLister<E> enriched;
+	private final Enumerator<E> enriched;
 	private final Enum<E> type;
 
-	public RichLister( EnumLister<E> enriched, Enum<E> type ) {
+	public RichEnumerator( Enumerator<E> enriched, Enum<E> type ) {
 		super();
 		this.enriched = enriched;
 		this.type = type;
