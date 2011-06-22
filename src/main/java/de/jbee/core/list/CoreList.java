@@ -337,8 +337,8 @@ public final class CoreList {
 			implements EnumeratorFactory {
 
 		@Override
-		public <E> RichEnumerator<E> enumerates( Enum<E> type ) {
-			return new RichEnumerator<E>( new StackEnumLister<E>( type ), type );
+		public <E> Enumerator<E> enumerates( Enum<E> type ) {
+			return new StackEnumLister<E>( type );
 		}
 
 	}

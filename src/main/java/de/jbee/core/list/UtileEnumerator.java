@@ -2,15 +2,15 @@ package de.jbee.core.list;
 
 import de.jbee.core.type.Enum;
 
-public final class RichEnumerator<E>
+public final class UtileEnumerator<E>
 		implements Enumerator<E> {
 
-	private final Enumerator<E> enriched;
+	private final Enumerator<E> utilised;
 	private final Enum<E> type;
 
-	public RichEnumerator( Enumerator<E> enriched, Enum<E> type ) {
+	public UtileEnumerator( Enumerator<E> utilised, Enum<E> type ) {
 		super();
-		this.enriched = enriched;
+		this.utilised = utilised;
 		this.type = type;
 	}
 
@@ -40,7 +40,7 @@ public final class RichEnumerator<E>
 
 	@Override
 	public List<E> stepwiseFromTo( E start, E end, int increment ) {
-		return enriched.stepwiseFromTo( start, end, increment );
+		return utilised.stepwiseFromTo( start, end, increment );
 	}
 
 }

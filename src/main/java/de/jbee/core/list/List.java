@@ -26,7 +26,8 @@ public interface List<E>
 		ModifiableSequence<E> {
 
 	Lister with = Core.list;
-	RichEnumerator<Integer> numbers = Core.numbers;
+	UtileEnumerator<Integer> numbers = Core.numbers;
+	UtileEnumeratorFactory that = Core.enumerator;
 
 	ListTransition reverse = ListTransition.reverse;
 

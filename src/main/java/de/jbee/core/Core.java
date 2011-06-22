@@ -8,7 +8,8 @@ import de.jbee.core.list.EnumeratorFactory;
 import de.jbee.core.list.List;
 import de.jbee.core.list.ListTransition;
 import de.jbee.core.list.Lister;
-import de.jbee.core.list.RichEnumerator;
+import de.jbee.core.list.UtileEnumerator;
+import de.jbee.core.list.UtileEnumeratorFactory;
 import de.jbee.core.type.Enum;
 
 /**
@@ -29,12 +30,15 @@ public final class Core {
 	}
 
 	public static final Lister list = new ProxyLister();
-	public static final EnumeratorFactory enumerator = new ProxyEnumeratorFactory(
+
+	private static final ProxyEnumeratorFactory enumeratorProxy = new ProxyEnumeratorFactory(
 			CoreList.LISTER_FACTORY );
+	public static final UtileEnumeratorFactory enumerator = new UtileEnumeratorFactory(
+			enumeratorProxy );
 	private static final ProxyEnumerator<Integer> numbersProxy = new ProxyEnumerator<Integer>(
 			enumerator.enumerates( INTEGERS ) );
-	public static final RichEnumerator<Integer> numbers = new RichEnumerator<Integer>( numbersProxy,
-			INTEGERS );
+	public static final UtileEnumerator<Integer> numbers = new UtileEnumerator<Integer>(
+			numbersProxy, INTEGERS );
 
 	/**
 	 * Change the list implementation used by changing the general list factory.
@@ -54,7 +58,7 @@ public final class Core {
 	 * Change the factory creating new listers for custom {@link Enum}s.
 	 */
 	static void setUp( EnumeratorFactory factory ) {
-		( (ProxyEnumeratorFactory) enumerator ).proxied = factory;
+		enumeratorProxy.proxied = factory;
 	}
 
 	public static List<Integer> I() {
@@ -144,7 +148,7 @@ public final class Core {
 		}
 
 		@Override
-		public <E> RichEnumerator<E> enumerates( Enum<E> type ) {
+		public <E> Enumerator<E> enumerates( Enum<E> type ) {
 			return proxied.enumerates( type );
 		}
 	}
