@@ -188,6 +188,11 @@ public final class CoreList {
 		}
 
 		@Override
+		public List<E> concat( List<E> other ) {
+			return of( size + other.size(), tail.concat( other ) );
+		}
+
+		@Override
 		public List<E> deleteAt( int index ) {
 			//FIXME negative index ?
 			final int length = length();
@@ -435,12 +440,6 @@ public final class CoreList {
 			super( size, stack, tail );
 		}
 
-		@Override
-		public List<E> concat( List<E> other ) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
 		public List<E> prepand( E e ) {
 			checkNonnull( e );
 			final int length = length();
@@ -520,12 +519,6 @@ public final class CoreList {
 		SecondaryStackList( int size, int offset, Object[] stack, List<E> tail ) {
 			super( size, stack, tail );
 			this.offset = offset;
-		}
-
-		@Override
-		public List<E> concat( List<E> other ) {
-			// TODO Auto-generated method stub
-			return null;
 		}
 
 		@Override
@@ -707,6 +700,9 @@ public final class CoreList {
 				return priorOrdinal == eOrdinal
 					? list( eOrdinal, lastOrdinal )
 					: primary( 1, stack( at( 0 ), 2 ), empty() ).prepand( e );
+			}
+			if ( length() == 1 ) {
+				return primary( 1 + tail.size(), stack( at( 0 ), 2 ), tail ).prepand( e );
 			}
 			return list( eOrdinal, eOrdinal, this );
 		}

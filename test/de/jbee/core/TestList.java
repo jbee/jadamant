@@ -98,8 +98,14 @@ public class TestList {
 	}
 
 	@Test
-	public void testDescendingFollowdByRandomTakeR() {
-		verifyTakeR( List.with.elements( 11, 19, 11, 22, 11, 12 ) );
+	public void testDescendingFollowdByMixedTakeR() {
+		List<Integer> l = List.with.elements( 7, 1, 2, 11, 19, 11, 22, 11, 12 );
+		System.out.println( l );
+		verifyTakeR( l );
+
+		l = List.with.elements( 7, 1, 2, 11, 19, 11, 22, 10, 11, 12 );
+		System.out.println( l );
+		verifyTakeR( l );
 	}
 
 	@Test
