@@ -267,13 +267,12 @@ public final class CoreList {
 		@Override
 		public String toString() {
 			StringBuilder b = new StringBuilder();
-			for ( int i = 0; i < size; i++ ) {
+			final int l = length();
+			for ( int i = 0; i < l; i++ ) {
 				b.append( ',' );
 				b.append( String.valueOf( at( i ) ) );
 			}
-			return "[" + ( b.length() == 0
-				? ""
-				: b.substring( 1 ) ) + "]";
+			return "[" + b.substring( 1 ) + "]:" + tail.toString();
 		}
 
 		abstract E element( int index, int l );
@@ -747,7 +746,9 @@ public final class CoreList {
 			if ( tailSize == ending ) {
 				return tail;
 			}
-			return list( lastMinus( ( ending - 1 - tailSize ) ), lastOrdinal );
+			return tailSize > ending
+				? tail.takeR( ending )
+				: list( lastMinus( ( ending - 1 - tailSize ) ), lastOrdinal );
 		}
 
 		@Override

@@ -116,7 +116,7 @@ public final class Core {
 
 	public static <E> List<E> _( E e1, E e2, E e3, E e4, E e5, E e6 ) {
 		return list.element( e6 ).prepand( e5 ).prepand( e4 ).prepand( e3 ).prepand( e2 ).append(
-				e1 );
+				e1 ); //FIXME seams not to work correct for 11, 19, 11, 22, 11, 12 
 	}
 
 	public static <E> List<E> _( E e1, E e2, E e3, E e4, E e5, E e6, E e7 ) {
