@@ -5,12 +5,13 @@ import java.util.Iterator;
 import de.jbee.core.IndexAccess;
 import de.jbee.core.type.Enum;
 import de.jbee.core.type.Enumerate;
+import de.jbee.util.ICluster;
 
 public final class CoreList {
 
 	public static final EnumeratorFactory LISTER_FACTORY = new StackEnumListerFactory();
 	public static final Lister LISTER = new StackLister();
-	static final List<Object> EMPTY = new EmptyStackList<Object>();
+	static final List<Object> EMPTY = new EmptyList<Object>();
 
 	static void checkNonnull( Object e ) {
 		if ( e == null ) {
@@ -40,7 +41,7 @@ public final class CoreList {
 		throw new UnsupportedOperationException( "util" );
 	}
 
-	final static class EmptyStackList<E>
+	final static class EmptyList<E>
 			implements List<E> {
 
 		@Override
@@ -339,9 +340,9 @@ public final class CoreList {
 		}
 
 		@Override
-		public <E> List<E> elements( Iterable<E> elems ) {
+		public <E> List<E> elements( ICluster<E> elems ) {
 			// FIXME liste neu aufbauen indem direkt die element arrays erzeugt werden
-			// dann entfällt auch das reverse
+			// dann entfällt auch das reverse - dazu muss man aber die size kennen
 			List<E> res = List.reverse.from( this.<E> noElements() );
 			for ( E e : elems ) {
 				res = res.append( e );
@@ -378,34 +379,33 @@ public final class CoreList {
 		}
 
 		@Override
-		public List<E> stepwiseFromTo( E start, E end, int increment ) {
+		public List<E> stepwiseFromTo( E first, E last, int increment ) {
 			//TODO make sure start and end are in range of type
 			return ( increment != 1 )
-				? fromTo( start, alignEndToStep( start, end, increment ), Enumerate.stepwise( type,
-						start, increment ) )
-				: fromTo( start, end, type );
+				? fromTo( first, alignEndToStep( first, last, increment ), Enumerate.stepwise( type,
+						first, increment ) )
+				: fromTo( first, last, type );
 		}
 
-		private E alignEndToStep( E start, E end, int inc ) {
-			int eo = type.toOrdinal( end );
-			return type.toEnum( eo - ( ( eo - type.toOrdinal( start ) ) % inc ) );
+		private E alignEndToStep( E first, E last, int inc ) {
+			int lo = type.toOrdinal( last );
+			return type.toEnum( lo - ( ( lo - type.toOrdinal( first ) ) % inc ) );
 		}
 
-		//FIXME through prepanding start is violated not end in case of stepswise - change
-		private List<E> fromTo( E start, E end, Enum<E> type ) {
-			int si = type.toOrdinal( start );
-			int ei = type.toOrdinal( end );
-			if ( si == ei ) { // length 1
-				return LISTER.element( start );
+		private List<E> fromTo( E first, E last, Enum<E> type ) {
+			int fo = type.toOrdinal( first );
+			int lo = type.toOrdinal( last );
+			if ( fo == lo ) { // length 1
+				return LISTER.element( first );
 			}
-			int length = Math.abs( si - ei ) + 1;
+			int length = Math.abs( fo - lo ) + 1;
 			if ( length == 2 ) {
-				return LISTER.element( end ).prepand( start );
+				return LISTER.element( last ).prepand( first );
 			}
 			int capacity = 2;
 			List<E> res = LISTER.noElements();
-			E cur = end;
-			final boolean asc = si < ei;
+			E cur = last;
+			final boolean asc = fo < lo;
 			int size = 0;
 			while ( size < length ) { // length will be > 2
 				Object[] stack = new Object[capacity];
@@ -576,27 +576,27 @@ public final class CoreList {
 
 		private final List<E> tail;
 		private final Enum<E> type;
-		private final int startOrdinal;
-		private final int endOrdinal;
+		private final int firstOrdinal;
+		private final int lastOrdinal;
 
-		EnumList( Enum<E> type, E start, E end ) {
-			this( type, type.toOrdinal( start ), type.toOrdinal( end ), List.with.<E> noElements() );
+		EnumList( Enum<E> type, E first, E last ) {
+			this( type, type.toOrdinal( first ), type.toOrdinal( last ), LISTER.<E> noElements() );
 		}
 
-		EnumList( Enum<E> type, int startOrdianl, int endOrdinal, List<E> tail ) {
+		EnumList( Enum<E> type, int firstOrdianl, int lastOrdinal, List<E> tail ) {
 			super();
 			this.type = type;
 			this.tail = tail;
-			this.startOrdinal = startOrdianl;
-			this.endOrdinal = endOrdinal;
+			this.firstOrdinal = firstOrdianl;
+			this.lastOrdinal = lastOrdinal;
 		}
 
 		@Override
 		public List<E> append( E e ) {
 			if ( tail.isEmpty() ) {
-				final int nextOrdinal = endPlus( 1 );
+				final int nextOrdinal = lastPlus( 1 );
 				if ( type.toOrdinal( e ) == nextOrdinal ) {
-					return list( startOrdinal, nextOrdinal );
+					return list( firstOrdinal, nextOrdinal );
 				}
 			}
 			return thisWithTail( tail.append( e ) );
@@ -607,7 +607,7 @@ public final class CoreList {
 			final int l = length();
 			return index >= l
 				? tail.at( index - l )
-				: type.toEnum( startPlus( index ) );
+				: type.toEnum( firstPlus( index ) );
 		}
 
 		@Override
@@ -617,8 +617,8 @@ public final class CoreList {
 			}
 			if ( other instanceof EnumList<?> ) {
 				EnumList<E> o = (EnumList<E>) other;
-				if ( ascending() == o.ascending() && o.startOrdinal == endPlus( 1 ) ) {
-					return list( startOrdinal, o.endOrdinal );
+				if ( ascending() == o.ascending() && o.firstOrdinal == lastPlus( 1 ) ) {
+					return list( firstOrdinal, o.lastOrdinal );
 				}
 			}
 			return thisWithTail( other );
@@ -633,17 +633,17 @@ public final class CoreList {
 			if ( index == 0 ) { // first of this enum list
 				return length == 1
 					? tail
-					: list( startPlus( 1 ), endOrdinal );
+					: list( firstPlus( 1 ), lastOrdinal );
 			}
 			if ( index == length - 1 ) { // last of this enum list
 				return length == 1
 					? tail
-					: list( startOrdinal, endMinus( 1 ) );
+					: list( firstOrdinal, lastMinus( 1 ) );
 			}
 			// sadly: in between this list
 			final int indexOrdinal = type.toOrdinal( at( index ) );
-			return list( startOrdinal, ordinalMinus( indexOrdinal, 1 ), list( ordinalPlus(
-					indexOrdinal, 1 ), endOrdinal, tail ) );
+			return list( firstOrdinal, ordinalMinus( indexOrdinal, 1 ), list( ordinalPlus(
+					indexOrdinal, 1 ), lastOrdinal, tail ) );
 		}
 
 		@Override
@@ -659,7 +659,7 @@ public final class CoreList {
 			if ( beginning > length ) {
 				return tail.dropL( beginning - length );
 			}
-			return list( startPlus( beginning ), endOrdinal );
+			return list( firstPlus( beginning ), lastOrdinal );
 		}
 
 		@Override
@@ -676,7 +676,7 @@ public final class CoreList {
 			if ( ending < tailSize ) {
 				return thisWithTail( tail.dropR( ending ) );
 			}
-			return list( startOrdinal, endMinus( ending - tailSize ), empty() );
+			return list( firstOrdinal, lastMinus( ending - tailSize ), empty() );
 		}
 
 		@Override
@@ -697,16 +697,16 @@ public final class CoreList {
 
 		@Override
 		public List<E> prepand( E e ) {
-			int priorOrdinal = startMinus( 1 );
+			int priorOrdinal = firstMinus( 1 );
 			final int eOrdinal = type.toOrdinal( e );
 			if ( eOrdinal == priorOrdinal ) {
-				return list( priorOrdinal, endOrdinal );
+				return list( priorOrdinal, lastOrdinal );
 			}
 			final int size = size();
 			if ( size == 1 ) {
-				priorOrdinal = startPlus( 1 );
+				priorOrdinal = firstPlus( 1 );
 				return priorOrdinal == eOrdinal
-					? list( eOrdinal, endOrdinal )
+					? list( eOrdinal, lastOrdinal )
 					: primary( 1, stack( at( 0 ), 2 ), empty() ).prepand( e );
 			}
 			return list( eOrdinal, eOrdinal, this );
@@ -733,7 +733,7 @@ public final class CoreList {
 				return thisWithTail( empty() );
 			}
 			return beginning <= length
-				? list( startOrdinal, startPlus( beginning - 1 ) )
+				? list( firstOrdinal, firstPlus( beginning - 1 ) )
 				: thisWithTail( tail.takeL( beginning - length ) );
 		}
 
@@ -747,7 +747,7 @@ public final class CoreList {
 			if ( tailSize == ending ) {
 				return tail;
 			}
-			return list( endMinus( ( ending - 1 - tailSize ) ), endOrdinal );
+			return list( lastMinus( ( ending - 1 - tailSize ) ), lastOrdinal );
 		}
 
 		@Override
@@ -760,20 +760,20 @@ public final class CoreList {
 
 		@Override
 		public String toString() {
-			return "[" + String.valueOf( type.toEnum( startOrdinal ) ) + ".."
-					+ String.valueOf( type.toEnum( endOrdinal ) ) + "]:" + tail.toString();
+			return "[" + String.valueOf( type.toEnum( firstOrdinal ) ) + ".."
+					+ String.valueOf( type.toEnum( lastOrdinal ) ) + "]:" + tail.toString();
 		}
 
 		private boolean ascending() {
-			return startOrdinal <= endOrdinal;
+			return firstOrdinal <= lastOrdinal;
 		}
 
-		private int endMinus( int dec ) {
-			return ordinalMinus( endOrdinal, dec );
+		private int lastMinus( int dec ) {
+			return ordinalMinus( lastOrdinal, dec );
 		}
 
-		private int endPlus( int inc ) {
-			return ordinalPlus( endOrdinal, inc );
+		private int lastPlus( int inc ) {
+			return ordinalPlus( lastOrdinal, inc );
 		}
 
 		/**
@@ -781,15 +781,15 @@ public final class CoreList {
 		 *         {@link #tail}s size).
 		 */
 		private int length() {
-			return Math.abs( endOrdinal - startOrdinal ) + 1;
+			return Math.abs( lastOrdinal - firstOrdinal ) + 1;
 		}
 
-		private List<E> list( int startOrdinal, int endOrdinal ) {
-			return new EnumList<E>( type, startOrdinal, endOrdinal, tail );
+		private List<E> list( int firstOrdinal, int lastOrdinal ) {
+			return new EnumList<E>( type, firstOrdinal, lastOrdinal, tail );
 		}
 
-		private List<E> list( int startOrdianl, int endOrdinal, List<E> tail ) {
-			return new EnumList<E>( type, startOrdianl, endOrdinal, tail );
+		private List<E> list( int firstOrdianl, int lastOrdinal, List<E> tail ) {
+			return new EnumList<E>( type, firstOrdianl, lastOrdinal, tail );
 		}
 
 		private List<E> empty() {
@@ -806,16 +806,16 @@ public final class CoreList {
 				: ordinal - inc;
 		}
 
-		private int startMinus( int dec ) {
-			return ordinalMinus( startOrdinal, dec );
+		private int firstMinus( int dec ) {
+			return ordinalMinus( firstOrdinal, dec );
 		}
 
-		private int startPlus( int inc ) {
-			return ordinalPlus( startOrdinal, inc );
+		private int firstPlus( int inc ) {
+			return ordinalPlus( firstOrdinal, inc );
 		}
 
 		private List<E> thisWithTail( List<E> tail ) {
-			return new EnumList<E>( type, startOrdinal, endOrdinal, tail );
+			return new EnumList<E>( type, firstOrdinal, lastOrdinal, tail );
 		}
 	}
 }

@@ -14,33 +14,33 @@ public final class UtileEnumerator<E>
 		this.type = type;
 	}
 
-	public List<E> from( E start ) {
-		return fromTo( start, type.maxBound() );
+	public List<E> from( E first ) {
+		return fromTo( first, type.maxBound() );
 	}
 
-	public List<E> stepwisefrom( E start, int increment ) {
-		return stepwiseFromTo( start, type.maxBound(), increment );
+	public List<E> stepwisefrom( E first, int increment ) {
+		return stepwiseFromTo( first, type.maxBound(), increment );
 	}
 
-	public List<E> fromTo( E start, E end ) {
-		return stepwiseFromTo( start, end, 1 );
+	public List<E> fromTo( E first, E last ) {
+		return stepwiseFromTo( first, last, 1 );
 	}
 
-	public List<E> fromThen( E start, E then ) {
-		return stepwiseFromTo( start, type.maxBound(), incrementBetween( start, then ) );
+	public List<E> fromThen( E first, E then ) {
+		return stepwiseFromTo( first, type.maxBound(), incrementBetween( first, then ) );
 	}
 
-	public List<E> fromThenTo( E start, E then, E end ) {
-		return stepwiseFromTo( start, end, incrementBetween( start, then ) );
+	public List<E> fromThenTo( E first, E then, E last ) {
+		return stepwiseFromTo( first, last, incrementBetween( first, then ) );
 	}
 
-	private int incrementBetween( E start, E then ) {
-		return type.toOrdinal( then ) - type.toOrdinal( start );
+	private int incrementBetween( E first, E then ) {
+		return type.toOrdinal( then ) - type.toOrdinal( first );
 	}
 
 	@Override
-	public List<E> stepwiseFromTo( E start, E end, int increment ) {
-		return utilised.stepwiseFromTo( start, end, increment );
+	public List<E> stepwiseFromTo( E first, E last, int increment ) {
+		return utilised.stepwiseFromTo( first, last, increment );
 	}
 
 }

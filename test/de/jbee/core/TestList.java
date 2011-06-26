@@ -12,6 +12,8 @@ import de.jbee.core.list.CoreList.EnumList;
 
 public class TestList {
 
+	private static final int LIST_SIZE = 30;
+
 	@Test ( expected = IndexOutOfBoundsException.class )
 	public void testAtOnEmptyListOutOfBoundsException() {
 		List<Integer> l = List.with.noElements();
@@ -34,22 +36,24 @@ public class TestList {
 
 	@Test
 	public void testDropL() {
+		verifyDropL( descendingTo1From( LIST_SIZE ) );
+	}
+
+	private List<Integer> descendingTo1From( final int start ) {
 		List<Integer> l = List.with.noElements();
-		final int size = 30;
-		for ( int i = 1; i <= size; i++ ) {
+		for ( int i = 10; i <= start; i++ ) {
 			l = l.prepand( i );
 		}
-		verifyDropL( l );
+		List<Integer> l2 = List.with.noElements();
+		for ( int i = 1; i < 10; i++ ) {
+			l2 = l2.prepand( i );
+		}
+		return l.concat( l2 );
 	}
 
 	@Test
 	public void testDropR() {
-		List<Integer> l = List.with.noElements();
-		final int size = 30;
-		for ( int i = 1; i <= size; i++ ) {
-			l = l.prepand( i );
-		}
-		verifyDropR( l );
+		verifyDropR( descendingTo1From( LIST_SIZE ) );
 	}
 
 	@Test
@@ -66,12 +70,7 @@ public class TestList {
 
 	@Test
 	public void testTakeL() {
-		List<Integer> l = List.with.noElements();
-		final int size = 30;
-		for ( int i = 1; i <= size; i++ ) {
-			l = l.prepand( i );
-		}
-		verifyTakeL( l );
+		verifyTakeL( descendingTo1From( LIST_SIZE ) );
 	}
 
 	@Test

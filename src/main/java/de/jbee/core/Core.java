@@ -11,6 +11,7 @@ import de.jbee.core.list.Lister;
 import de.jbee.core.list.UtileEnumerator;
 import de.jbee.core.list.UtileEnumeratorFactory;
 import de.jbee.core.type.Enum;
+import de.jbee.util.ICluster;
 
 /**
  * Provides the basis utilities.
@@ -164,8 +165,8 @@ public final class Core {
 		}
 
 		@Override
-		public List<E> stepwiseFromTo( E start, E end, int increment ) {
-			return proxied.stepwiseFromTo( start, end, increment );
+		public List<E> stepwiseFromTo( E first, E last, int increment ) {
+			return proxied.stepwiseFromTo( first, last, increment );
 		}
 
 	}
@@ -190,7 +191,7 @@ public final class Core {
 		}
 
 		@Override
-		public <E> List<E> elements( Iterable<E> elems ) {
+		public <E> List<E> elements( ICluster<E> elems ) {
 			return factory.elements( elems );
 		}
 

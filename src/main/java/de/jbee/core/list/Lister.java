@@ -1,5 +1,7 @@
 package de.jbee.core.list;
 
+import de.jbee.util.ICluster;
+
 
 public interface Lister {
 
@@ -9,6 +11,6 @@ public interface Lister {
 
 	<E> List<E> elements( E... elems );
 
-	<E> List<E> elements( Iterable<E> elems );
+	<E> List<E> elements( ICluster<E> elems );
 
 }
