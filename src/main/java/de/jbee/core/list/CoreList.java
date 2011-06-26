@@ -382,12 +382,12 @@ public final class CoreList {
 		public List<E> stepwiseFromTo( E first, E last, int increment ) {
 			//TODO make sure start and end are in range of type
 			return ( increment != 1 )
-				? fromTo( first, alignEndToStep( first, last, increment ), Enumerate.stepwise( type,
-						first, increment ) )
+				? fromTo( first, alignLastToStep( first, last, increment ), Enumerate.stepwise(
+						type, first, increment ) )
 				: fromTo( first, last, type );
 		}
 
-		private E alignEndToStep( E first, E last, int inc ) {
+		private E alignLastToStep( E first, E last, int inc ) {
 			int lo = type.toOrdinal( last );
 			return type.toEnum( lo - ( ( lo - type.toOrdinal( first ) ) % inc ) );
 		}
@@ -733,7 +733,7 @@ public final class CoreList {
 				return thisWithTail( empty() );
 			}
 			return beginning <= length
-				? list( firstOrdinal, firstPlus( beginning - 1 ) )
+				? list( firstOrdinal, firstPlus( beginning - 1 ), empty() )
 				: thisWithTail( tail.takeL( beginning - length ) );
 		}
 
