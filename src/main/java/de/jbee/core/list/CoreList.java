@@ -95,7 +95,31 @@ public final class CoreList {
 		@Override
 		public List<E> prepand( E e ) {
 			checkNonnull( e );
+			if ( e instanceof Integer ) {
+				return integerList( e );
+			}
+			if ( e.getClass().isEnum() ) {
+				return enumList( e );
+			}
 			return primary( 1, stack( e, 2 ), this );
+		}
+
+		@SuppressWarnings ( "unchecked" )
+		private <T> List<E> enumList( E e ) {
+			java.lang.Enum<?> v = (java.lang.Enum<?>) e;
+			return (List<E>) enumList( v );
+		}
+
+		@SuppressWarnings ( "unchecked" )
+		private <T extends java.lang.Enum<?>> List<T> enumList( T e ) {
+			Class<? extends java.lang.Enum<?>> c = e.getDeclaringClass();
+			return new EnumList<T>( (Enum<T>) Enumerate.type( c ), e, e );
+		}
+
+		@SuppressWarnings ( "unchecked" )
+		private List<E> integerList( E e ) {
+			Integer i = (Integer) e;
+			return (List<E>) new EnumList<Integer>( Enumerate.INTEGERS, i, i );
 		}
 
 		@Override
@@ -545,5 +569,253 @@ public final class CoreList {
 			return offset;
 		}
 
+	}
+
+	public static final class EnumList<E>
+			implements List<E> {
+
+		private final List<E> tail;
+		private final Enum<E> type;
+		private final int startOrdinal;
+		private final int endOrdinal;
+
+		EnumList( Enum<E> type, E start, E end ) {
+			this( type, type.toOrdinal( start ), type.toOrdinal( end ), List.with.<E> noElements() );
+		}
+
+		EnumList( Enum<E> type, int startOrdianl, int endOrdinal, List<E> tail ) {
+			super();
+			this.type = type;
+			this.tail = tail;
+			this.startOrdinal = startOrdianl;
+			this.endOrdinal = endOrdinal;
+		}
+
+		@Override
+		public List<E> append( E e ) {
+			if ( tail.isEmpty() ) {
+				final int nextOrdinal = endPlus( 1 );
+				if ( type.toOrdinal( e ) == nextOrdinal ) {
+					return list( startOrdinal, nextOrdinal );
+				}
+			}
+			return thisWithTail( tail.append( e ) );
+		}
+
+		@Override
+		public E at( int index ) {
+			final int l = length();
+			return index >= l
+				? tail.at( index - l )
+				: type.toEnum( startPlus( index ) );
+		}
+
+		@Override
+		public List<E> concat( List<E> other ) {
+			if ( !tail.isEmpty() ) {
+				return tail.concat( other );
+			}
+			if ( other instanceof EnumList<?> ) {
+				EnumList<E> o = (EnumList<E>) other;
+				if ( ascending() == o.ascending() && o.startOrdinal == endPlus( 1 ) ) {
+					return list( startOrdinal, o.endOrdinal );
+				}
+			}
+			return thisWithTail( other );
+		}
+
+		@Override
+		public List<E> deleteAt( int index ) {
+			final int length = length();
+			if ( index >= length ) { // its in the tail
+				return thisWithTail( tail.deleteAt( index - length ) );
+			}
+			if ( index == 0 ) { // first of this enum list
+				return length == 1
+					? tail
+					: list( startPlus( 1 ), endOrdinal );
+			}
+			if ( index == length - 1 ) { // last of this enum list
+				return length == 1
+					? tail
+					: list( startOrdinal, endMinus( 1 ) );
+			}
+			// sadly: in between this list
+			final int indexOrdinal = type.toOrdinal( at( index ) );
+			return list( startOrdinal, ordinalMinus( indexOrdinal, 1 ), list( ordinalPlus(
+					indexOrdinal, 1 ), endOrdinal, tail ) );
+		}
+
+		@Override
+		public List<E> dropL( int beginning ) {
+			final int size = size();
+			if ( beginning >= size ) {
+				return empty();
+			}
+			final int length = length();
+			if ( beginning == length ) {
+				return tail;
+			}
+			if ( beginning > length ) {
+				return tail.dropL( beginning - length );
+			}
+			return list( startPlus( beginning ), endOrdinal );
+		}
+
+		@Override
+		public List<E> dropR( int ending ) {
+			final int size = size();
+			if ( ending >= size ) {
+				return empty();
+			}
+			final int length = length();
+			final int tailSize = size - length;
+			if ( tailSize == ending ) {
+				return thisWithTail( empty() );
+			}
+			if ( ending < tailSize ) {
+				return thisWithTail( tail.dropR( ending ) );
+			}
+			return list( startOrdinal, endMinus( ending - tailSize ), empty() );
+		}
+
+		@Override
+		public List<E> insertAt( int index, E e ) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public boolean isEmpty() {
+			return false;
+		}
+
+		@Override
+		public Iterator<E> iterator() {
+			return IndexAccess.iterator( this, 0, size() );
+		}
+
+		@Override
+		public List<E> prepand( E e ) {
+			int priorOrdinal = startMinus( 1 );
+			final int eOrdinal = type.toOrdinal( e );
+			if ( eOrdinal == priorOrdinal ) {
+				return list( priorOrdinal, endOrdinal );
+			}
+			final int size = size();
+			if ( size == 1 ) {
+				priorOrdinal = startPlus( 1 );
+				return priorOrdinal == eOrdinal
+					? list( eOrdinal, endOrdinal )
+					: primary( 1, stack( at( 0 ), 2 ), empty() ).prepand( e );
+			}
+			return list( eOrdinal, eOrdinal, this );
+		}
+
+		@Override
+		public List<E> replaceAt( int index, E e ) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public int size() {
+			return length() + tail.size();
+		}
+
+		@Override
+		public List<E> takeL( int beginning ) {
+			if ( beginning >= size() ) {
+				return this;
+			}
+			final int length = length();
+			if ( beginning == length ) {
+				return thisWithTail( empty() );
+			}
+			return beginning <= length
+				? list( startOrdinal, startPlus( beginning - 1 ) )
+				: thisWithTail( tail.takeL( beginning - length ) );
+		}
+
+		@Override
+		public List<E> takeR( int ending ) {
+			final int size = size();
+			if ( ending >= size ) {
+				return this;
+			}
+			final int tailSize = size - length();
+			if ( tailSize == ending ) {
+				return tail;
+			}
+			return list( endMinus( ( ending - 1 - tailSize ) ), endOrdinal );
+		}
+
+		@Override
+		public List<E> tidyUp() {
+			List<E> tidyTail = tail.tidyUp();
+			return tidyTail == tail
+				? this
+				: thisWithTail( tidyTail );
+		}
+
+		@Override
+		public String toString() {
+			return "[" + String.valueOf( type.toEnum( startOrdinal ) ) + ".."
+					+ String.valueOf( type.toEnum( endOrdinal ) ) + "]:" + tail.toString();
+		}
+
+		private boolean ascending() {
+			return startOrdinal <= endOrdinal;
+		}
+
+		private int endMinus( int dec ) {
+			return ordinalMinus( endOrdinal, dec );
+		}
+
+		private int endPlus( int inc ) {
+			return ordinalPlus( endOrdinal, inc );
+		}
+
+		/**
+		 * @return The amount of elements in this enumerated list (*not* considering the
+		 *         {@link #tail}s size).
+		 */
+		private int length() {
+			return Math.abs( endOrdinal - startOrdinal ) + 1;
+		}
+
+		private List<E> list( int startOrdinal, int endOrdinal ) {
+			return new EnumList<E>( type, startOrdinal, endOrdinal, tail );
+		}
+
+		private List<E> list( int startOrdianl, int endOrdinal, List<E> tail ) {
+			return new EnumList<E>( type, startOrdianl, endOrdinal, tail );
+		}
+
+		private List<E> empty() {
+			return LISTER.noElements();
+		}
+
+		private int ordinalMinus( int ordinal, int dec ) {
+			return ordinalPlus( ordinal, -dec );
+		}
+
+		private int ordinalPlus( int ordinal, int inc ) {
+			return ascending()
+				? ordinal + inc
+				: ordinal - inc;
+		}
+
+		private int startMinus( int dec ) {
+			return ordinalMinus( startOrdinal, dec );
+		}
+
+		private int startPlus( int inc ) {
+			return ordinalPlus( startOrdinal, inc );
+		}
+
+		private List<E> thisWithTail( List<E> tail ) {
+			return new EnumList<E>( type, startOrdinal, endOrdinal, tail );
+		}
 	}
 }

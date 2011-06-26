@@ -10,7 +10,7 @@ public final class Enumerate {
 	public static final Enum<Integer> POSITIVES = numbers( 1, Integer.MAX_VALUE );
 	public static final Enum<Integer> NUMERARY = numbers( 0, 9 );
 
-	public static <E extends java.lang.Enum<E>> Enum<E> type( Class<E> type ) {
+	public static <E extends java.lang.Enum<?>> Enum<E> type( Class<E> type ) {
 		return new EnumerateEnum<E>( type );
 	}
 
@@ -73,7 +73,7 @@ public final class Enumerate {
 
 	}
 
-	static final class EnumerateEnum<E extends java.lang.Enum<E>>
+	static final class EnumerateEnum<E extends java.lang.Enum<?>>
 			implements Enum<E> {
 
 		private final E[] values;

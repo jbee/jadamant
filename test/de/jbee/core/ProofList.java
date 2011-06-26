@@ -1,8 +1,8 @@
 package de.jbee.core;
 
-import static de.jbee.core.Core.ſ;
 import static de.jbee.core.Core.I;
 import static de.jbee.core.Core._;
+import static de.jbee.core.Core.ſ;
 import static de.jbee.core.list.ListTransition.reverse;
 import static de.jbee.core.list.ListTransition.tail;
 
