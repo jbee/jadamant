@@ -3,9 +3,12 @@ package de.jbee.core;
 import static de.jbee.core.type.Enumerate.INTEGERS;
 import static de.jbee.core.type.Enumerate.numbers;
 import static de.jbee.core.type.Enumerate.stepwise;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 
+import de.jbee.core.list.CoreList;
 import de.jbee.core.list.List;
 import de.jbee.core.list.UtileEnumerator;
 
@@ -46,5 +49,27 @@ public class TestLister {
 		System.out.println( l3 );
 		List<Weekday> l4 = weekdays.fromTo( Weekday.Friday, Weekday.Tuesday );
 		System.out.println( l4 );
+	}
+
+	@Test
+	public void testNextHighestPowerOf2() {
+		assertThat( CoreList.nextHighestPowerOf2( 1 ), is( 1 ) );
+		assertThat( CoreList.nextHighestPowerOf2( 2 ), is( 2 ) );
+		assertThat( CoreList.nextHighestPowerOf2( 3 ), is( 4 ) );
+		assertThat( CoreList.nextHighestPowerOf2( 4 ), is( 4 ) );
+		assertThat( CoreList.nextHighestPowerOf2( 5 ), is( 8 ) );
+		assertThat( CoreList.nextHighestPowerOf2( 6 ), is( 8 ) );
+		assertThat( CoreList.nextHighestPowerOf2( 7 ), is( 8 ) );
+		assertThat( CoreList.nextHighestPowerOf2( 8 ), is( 8 ) );
+		assertThat( CoreList.nextHighestPowerOf2( 9 ), is( 16 ) );
+	}
+
+	@Test
+	public void testElementsCluster() {
+		List<Integer> l = List.with.elements( de.jbee.util.List.readonly1( 1, 2, 3 ) );
+		assertThat( l.size(), is( 3 ) );
+		assertThat( l.at( 0 ), is( 1 ) );
+		assertThat( l.at( 1 ), is( 2 ) );
+		assertThat( l.at( 2 ), is( 3 ) );
 	}
 }

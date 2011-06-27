@@ -166,8 +166,8 @@ public final class CoreListTransition {
 		}
 
 		@Override
-		public List<E> drop( int beginning ) {
-			return reverseViewOf( list.take( list.size() - beginning ) );
+		public List<E> drop( int count ) {
+			return reverseViewOf( list.take( list.size() - count ) );
 		}
 
 		@Override
@@ -196,8 +196,8 @@ public final class CoreListTransition {
 		}
 
 		@Override
-		public List<E> take( int beginning ) {
-			return reverseViewOf( list.drop( list.size() - beginning ) );
+		public List<E> take( int count ) {
+			return reverseViewOf( list.drop( list.size() - count ) );
 		}
 
 		@Override

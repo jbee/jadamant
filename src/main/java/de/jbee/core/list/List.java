@@ -79,10 +79,10 @@ public interface List<E>
 	List<E> replaceAt( int index, E e );
 
 	@Override
-	List<E> take( int beginning );
+	List<E> take( int count );
 
 	@Override
-	List<E> drop( int beginning );
+	List<E> drop( int count );
 
 	/*
 	 * additional methods
