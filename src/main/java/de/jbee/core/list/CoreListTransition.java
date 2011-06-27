@@ -11,13 +11,46 @@ public final class CoreListTransition {
 	}
 
 	public static final ListTransition reverse = new ReverseListTransition();
+	public static final ListTransition tail = dropL( 1 );
+	public static final ListTransition init = dropR( 1 );
 
 	public static ListTransition dropL( int beginning ) {
-		return new DropLListTransition( beginning );
+		return beginning == 1
+			? tail
+			: new DropLListTransition( beginning );
 	}
 
-	public static ListTransition concat( ListTransition fst, ListTransition snd ) {
-		return new ConcatListTransition( fst, snd );
+	public static ListTransition dropR( int ending ) {
+		return new DropRListTransition( ending );
+	}
+
+	public static ListTransition takeL( int beginning ) {
+		return new TakeLListTransition( beginning );
+	}
+
+	public static ListTransition takeR( int ending ) {
+		return new TakeRListTransition( ending );
+	}
+
+	public static ListTransition consec( ListTransition fst, ListTransition snd ) {
+		return new ConsecutivelyListTransition( fst, snd );
+	}
+
+	static final class TakeLListTransition
+			implements ListTransition {
+
+		private final int beginning;
+
+		TakeLListTransition( int beginning ) {
+			super();
+			this.beginning = beginning;
+		}
+
+		@Override
+		public <E> List<E> from( List<E> list ) {
+			return list.take( beginning );
+		}
+
 	}
 
 	static final class DropLListTransition
@@ -32,18 +65,51 @@ public final class CoreListTransition {
 
 		@Override
 		public <E> List<E> from( List<E> list ) {
-			return list.dropL( beginning );
+			return list.drop( beginning );
 		}
 
 	}
 
-	static final class ConcatListTransition
+	static final class TakeRListTransition
+			implements ListTransition {
+
+		private final int ending;
+
+		TakeRListTransition( int ending ) {
+			super();
+			this.ending = ending;
+		}
+
+		@Override
+		public <E> List<E> from( List<E> list ) {
+			return list.drop( list.size() - ending );
+		}
+	}
+
+	static final class DropRListTransition
+			implements ListTransition {
+
+		private final int ending;
+
+		DropRListTransition( int ending ) {
+			super();
+			this.ending = ending;
+		}
+
+		@Override
+		public <E> List<E> from( List<E> list ) {
+			return list.take( list.size() - ending );
+		}
+
+	}
+
+	static final class ConsecutivelyListTransition
 			implements ListTransition {
 
 		final ListTransition fst;
 		final ListTransition snd;
 
-		ConcatListTransition( ListTransition fst, ListTransition snd ) {
+		ConsecutivelyListTransition( ListTransition fst, ListTransition snd ) {
 			super();
 			this.fst = fst;
 			this.snd = snd;
@@ -100,13 +166,8 @@ public final class CoreListTransition {
 		}
 
 		@Override
-		public List<E> dropL( int beginning ) {
-			return reverseViewOf( list.dropR( beginning ) );
-		}
-
-		@Override
-		public List<E> dropR( int ending ) {
-			return reverseViewOf( list.dropL( ending ) );
+		public List<E> drop( int beginning ) {
+			return reverseViewOf( list.take( list.size() - beginning ) );
 		}
 
 		@Override
@@ -135,13 +196,8 @@ public final class CoreListTransition {
 		}
 
 		@Override
-		public List<E> takeL( int beginning ) {
-			return reverseViewOf( list.takeR( beginning ) );
-		}
-
-		@Override
-		public List<E> takeR( int ending ) {
-			return reverseViewOf( list.takeL( ending ) );
+		public List<E> take( int beginning ) {
+			return reverseViewOf( list.drop( list.size() - beginning ) );
 		}
 
 		@Override

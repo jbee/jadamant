@@ -52,6 +52,7 @@ public interface List<E>
 	/**
 	 * Expect this to be the fastest way to add elements. Almost O(1) in every case.
 	 */
+	@Override
 	List<E> prepand( E e );
 
 	/**
@@ -59,6 +60,7 @@ public interface List<E>
 	 * {@link CoreList#reverse(List)} a list so a <code>append</code> is in fact a
 	 * <code> prepand</code>.
 	 */
+	@Override
 	List<E> append( E e );
 
 	/*
@@ -67,19 +69,20 @@ public interface List<E>
 	 * FROM: ModifiableSequence
 	 */
 
+	@Override
 	List<E> insertAt( int index, E e );
 
+	@Override
 	List<E> deleteAt( int index );
 
+	@Override
 	List<E> replaceAt( int index, E e );
 
-	List<E> takeL( int beginning );
+	@Override
+	List<E> take( int beginning );
 
-	List<E> takeR( int ending );
-
-	List<E> dropL( int beginning );
-
-	List<E> dropR( int ending );
+	@Override
+	List<E> drop( int beginning );
 
 	/*
 	 * additional methods

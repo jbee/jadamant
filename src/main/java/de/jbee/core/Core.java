@@ -135,7 +135,7 @@ public final class Core {
 	}
 
 	public static ListTransition ſ( ListTransition fst, ListTransition snd ) {
-		return CoreListTransition.concat( fst, snd );
+		return CoreListTransition.consec( fst, snd );
 	}
 
 	static final class ProxyEnumeratorFactory

@@ -27,11 +27,7 @@ public class ProofList {
 	}
 
 	public void proofDropLOverride() {
-		List<Integer> l = I().dropL( 2 );
-	}
-
-	public void proofDropROverride() {
-		List<Integer> l = I().dropR( 2 );
+		List<Integer> l = I().drop( 2 );
 	}
 
 	public void proofInsertOverride() {
@@ -43,11 +39,7 @@ public class ProofList {
 	}
 
 	public void proofTakeLOverride() {
-		List<Integer> l = I().takeL( 2 );
-	}
-
-	public void proofTakeROverride() {
-		List<Integer> l = I().takeR( 2 );
+		List<Integer> l = I().take( 2 );
 	}
 
 	public void proofFactoryAccess() {

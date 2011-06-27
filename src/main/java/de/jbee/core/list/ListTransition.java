@@ -12,9 +12,10 @@ package de.jbee.core.list;
  */
 public interface ListTransition {
 
+	ListTransition reverse = CoreListTransition.reverse;
+	ListTransition tail = CoreListTransition.tail;
+
+	//TODO rename to "on" ?
 	<E> List<E> from( List<E> list );
 
-	ListTransition reverse = CoreListTransition.reverse;
-
-	ListTransition tail = CoreListTransition.dropL( 1 );
 }

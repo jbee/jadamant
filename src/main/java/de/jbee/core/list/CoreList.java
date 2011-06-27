@@ -86,12 +86,7 @@ public final class CoreList {
 		}
 
 		@Override
-		public List<E> dropL( int beginning ) {
-			return this;
-		}
-
-		@Override
-		public List<E> dropR( int ending ) {
+		public List<E> drop( int beginning ) {
 			return this;
 		}
 
@@ -154,12 +149,7 @@ public final class CoreList {
 		}
 
 		@Override
-		public List<E> takeL( int beginning ) {
-			return this;
-		}
-
-		@Override
-		public List<E> takeR( int ending ) {
+		public List<E> take( int beginning ) {
 			return this;
 		}
 
@@ -233,13 +223,17 @@ public final class CoreList {
 		}
 
 		@Override
-		public List<E> dropL( int beginning ) {
-			return takeR( size - beginning );
-		}
-
-		@Override
-		public List<E> dropR( int ending ) {
-			return takeL( size - ending );
+		public List<E> drop( int beginning ) {
+			if ( beginning <= 0 ) {
+				return this;
+			}
+			if ( beginning >= size ) {
+				return empty();
+			}
+			final int length = length();
+			return beginning >= length
+				? tail.drop( beginning - length )
+				: secondary( size - beginning, stack, tail );
 		}
 
 		@Override
@@ -268,7 +262,7 @@ public final class CoreList {
 		}
 
 		@Override
-		public final List<E> takeL( int beginning ) {
+		public final List<E> take( int beginning ) {
 			if ( beginning <= 0 ) {
 				return empty();
 			}
@@ -276,17 +270,6 @@ public final class CoreList {
 				return this;
 			}
 			return nontrivialTakeL( beginning );
-		}
-
-		@Override
-		public final List<E> takeR( int ending ) {
-			if ( ending <= 0 ) {
-				return empty();
-			}
-			if ( ending >= size ) {
-				return this;
-			}
-			return nontrivialTakeR( ending );
 		}
 
 		@Override
@@ -335,15 +318,9 @@ public final class CoreList {
 				return secondary( beginning, ( length - beginning ) + offset(), stack, empty() );
 			}
 			// took this hole stack and parts of the tails elements
-			return thisWith( beginning, tail.takeL( beginning - length ) );
+			return thisWith( beginning, tail.take( beginning - length ) );
 		}
 
-		private List<E> nontrivialTakeR( int ending ) {
-			final int tailSize = tail.size();
-			return ending > tailSize
-				? secondary( ending, stack, tail )
-				: tail.takeR( ending );
-		}
 	}
 
 	static class StackLister
@@ -631,13 +608,12 @@ public final class CoreList {
 		}
 
 		@Override
-		public List<E> dropL( int beginning ) {
-			return takeR( size() - beginning );
-		}
-
-		@Override
-		public List<E> dropR( int ending ) {
-			return takeL( size() - ending );
+		public List<E> drop( int beginning ) {
+			return beginning <= 0
+				? this
+				: beginning == 1
+					? tail
+					: tail.drop( beginning - 1 );
 		}
 
 		@Override
@@ -659,17 +635,10 @@ public final class CoreList {
 		}
 
 		@Override
-		public List<E> takeL( int beginning ) {
+		public List<E> take( int beginning ) {
 			return beginning > 0
-				? thisWithTail( tail.takeL( beginning - 1 ) )
+				? thisWithTail( tail.take( beginning - 1 ) )
 				: LISTER.<E> noElements();
-		}
-
-		@Override
-		public List<E> takeR( int ending ) {
-			return ending >= size()
-				? this
-				: tail.takeR( ending );
 		}
 
 		@Override
@@ -795,7 +764,10 @@ public final class CoreList {
 		}
 
 		@Override
-		public List<E> dropL( int beginning ) {
+		public List<E> drop( int beginning ) {
+			if ( beginning <= 0 ) {
+				return this;
+			}
 			final int size = size();
 			if ( beginning >= size ) {
 				return empty();
@@ -805,26 +777,9 @@ public final class CoreList {
 				return tail;
 			}
 			if ( beginning > length ) {
-				return tail.dropL( beginning - length );
+				return tail.drop( beginning - length );
 			}
 			return list( firstPlus( beginning ), lastOrdinal );
-		}
-
-		@Override
-		public List<E> dropR( int ending ) {
-			final int size = size();
-			if ( ending >= size ) {
-				return empty();
-			}
-			final int length = length();
-			final int tailSize = size - length;
-			if ( tailSize == ending ) {
-				return thisWithTail( empty() );
-			}
-			if ( ending < tailSize ) {
-				return thisWithTail( tail.dropR( ending ) );
-			}
-			return list( firstOrdinal, lastMinus( ending - tailSize ), empty() );
 		}
 
 		@Override
@@ -874,7 +829,7 @@ public final class CoreList {
 		}
 
 		@Override
-		public List<E> takeL( int beginning ) {
+		public List<E> take( int beginning ) {
 			if ( beginning <= 0 ) {
 				return empty();
 			}
@@ -887,25 +842,7 @@ public final class CoreList {
 			}
 			return beginning <= length
 				? list( firstOrdinal, firstPlus( beginning - 1 ), empty() )
-				: thisWithTail( tail.takeL( beginning - length ) );
-		}
-
-		@Override
-		public List<E> takeR( int ending ) {
-			if ( ending <= 0 ) {
-				return empty();
-			}
-			final int size = size();
-			if ( ending >= size ) {
-				return this;
-			}
-			final int tailSize = size - length();
-			if ( tailSize == ending ) {
-				return tail;
-			}
-			return tailSize > ending
-				? tail.takeR( ending )
-				: list( lastMinus( ( ending - 1 - tailSize ) ), lastOrdinal );
+				: thisWithTail( tail.take( beginning - length ) );
 		}
 
 		@Override

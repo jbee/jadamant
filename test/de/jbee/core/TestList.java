@@ -1,5 +1,7 @@
 package de.jbee.core;
 
+import static de.jbee.core.list.CoreListTransition.dropR;
+import static de.jbee.core.list.CoreListTransition.takeR;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.sameInstance;
@@ -10,7 +12,6 @@ import java.util.Random;
 import org.junit.Test;
 
 import de.jbee.core.list.List;
-import de.jbee.core.list.CoreList.EnumList;
 
 public class TestList {
 
@@ -115,33 +116,6 @@ public class TestList {
 		}
 	}
 
-	@Test
-	public void testTakeRStackList() {
-		List<Integer> l = List.with.noElements();
-		List<Integer> stack1 = null;
-		List<Integer> stack2 = null;
-		List<Integer> stack3 = null;
-		final int size = 30;
-		for ( int i = 1; i <= size; i++ ) {
-			l = l.prepand( i );
-			if ( i == 14 ) {
-				stack3 = l;
-			}
-			if ( i == 6 ) {
-				stack2 = l;
-			}
-			if ( i == 2 ) {
-				stack1 = l;
-			}
-		}
-		if ( ! ( l instanceof EnumList<?> ) ) {
-			assertThat( stack1, sameInstance( l.takeR( 2 ) ) );
-			assertThat( stack2, sameInstance( l.takeR( 6 ) ) );
-			assertThat( stack3, sameInstance( l.takeR( 14 ) ) );
-		}
-		verifyTakeR( l );
-	}
-
 	private List<Integer> descendingTo1From( final int start ) {
 		List<Integer> l = List.with.noElements();
 		for ( int i = 10; i <= start; i++ ) {
@@ -164,24 +138,24 @@ public class TestList {
 
 	private void verifyDropL( List<Integer> l ) {
 		final int size = l.size();
-		assertThat( l.dropL( size ).size(), is( 0 ) );
-		assertThat( l.dropL( size + 1 ).size(), is( 0 ) );
-		assertThat( l.dropL( size - 1 ).size(), is( 1 ) );
+		assertThat( l.drop( size ).size(), is( 0 ) );
+		assertThat( l.drop( size + 1 ).size(), is( 0 ) );
+		assertThat( l.drop( size - 1 ).size(), is( 1 ) );
 		for ( int i = 1; i < size; i++ ) {
-			List<Integer> dropped = l.dropL( i );
+			List<Integer> dropped = l.drop( i );
 			assertThat( dropped.size(), is( size - i ) );
-			assertThat( dropped.at( 0 ), is( l.at( i ) ) );
+			assertThat( i + "=>" + l + "=" + dropped, dropped.at( 0 ), is( l.at( i ) ) );
 			assertThat( dropped.at( size - i - 1 ), is( l.at( size - 1 ) ) );
 		}
 	}
 
 	private void verifyDropR( List<Integer> l ) {
 		final int size = l.size();
-		assertThat( l.dropR( size ).size(), is( 0 ) );
-		assertThat( l.dropR( size + 1 ).size(), is( 0 ) );
-		assertThat( l.dropR( size - 1 ).size(), is( 1 ) );
+		assertThat( dropR( size ).from( l ).size(), is( 0 ) );
+		assertThat( dropR( size + 1 ).from( l ).size(), is( 0 ) );
+		assertThat( dropR( size - 1 ).from( l ).size(), is( 1 ) );
 		for ( int i = 1; i < size; i++ ) {
-			List<Integer> dropped = l.dropR( i );
+			List<Integer> dropped = dropR( i ).from( l );
 			assertThat( dropped.size(), is( size - i ) );
 			assertThat( dropped.at( 0 ), is( l.at( 0 ) ) );
 			int lastIndex = size - i - 1;
@@ -191,11 +165,11 @@ public class TestList {
 
 	private void verifyTakeL( List<Integer> l ) {
 		final int size = l.size();
-		assertThat( l.takeL( size ), sameInstance( l ) );
-		assertThat( l.takeL( size + 1 ), sameInstance( l ) );
-		assertThat( l.takeL( size - 1 ), not( sameInstance( l ) ) );
+		assertThat( l.take( size ), sameInstance( l ) );
+		assertThat( l.take( size + 1 ), sameInstance( l ) );
+		assertThat( l.take( size - 1 ), not( sameInstance( l ) ) );
 		for ( int i = 1; i < size; i++ ) {
-			List<Integer> taken = l.takeL( i );
+			List<Integer> taken = l.take( i );
 			assertThat( taken.size(), is( i ) );
 			assertThat( taken.at( 0 ), is( l.at( 0 ) ) );
 			int lastIndex = i - 1;
@@ -206,11 +180,11 @@ public class TestList {
 
 	private void verifyTakeR( List<Integer> l ) {
 		final int size = l.size();
-		assertThat( l.takeR( size ), sameInstance( l ) );
-		assertThat( l.takeR( size + 1 ), sameInstance( l ) );
-		assertThat( l.takeR( size - 1 ), not( sameInstance( l ) ) );
+		assertThat( takeR( size ).from( l ), sameInstance( l ) );
+		assertThat( takeR( size + 1 ).from( l ), sameInstance( l ) );
+		assertThat( takeR( size - 1 ).from( l ), not( sameInstance( l ) ) );
 		for ( int i = 1; i < size; i++ ) {
-			List<Integer> taken = l.takeR( i );
+			List<Integer> taken = takeR( i ).from( l );
 			assertThat( taken.size(), is( i ) );
 			assertThat( taken.at( 0 ), is( l.at( size - i ) ) );
 		}
