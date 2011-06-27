@@ -26,6 +26,14 @@ public final class Enumerate {
 		throw new UnsupportedOperationException( "util" );
 	}
 
+	public static <E> void validateBounds( Enum<E> type, E e ) {
+		final int eOrdinal = type.toOrdinal( e );
+		if ( eOrdinal < type.toOrdinal( type.minBound() )
+				|| eOrdinal > type.toOrdinal( type.maxBound() ) ) {
+			throw new IndexOutOfBoundsException( "The type doesn't cover " + e );
+		}
+	}
+
 	static final class EnumerateStepwise<T>
 			implements Enum<T> {
 

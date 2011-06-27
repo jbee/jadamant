@@ -394,7 +394,6 @@ public final class CoreList {
 
 		@Override
 		public List<E> stepwiseFromTo( E first, E last, int increment ) {
-			//TODO make sure start and end are in range of type
 			return ( increment != 1 )
 				? fromTo( first, alignLastToStep( first, last, increment ), Enumerate.stepwise(
 						type, first, increment ) )
@@ -407,6 +406,8 @@ public final class CoreList {
 		}
 
 		private List<E> fromTo( E first, E last, Enum<E> type ) {
+			Enumerate.validateBounds( type, first );
+			Enumerate.validateBounds( type, last );
 			int fo = type.toOrdinal( first );
 			int lo = type.toOrdinal( last );
 			if ( fo == lo ) { // length 1
@@ -631,8 +632,9 @@ public final class CoreList {
 
 		@Override
 		public List<E> insertAt( int index, E e ) {
-			// TODO Auto-generated method stub
-			return null;
+			return index == 0
+				? prepand( e )
+				: thisWithTail( tail.insertAt( index - 1, e ) );
 		}
 
 		@Override
@@ -643,8 +645,9 @@ public final class CoreList {
 
 		@Override
 		public List<E> replaceAt( int index, E e ) {
-			// TODO Auto-generated method stub
-			return null;
+			return index == 0
+				? singleton( e, tail )
+				: thisWithTail( tail.replaceAt( index - 1, e ) );
 		}
 
 		@Override
