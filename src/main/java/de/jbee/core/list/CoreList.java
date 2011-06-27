@@ -463,7 +463,7 @@ public final class CoreList {
 		public List<E> prepand( E e ) {
 			checkNonnull( e );
 			final int length = length();
-			int index = stack.length - 1 - length;
+			int index = occupationIndex( length );
 			if ( index < 0 ) { // stack capacity exceeded
 				return grow1( stack( e, stack.length * 2 ), this );
 			}
@@ -478,6 +478,10 @@ public final class CoreList {
 			return grow1( copy, tail );
 		}
 
+		private int occupationIndex( final int length ) {
+			return stack.length - 1 - length;
+		}
+
 		@Override
 		public List<E> replaceAt( int index, E e ) {
 			// TODO Auto-generated method stub
@@ -487,10 +491,16 @@ public final class CoreList {
 		@Override
 		public List<E> tidyUp() {
 			List<E> tidyTail = tail.tidyUp();
-			// FIXME ensure that next prepand index is still unused
-			return tidyTail == tail
-				? this
-				: primary( size, stack, tidyTail );
+			int length = length();
+			synchronized ( stack ) {
+				if ( notOccupied( occupationIndex( length ) ) ) {
+					return tidyTail == tail
+						? this
+						: primary( size, stack, tidyTail );
+				}
+
+			}
+			return primary( size, stackCopyFrom( 0, length ), tail );
 		}
 
 		@SuppressWarnings ( "unchecked" )
@@ -515,12 +525,16 @@ public final class CoreList {
 
 		private boolean prepandedOccupying( E e, int index ) {
 			synchronized ( stack ) {
-				if ( stack[index] == null ) {
+				if ( notOccupied( index ) ) {
 					stack[index] = e;
 					return true;
 				}
 				return false;
 			}
+		}
+
+		private boolean notOccupied( int index ) {
+			return stack[index] == null;
 		}
 
 		private Object[] stackCopyFrom( int start, int length ) {
