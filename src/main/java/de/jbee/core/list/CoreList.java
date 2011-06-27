@@ -7,6 +7,22 @@ import de.jbee.core.type.Enum;
 import de.jbee.core.type.Enumerate;
 import de.jbee.util.ICluster;
 
+/**
+ * The data-structure of the core list consists of a chain of partial lists. The capacity of each
+ * partial list is growing with the power of 2 starting with 1. If the capacity is exceeded a new
+ * partial list is created having the current list as its tail list. The created list has twice the
+ * capacity of the last partial list. Thereby the longest partial list is always first. Through this
+ * the majority (>= 50%) of elements are always contained in the first or second partial list. A
+ * random access therefore is just a array index access.
+ * 
+ * <p>
+ * This idea is based on the <a
+ * href="http://infoscience.epfl.ch/record/64410/files/techlists.pdf">V-List data-structure by Phil
+ * Bagwell</a>
+ * </p>
+ * 
+ * @author Jan Bernitt (jan.bernitt@gmx.de)
+ */
 public final class CoreList {
 
 	public static final EnumeratorFactory LISTER_FACTORY = new StackEnumListerFactory();
@@ -29,6 +45,10 @@ public final class CoreList {
 
 	static <E> List<E> secondary( int size, Object[] stack, List<E> tail ) {
 		return secondary( size, 0, stack, tail );
+	}
+
+	static <E> List<E> singleton( E element, List<E> tail ) {
+		return new SingletonList<E>( element, tail );
 	}
 
 	static <E> Object[] stack( E initial, int length ) {
@@ -102,7 +122,7 @@ public final class CoreList {
 			if ( e.getClass().isEnum() ) {
 				return enumList( e );
 			}
-			return primary( 1, stack( e, 2 ), this );
+			return singleton( e, this );
 		}
 
 		@SuppressWarnings ( "unchecked" )
@@ -175,21 +195,21 @@ public final class CoreList {
 
 		@Override
 		public List<E> append( E e ) {
-			// TODO Auto-generated method stub
-			return null;
+			//TODO improve - this works but covers no optimization case
+			return thisWith( size + 1, tail.append( e ) );
 		}
 
 		@Override
 		public final E at( int index ) {
-			final int length = length();
-			return index >= length
-				? tail.at( index - length )
-				: element( index, length );
+			final int l = length();
+			return index >= l
+				? tail.at( index - l )
+				: element( index, l );
 		}
 
 		@Override
 		public List<E> concat( List<E> other ) {
-			return of( size + other.size(), tail.concat( other ) );
+			return thisWith( size + other.size(), tail.concat( other ) );
 		}
 
 		@Override
@@ -277,7 +297,7 @@ public final class CoreList {
 				b.append( ',' );
 				b.append( String.valueOf( at( i ) ) );
 			}
-			return "[" + b.substring( 1 ) + "]:" + tail.toString();
+			return "[" + b.substring( 1 ) + "]" + List.CONCAT_OPERATOR + tail.toString();
 		}
 
 		abstract E element( int index, int l );
@@ -293,7 +313,7 @@ public final class CoreList {
 			return size - tail.size();
 		}
 
-		abstract List<E> of( int size, List<E> tail );
+		abstract List<E> thisWith( int size, List<E> tail );
 
 		abstract int offset();
 
@@ -303,19 +323,19 @@ public final class CoreList {
 		 * tail size is shrinking 1.
 		 */
 		final List<E> shrink1( List<E> tail ) {
-			return of( size - 1, tail );
+			return thisWith( size - 1, tail );
 		}
 
 		private List<E> nontrivialTakeL( int beginning ) {
 			final int length = length();
 			if ( beginning == length ) { // took this stack without tail
-				return of( length, empty() );
+				return thisWith( length, empty() );
 			}
 			if ( beginning < length ) { // took parts of this stack
 				return secondary( beginning, ( length - beginning ) + offset(), stack, empty() );
 			}
 			// took this hole stack and parts of the tails elements
-			return of( beginning, tail.takeL( beginning - length ) );
+			return thisWith( beginning, tail.takeL( beginning - length ) );
 		}
 
 		private List<E> nontrivialTakeR( int ending ) {
@@ -480,7 +500,7 @@ public final class CoreList {
 		}
 
 		@Override
-		final List<E> of( int size, List<E> tail ) {
+		final List<E> thisWith( int size, List<E> tail ) {
 			return primary( size, stack, tail );
 		}
 
@@ -552,13 +572,125 @@ public final class CoreList {
 		}
 
 		@Override
-		List<E> of( int size, List<E> tail ) {
+		List<E> thisWith( int size, List<E> tail ) {
 			return secondary( size, offset, stack, tail );
 		}
 
 		@Override
 		final int offset() {
 			return offset;
+		}
+
+	}
+
+	private static final class SingletonList<E>
+			implements List<E> {
+
+		private final E element;
+		private final List<E> tail;
+
+		SingletonList( E element, List<E> tail ) {
+			super();
+			this.element = element;
+			this.tail = tail;
+		}
+
+		private List<E> thisWithTail( List<E> tail ) {
+			return new SingletonList<E>( element, tail );
+		}
+
+		@Override
+		public List<E> append( E e ) {
+			return thisWithTail( tail.append( e ) );
+		}
+
+		@Override
+		public List<E> concat( List<E> other ) {
+			return thisWithTail( tail.concat( other ) );
+		}
+
+		@Override
+		public List<E> deleteAt( int index ) {
+			return index == 0
+				? tail
+				: thisWithTail( tail.deleteAt( index - 1 ) );
+		}
+
+		@Override
+		public List<E> dropL( int beginning ) {
+			return takeR( size() - beginning );
+		}
+
+		@Override
+		public List<E> dropR( int ending ) {
+			return takeL( size() - ending );
+		}
+
+		@Override
+		public List<E> insertAt( int index, E e ) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public List<E> prepand( E e ) {
+			checkNonnull( e );
+			return primary( size() + 1, stack( e, 2 ), this );
+		}
+
+		@Override
+		public List<E> replaceAt( int index, E e ) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public List<E> takeL( int beginning ) {
+			return beginning > 0
+				? thisWithTail( tail.takeL( beginning - 1 ) )
+				: LISTER.<E> noElements();
+		}
+
+		@Override
+		public List<E> takeR( int ending ) {
+			return ending >= size()
+				? this
+				: tail.takeR( ending );
+		}
+
+		@Override
+		public List<E> tidyUp() {
+			final List<E> tidyTail = tail.tidyUp();
+			return tidyTail == tail
+				? this
+				: thisWithTail( tidyTail );
+		}
+
+		@Override
+		public boolean isEmpty() {
+			return false;
+		}
+
+		@Override
+		public int size() {
+			return tail.size() + 1;
+		}
+
+		@Override
+		public Iterator<E> iterator() {
+			return IndexAccess.iterator( this, 0, size() );
+		}
+
+		@Override
+		public E at( int index ) {
+			return index == 0
+				? element
+				: tail.at( index - 1 );
+		}
+
+		@Override
+		public String toString() {
+			return "[" + String.valueOf( element ) + "]" + List.CONCAT_OPERATOR + tail.toString();
 		}
 
 	}
@@ -585,11 +717,21 @@ public final class CoreList {
 
 		@Override
 		public List<E> append( E e ) {
+			final int eOrdinal = type.toOrdinal( e );
 			if ( tail.isEmpty() ) {
 				final int nextOrdinal = lastPlus( 1 );
-				if ( type.toOrdinal( e ) == nextOrdinal ) {
+				if ( eOrdinal == nextOrdinal ) {
 					return list( firstOrdinal, nextOrdinal );
 				}
+			}
+			final int size = size();
+			if ( size == 1 ) { // check for a desc sequence
+				return firstMinus( 1 ) == eOrdinal
+					? list( firstOrdinal, eOrdinal )
+					: singleton( at( 0 ), empty() ).append( e );
+			}
+			if ( length() == 1 ) {
+				return singleton( at( 0 ), tail ).append( e );
 			}
 			return thisWithTail( tail.append( e ) );
 		}
@@ -689,20 +831,19 @@ public final class CoreList {
 
 		@Override
 		public List<E> prepand( E e ) {
-			int priorOrdinal = firstMinus( 1 );
+			final int priorOrdinal = firstMinus( 1 );
 			final int eOrdinal = type.toOrdinal( e );
 			if ( eOrdinal == priorOrdinal ) {
 				return list( priorOrdinal, lastOrdinal );
 			}
 			final int size = size();
-			if ( size == 1 ) {
-				priorOrdinal = firstPlus( 1 );
-				return priorOrdinal == eOrdinal
+			if ( size == 1 ) { // check a descending sequence
+				return firstPlus( 1 ) == eOrdinal
 					? list( eOrdinal, lastOrdinal )
-					: primary( 1, stack( at( 0 ), 2 ), empty() ).prepand( e );
+					: singleton( at( 0 ), empty() ).prepand( e );
 			}
 			if ( length() == 1 ) {
-				return primary( 1 + tail.size(), stack( at( 0 ), 2 ), tail ).prepand( e );
+				return singleton( at( 0 ), tail ).prepand( e );
 			}
 			return list( eOrdinal, eOrdinal, this );
 		}
@@ -720,6 +861,9 @@ public final class CoreList {
 
 		@Override
 		public List<E> takeL( int beginning ) {
+			if ( beginning <= 0 ) {
+				return empty();
+			}
 			if ( beginning >= size() ) {
 				return this;
 			}
@@ -734,6 +878,9 @@ public final class CoreList {
 
 		@Override
 		public List<E> takeR( int ending ) {
+			if ( ending <= 0 ) {
+				return empty();
+			}
 			final int size = size();
 			if ( ending >= size ) {
 				return this;
@@ -758,7 +905,8 @@ public final class CoreList {
 		@Override
 		public String toString() {
 			return "[" + String.valueOf( type.toEnum( firstOrdinal ) ) + ".."
-					+ String.valueOf( type.toEnum( lastOrdinal ) ) + "]:" + tail.toString();
+					+ String.valueOf( type.toEnum( lastOrdinal ) ) + "]" + List.CONCAT_OPERATOR
+					+ tail.toString();
 		}
 
 		private boolean ascending() {

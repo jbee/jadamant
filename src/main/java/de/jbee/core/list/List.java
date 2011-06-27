@@ -25,6 +25,18 @@ public interface List<E>
 		extends ICluster<E>, IndexAccessible<E>, Prepandable<E>, Appendable<E>,
 		ModifiableSequence<E> {
 
+	/**
+	 * The operator to use in a {@link Object#toString()} when visualizing concatenation of lists.
+	 * Example:
+	 * 
+	 * <pre>
+	 * [1,2]+[36,9]
+	 * </pre>
+	 * 
+	 * is a list containing the sequence 1,2,36,9 in 2 sublists chained together.
+	 */
+	char CONCAT_OPERATOR = '+';
+
 	Lister with = Core.list;
 	UtileEnumerator<Integer> numbers = Core.numbers;
 	UtileEnumeratorFactory that = Core.enumerator;
