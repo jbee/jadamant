@@ -1,5 +1,7 @@
 package de.jbee.core.type;
 
+import java.util.NoSuchElementException;
+
 import de.jbee.core.Nullsave;
 
 public final class Enumerate {
@@ -30,7 +32,9 @@ public final class Enumerate {
 		final int eOrdinal = type.toOrdinal( e );
 		if ( eOrdinal < type.toOrdinal( type.minBound() )
 				|| eOrdinal > type.toOrdinal( type.maxBound() ) ) {
-			throw new IndexOutOfBoundsException( "The type doesn't cover " + e );
+			throw new NoSuchElementException( "The type covers " + type.minBound() + "["
+					+ type.toOrdinal( type.minBound() ) + "] to " + type.maxBound() + "["
+					+ type.toOrdinal( type.maxBound() ) + "] but not:" + e );
 		}
 	}
 
@@ -44,8 +48,8 @@ public final class Enumerate {
 		EnumerateStepwise( Enum<T> unstepped, T start, int increment ) {
 			super();
 			this.unstepped = unstepped;
-			this.increment = increment;
-			this.offset = unstepped.toOrdinal( start ) % increment;
+			this.increment = Math.abs( increment );
+			this.offset = unstepped.toOrdinal( start ) % this.increment;
 		}
 
 		@Override

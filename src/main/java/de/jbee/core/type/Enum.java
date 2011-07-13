@@ -1,8 +1,7 @@
 package de.jbee.core.type;
 
-
 public interface Enum<T>
-		extends Bounded<T> {
+		extends Bounded<T> /* , Show<T> */{
 
 	T succ( T value );
 

@@ -800,8 +800,17 @@ public final class CoreList {
 
 		@Override
 		public List<E> insertAt( int index, E e ) {
-			// TODO Auto-generated method stub
-			return null;
+			//TODO nonnull ?
+			if ( index == 0 ) {
+				singleton( e, this );
+			}
+			final int length = length();
+			if ( index >= length ) {
+				thisWithTail( tail.insertAt( index - length, e ) );
+			}
+			// somewhere in between this enumeration
+			return list( firstOrdinal, firstPlus( index - 1 ), singleton( e, list(
+					firstPlus( index ), lastOrdinal, tail ) ) );
 		}
 
 		@Override

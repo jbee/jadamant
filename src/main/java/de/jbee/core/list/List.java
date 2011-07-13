@@ -40,6 +40,7 @@ public interface List<E>
 	Lister with = Core.list;
 	UtileEnumerator<Integer> numbers = Core.numbers;
 	UtileEnumeratorFactory that = Core.enumerator;
+	UtileListTransition is = UtileListTransition.instance;
 
 	ListTransition reverse = ListTransition.reverse;
 

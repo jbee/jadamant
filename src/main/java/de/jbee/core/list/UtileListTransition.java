@@ -4,51 +4,133 @@ import java.util.Iterator;
 
 import de.jbee.core.IndexAccess;
 
-public final class CoreListTransition {
+public final class UtileListTransition {
 
-	private CoreListTransition() {
-		throw new UnsupportedOperationException( "util class" );
+	static final UtileListTransition instance = new UtileListTransition();
+
+	private UtileListTransition() {
+		// enforce singleton
 	}
 
 	public static final ListTransition reverse = new ReverseListTransition();
-	public static final ListTransition tail = dropL( 1 );
-	public static final ListTransition init = dropR( 1 );
+	public static final ListTransition tail = new DropLListTransition( 1 );
+	public static final ListTransition init = new DropRListTransition( 1 );
 
-	public static ListTransition dropL( int beginning ) {
-		return beginning == 1
+	public ListTransition dropLeft( int count ) {
+		return count == 1
 			? tail
-			: new DropLListTransition( beginning );
+			: new DropLListTransition( count );
 	}
 
-	public static ListTransition dropR( int ending ) {
-		return new DropRListTransition( ending );
+	public ListTransition dropRight( int count ) {
+		return new DropRListTransition( count );
 	}
 
-	public static ListTransition takeL( int beginning ) {
-		return new TakeLListTransition( beginning );
+	public ListTransition takeLeft( int count ) {
+		return new TakeLListTransition( count );
 	}
 
-	public static ListTransition takeR( int ending ) {
-		return new TakeRListTransition( ending );
+	public ListTransition takeRight( int count ) {
+		return new TakeRListTransition( count );
 	}
 
-	public static ListTransition consec( ListTransition fst, ListTransition snd ) {
+	public ListTransition takeFrom( int index ) {
+		return dropLeft( index );
+	}
+
+	public ListTransition takeUpTo( int index ) {
+		return takeLeft( index );
+	}
+
+	public ListTransition dropFrom( int index ) {
+		return takeLeft( index );
+	}
+
+	public ListTransition dropUpTo( int index ) {
+		return dropLeft( index );
+	}
+
+	public ListTransition takeFromTo( int start, int end ) {
+		return sublist( start, end - start + 1 );
+	}
+
+	public ListTransition dropFromTo( int start, int end ) {
+		return concat( takeUpTo( start - 1 ), takeFrom( end + 1 ) );
+	}
+
+	public ListTransition sublist( int start, int length ) {
+		return new SublistTransition( start, length );
+	}
+
+	public ListTransition consec( ListTransition fst, ListTransition snd ) {
 		return new ConsecutivelyListTransition( fst, snd );
+	}
+
+	public ListTransition concat( ListTransition head, ListTransition tail ) {
+		return new ConcatTranstion( head, tail );
+	}
+
+	static final class ConcatTranstion
+			implements ListTransition {
+
+		private final ListTransition head;
+		private final ListTransition tail;
+
+		ConcatTranstion( ListTransition head, ListTransition tail ) {
+			super();
+			this.head = head;
+			this.tail = tail;
+		}
+
+		@Override
+		public <E> List<E> from( List<E> list ) {
+			return head.from( list ).concat( tail.from( list ) );
+		}
+
+	}
+
+	static final class SublistTransition
+			implements ListTransition {
+
+		private final int start;
+		private final int length;
+
+		SublistTransition( int start, int length ) {
+			super();
+			this.start = start;
+			this.length = length;
+		}
+
+		@Override
+		public <E> List<E> from( List<E> list ) {
+			if ( start == 0 ) {
+				return list.take( length );
+			}
+			int size = list.size();
+			if ( start >= size ) {
+				return list.take( 0 ); // will lead to empty list but impl. depends on argument
+			}
+			if ( start + length > size ) {
+				return list.drop( start );
+			}
+			return list.drop( start ).take( length );
+		}
+
 	}
 
 	static final class TakeLListTransition
 			implements ListTransition {
 
-		private final int beginning;
+		private final int count;
 
-		TakeLListTransition( int beginning ) {
+		TakeLListTransition( int count ) {
 			super();
-			this.beginning = beginning;
+			this.count = count;
 		}
 
 		@Override
 		public <E> List<E> from( List<E> list ) {
-			return list.take( beginning );
+			return list.take( count );
 		}
 
 	}
@@ -56,16 +138,16 @@ public final class CoreListTransition {
 	static final class DropLListTransition
 			implements ListTransition {
 
-		private final int beginning;
+		private final int count;
 
-		DropLListTransition( int beginning ) {
+		DropLListTransition( int count ) {
 			super();
-			this.beginning = beginning;
+			this.count = count;
 		}
 
 		@Override
 		public <E> List<E> from( List<E> list ) {
-			return list.drop( beginning );
+			return list.drop( count );
 		}
 
 	}
@@ -73,32 +155,32 @@ public final class CoreListTransition {
 	static final class TakeRListTransition
 			implements ListTransition {
 
-		private final int ending;
+		private final int count;
 
-		TakeRListTransition( int ending ) {
+		TakeRListTransition( int count ) {
 			super();
-			this.ending = ending;
+			this.count = count;
 		}
 
 		@Override
 		public <E> List<E> from( List<E> list ) {
-			return list.drop( list.size() - ending );
+			return list.drop( list.size() - count );
 		}
 	}
 
 	static final class DropRListTransition
 			implements ListTransition {
 
-		private final int ending;
+		private final int count;
 
-		DropRListTransition( int ending ) {
+		DropRListTransition( int count ) {
 			super();
-			this.ending = ending;
+			this.count = count;
 		}
 
 		@Override
 		public <E> List<E> from( List<E> list ) {
-			return list.take( list.size() - ending );
+			return list.take( list.size() - count );
 		}
 
 	}

@@ -12,8 +12,8 @@ package de.jbee.core.list;
  */
 public interface ListTransition {
 
-	ListTransition reverse = CoreListTransition.reverse;
-	ListTransition tail = CoreListTransition.tail;
+	ListTransition reverse = UtileListTransition.reverse;
+	ListTransition tail = UtileListTransition.tail;
 
 	//TODO rename to "on" ?
 	<E> List<E> from( List<E> list );

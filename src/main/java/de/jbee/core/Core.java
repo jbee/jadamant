@@ -2,7 +2,6 @@ package de.jbee.core;
 
 import static de.jbee.core.type.Enumerate.INTEGERS;
 import de.jbee.core.list.CoreList;
-import de.jbee.core.list.CoreListTransition;
 import de.jbee.core.list.Enumerator;
 import de.jbee.core.list.EnumeratorFactory;
 import de.jbee.core.list.List;
@@ -135,7 +134,7 @@ public final class Core {
 	}
 
 	public static ListTransition ſ( ListTransition fst, ListTransition snd ) {
-		return CoreListTransition.consec( fst, snd );
+		return List.is.consec( fst, snd );
 	}
 
 	static final class ProxyEnumeratorFactory

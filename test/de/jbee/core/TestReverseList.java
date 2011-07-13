@@ -5,7 +5,6 @@ import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 
-import de.jbee.core.list.CoreListTransition;
 import de.jbee.core.list.List;
 import de.jbee.core.list.ListTransition;
 
@@ -35,7 +34,7 @@ public class TestReverseList {
 	@Test
 	public void testConcatTransition() {
 		List<Integer> expected = List.with.elements( 3, 2, 1 );
-		ListTransition reverseTail = CoreListTransition.consec( List.reverse, List.tail );
+		ListTransition reverseTail = List.is.consec( List.reverse, List.tail );
 		List<Integer> actual = reverseTail.from( List.with.elements( 1, 2, 3, 4 ) );
 		for ( int i = 0; i < expected.size(); i++ ) {
 			assertThat( actual.at( i ), is( expected.at( i ) ) );
