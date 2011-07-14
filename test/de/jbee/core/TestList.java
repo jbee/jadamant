@@ -149,11 +149,11 @@ public class TestList {
 
 	private void verifyDropR( List<Integer> l ) {
 		final int size = l.size();
-		assertThat( List.is.dropRight( size ).from( l ).size(), is( 0 ) );
-		assertThat( List.is.dropRight( size + 1 ).from( l ).size(), is( 0 ) );
-		assertThat( List.is.dropRight( size - 1 ).from( l ).size(), is( 1 ) );
+		assertThat( List.which.dropsRight( size ).from( l ).size(), is( 0 ) );
+		assertThat( List.which.dropsRight( size + 1 ).from( l ).size(), is( 0 ) );
+		assertThat( List.which.dropsRight( size - 1 ).from( l ).size(), is( 1 ) );
 		for ( int i = 1; i < size; i++ ) {
-			List<Integer> dropped = List.is.dropRight( i ).from( l );
+			List<Integer> dropped = List.which.dropsRight( i ).from( l );
 			assertThat( dropped.size(), is( size - i ) );
 			assertThat( dropped.at( 0 ), is( l.at( 0 ) ) );
 			int lastIndex = size - i - 1;
@@ -178,11 +178,11 @@ public class TestList {
 
 	private void verifyTakeR( List<Integer> l ) {
 		final int size = l.size();
-		assertThat( List.is.takeRight( size ).from( l ), sameInstance( l ) );
-		assertThat( List.is.takeRight( size + 1 ).from( l ), sameInstance( l ) );
-		assertThat( List.is.takeRight( size - 1 ).from( l ), not( sameInstance( l ) ) );
+		assertThat( List.which.takesRight( size ).from( l ), sameInstance( l ) );
+		assertThat( List.which.takesRight( size + 1 ).from( l ), sameInstance( l ) );
+		assertThat( List.which.takesRight( size - 1 ).from( l ), not( sameInstance( l ) ) );
 		for ( int i = 1; i < size; i++ ) {
-			List<Integer> taken = List.is.takeRight( i ).from( l );
+			List<Integer> taken = List.which.takesRight( i ).from( l );
 			assertThat( taken.size(), is( i ) );
 			assertThat( taken.at( 0 ), is( l.at( size - i ) ) );
 		}

@@ -12,54 +12,71 @@ public final class UtileListTransition {
 		// enforce singleton
 	}
 
+	public static final ListTransition none = new NoneTranstion();
 	public static final ListTransition reverse = new ReverseListTransition();
 	public static final ListTransition tail = new DropLListTransition( 1 );
 	public static final ListTransition init = new DropRListTransition( 1 );
 
-	public ListTransition dropLeft( int count ) {
+	public ListTransition dropsLeft( int count ) {
 		return count == 1
 			? tail
 			: new DropLListTransition( count );
 	}
 
-	public ListTransition dropRight( int count ) {
+	public ListTransition dropsRight( int count ) {
 		return new DropRListTransition( count );
 	}
 
-	public ListTransition takeLeft( int count ) {
+	public ListTransition takesLeft( int count ) {
 		return new TakeLListTransition( count );
 	}
 
-	public ListTransition takeRight( int count ) {
+	public ListTransition takesRight( int count ) {
 		return new TakeRListTransition( count );
 	}
 
-	public ListTransition takeFrom( int index ) {
-		return dropLeft( index );
+	public ListTransition takesFrom( int index ) {
+		return dropsLeft( index );
 	}
 
-	public ListTransition takeUpTo( int index ) {
-		return takeLeft( index );
+	public ListTransition takesUpTo( int index ) {
+		return takesLeft( index );
 	}
 
-	public ListTransition dropFrom( int index ) {
-		return takeLeft( index );
+	public ListTransition dropsFrom( int index ) {
+		return takesLeft( index );
 	}
 
-	public ListTransition dropUpTo( int index ) {
-		return dropLeft( index );
+	public ListTransition dropsUpTo( int index ) {
+		return dropsLeft( index );
 	}
 
-	public ListTransition takeFromTo( int start, int end ) {
+	public ListTransition takesFromTo( int start, int end ) {
 		return sublist( start, end - start + 1 );
 	}
 
-	public ListTransition dropFromTo( int start, int end ) {
-		return concat( takeUpTo( start - 1 ), takeFrom( end + 1 ) );
+	public ListTransition dropsFromTo( int start, int end ) {
+		return cutout( start, end );
+	}
+
+	public ListTransition cutout( int start, int end ) {
+		return start == end
+			? deletes( start )
+			: concat( takesUpTo( start - 1 ), takesFrom( end + 1 ) );
 	}
 
 	public ListTransition sublist( int start, int length ) {
 		return new SublistTransition( start, length );
+	}
+
+	public ListTransition swaps( int idx1, int idx2 ) {
+		return idx1 == idx2
+			? none
+			: new SwapTranstion( idx1, idx2 );
+	}
+
+	public ListTransition deletes( int index ) {
+		return new DeleteTransition( index );
 	}
 
 	public ListTransition consec( ListTransition fst, ListTransition snd ) {
@@ -68,6 +85,50 @@ public final class UtileListTransition {
 
 	public ListTransition concat( ListTransition head, ListTransition tail ) {
 		return new ConcatTranstion( head, tail );
+	}
+
+	static final class NoneTranstion
+			implements ListTransition {
+
+		@Override
+		public <E> List<E> from( List<E> list ) {
+			return list;
+		}
+	}
+
+	static final class SwapTranstion
+			implements ListTransition {
+
+		private final int idx1;
+		private final int idx2;
+
+		SwapTranstion( int idx1, int idx2 ) {
+			super();
+			this.idx1 = idx1;
+			this.idx2 = idx2;
+		}
+
+		@Override
+		public <E> List<E> from( List<E> list ) {
+			final E e1 = list.at( idx1 );
+			return list.replaceAt( idx1, list.at( idx2 ) ).replaceAt( idx2, e1 );
+		}
+	}
+
+	static final class DeleteTransition
+			implements ListTransition {
+
+		private final int index;
+
+		DeleteTransition( int index ) {
+			super();
+			this.index = index;
+		}
+
+		@Override
+		public <E> List<E> from( List<E> list ) {
+			return list.deleteAt( index );
+		}
 	}
 
 	static final class ConcatTranstion
@@ -112,6 +173,9 @@ public final class UtileListTransition {
 			}
 			if ( start + length > size ) {
 				return list.drop( start );
+			}
+			if ( length == 1 ) {
+				return list.take( 1 ).replaceAt( 0, list.at( start ) );
 			}
 			return list.drop( start ).take( length );
 		}

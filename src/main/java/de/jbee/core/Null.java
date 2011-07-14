@@ -9,6 +9,5 @@ public final class Null {
 	public static boolean isSave( Object obj ) {
 		return obj instanceof Nullsave
 				|| ( obj instanceof Nullproof && ( (Nullproof) obj ).isNullsave() );
-
 	}
 }

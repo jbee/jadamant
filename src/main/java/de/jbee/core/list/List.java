@@ -25,6 +25,8 @@ public interface List<E>
 		extends ICluster<E>, IndexAccessible<E>, Prepandable<E>, Appendable<E>,
 		ModifiableSequence<E> {
 
+	//TODO also add Arrayable
+
 	/**
 	 * The operator to use in a {@link Object#toString()} when visualizing concatenation of lists.
 	 * Example:
@@ -38,9 +40,12 @@ public interface List<E>
 	char CONCAT_OPERATOR = '+';
 
 	Lister with = Core.list;
+	UtileEnumeratorFactory does = Core.enumerator;
+	UtileListTransition which = UtileListTransition.instance;
+
 	UtileEnumerator<Integer> numbers = Core.numbers;
-	UtileEnumeratorFactory that = Core.enumerator;
-	UtileListTransition is = UtileListTransition.instance;
+	UtileEnumerator<Character> letters = Core.letters;
+	UtileEnumerator<Character> characters = Core.characters;
 
 	ListTransition reverse = ListTransition.reverse;
 
@@ -59,7 +64,7 @@ public interface List<E>
 	/**
 	 * Expect this to be much slower than {@link #prepand(Object)}. Only use this when
 	 * {@link CoreList#reverse(List)} a list so a <code>append</code> is in fact a
-	 * <code> prepand</code>.
+	 * <code>prepand</code>.
 	 */
 	@Override
 	List<E> append( E e );
@@ -92,12 +97,6 @@ public interface List<E>
 	List<E> tidyUp();
 
 	//TODO head - tail
-
-	//TODO IElasticList<E> prepand(ICluster<E> elems);
-
-	//TODO IElasticList<E> append(ICluster<E> elems);
-
-	//TODO IElasticList<E> cutout( int from, int to );
 
 	/**
 	 * Why is {@link #swap(int, int)} a API method ?

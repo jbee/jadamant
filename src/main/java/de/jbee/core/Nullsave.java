@@ -9,5 +9,5 @@ package de.jbee.core;
  * @author Jan Bernitt (jan.bernitt@gmx.de)
  */
 public interface Nullsave {
-
+	// Marker interface
 }

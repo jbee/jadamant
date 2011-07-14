@@ -1,6 +1,8 @@
 package de.jbee.core;
 
+import static de.jbee.core.type.Enumerate.CHARACTERS;
 import static de.jbee.core.type.Enumerate.INTEGERS;
+import static de.jbee.core.type.Enumerate.LETTERS;
 import de.jbee.core.list.CoreList;
 import de.jbee.core.list.Enumerator;
 import de.jbee.core.list.EnumeratorFactory;
@@ -35,10 +37,22 @@ public final class Core {
 			CoreList.LISTER_FACTORY );
 	public static final UtileEnumeratorFactory enumerator = new UtileEnumeratorFactory(
 			enumeratorProxy );
-	private static final ProxyEnumerator<Integer> numbersProxy = new ProxyEnumerator<Integer>(
-			enumerator.enumerates( INTEGERS ) );
-	public static final UtileEnumerator<Integer> numbers = new UtileEnumerator<Integer>(
-			numbersProxy, INTEGERS );
+
+	private static final ProxyEnumerator<Integer> numbersProxy = proxy( INTEGERS );
+	private static final ProxyEnumerator<Character> charactersProxy = proxy( CHARACTERS );
+	private static final ProxyEnumerator<Character> lettersProxy = proxy( LETTERS );
+
+	public static final UtileEnumerator<Integer> numbers = utile( numbersProxy, INTEGERS );
+	public static final UtileEnumerator<Character> characters = utile( charactersProxy, CHARACTERS );
+	public static final UtileEnumerator<Character> letters = utile( lettersProxy, LETTERS );
+
+	private static <T> ProxyEnumerator<T> proxy( Enum<T> type ) {
+		return new ProxyEnumerator<T>( enumerator.enumerate( type ) );
+	}
+
+	private static <T> UtileEnumerator<T> utile( Enumerator<T> e, Enum<T> type ) {
+		return new UtileEnumerator<T>( e, type );
+	}
 
 	/**
 	 * Change the list implementation used by changing the general list factory.
@@ -134,7 +148,7 @@ public final class Core {
 	}
 
 	public static ListTransition ſ( ListTransition fst, ListTransition snd ) {
-		return List.is.consec( fst, snd );
+		return List.which.consec( fst, snd );
 	}
 
 	static final class ProxyEnumeratorFactory
@@ -148,8 +162,8 @@ public final class Core {
 		}
 
 		@Override
-		public <E> Enumerator<E> enumerates( Enum<E> type ) {
-			return proxied.enumerates( type );
+		public <E> Enumerator<E> enumerate( Enum<E> type ) {
+			return proxied.enumerate( type );
 		}
 	}
 

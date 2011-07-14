@@ -11,6 +11,9 @@ public final class Enumerate {
 	public static final Enum<Integer> NATURALS = numbers( 0, Integer.MAX_VALUE );
 	public static final Enum<Integer> POSITIVES = numbers( 1, Integer.MAX_VALUE );
 	public static final Enum<Integer> NUMERARY = numbers( 0, 9 );
+	public static final Enum<Character> LETTERS = characters( 'A', 'Z' );
+	public static final Enum<Character> CHARACTERS = characters( Character.MIN_VALUE,
+			Character.MAX_VALUE );
 
 	public static <E extends java.lang.Enum<?>> Enum<E> type( Class<E> type ) {
 		return new EnumerateEnum<E>( type );
@@ -18,6 +21,10 @@ public final class Enumerate {
 
 	public static Enum<Integer> numbers( int minBound, int maxBound ) {
 		return new EnumerateInteger( minBound, maxBound );
+	}
+
+	public static Enum<Character> characters( char minBound, char maxBound ) {
+		return new EnumerateCharacter( minBound, maxBound );
 	}
 
 	public static <T> Enum<T> stepwise( Enum<T> type, T start, int increment ) {
@@ -32,9 +39,14 @@ public final class Enumerate {
 		final int eOrdinal = type.toOrdinal( e );
 		if ( eOrdinal < type.toOrdinal( type.minBound() )
 				|| eOrdinal > type.toOrdinal( type.maxBound() ) ) {
-			throw new NoSuchElementException( "The type covers " + type.minBound() + "["
-					+ type.toOrdinal( type.minBound() ) + "] to " + type.maxBound() + "["
-					+ type.toOrdinal( type.maxBound() ) + "] but not:" + e );
+			throw new NoSuchElementException( "The type covers " //
+					+ type.show( type.minBound() ) + "["
+					+ type.toOrdinal( type.minBound() )
+					+ "] to " + type.show( type.maxBound() )
+					+ "["
+					+ type.toOrdinal( type.maxBound() ) + "] but not:" + type.show( e )
+					+ "["
+					+ type.toOrdinal( e ) + "]" );
 		}
 	}
 
@@ -83,6 +95,11 @@ public final class Enumerate {
 			return unstepped.toEnum( offset );
 		}
 
+		@Override
+		public String show( T e ) {
+			return unstepped.show( e );
+		}
+
 	}
 
 	static final class EnumerateEnum<E extends java.lang.Enum<?>>
@@ -123,6 +140,13 @@ public final class Enumerate {
 		@Override
 		public E minBound() {
 			return values[0];
+		}
+
+		@Override
+		public String show( E e ) {
+			return e == null
+				? ""
+				: e.name();
 		}
 
 	}
@@ -181,6 +205,70 @@ public final class Enumerate {
 			return minBound;
 		}
 
+		@Override
+		public String show( Integer e ) {
+			return e == null
+				? "0"
+				: e.toString();
+		}
+
+	}
+
+	static final class EnumerateCharacter
+			implements Enum<Character>, Nullsave {
+
+		private final Character minBound;
+		private final Character maxBound;
+
+		EnumerateCharacter( Character minBound, Character maxBound ) {
+			super();
+			this.minBound = minBound;
+			this.maxBound = maxBound;
+		}
+
+		@Override
+		public Character pred( Character value ) {
+			final char c = value == null
+				? minBound.charValue()
+				: value.charValue();
+			return Character.valueOf( (char) ( c - 1 ) );
+		}
+
+		@Override
+		public Character succ( Character value ) {
+			final char c = value == null
+				? minBound.charValue()
+				: value.charValue();
+			return Character.valueOf( (char) ( c + 1 ) );
+		}
+
+		@Override
+		public Character toEnum( int ord ) {
+			return Character.valueOf( (char) ord );
+		}
+
+		@Override
+		public int toOrdinal( Character value ) {
+			return value.charValue();
+		}
+
+		@Override
+		public Character maxBound() {
+			return maxBound;
+		}
+
+		@Override
+		public Character minBound() {
+			return minBound;
+		}
+
+		@Override
+		public String show( Character e ) {
+			return e == null
+				? minBound.toString()
+				: e.toString();
+		}
+
 	}
 
 	static final class EnumerateBoolean
@@ -228,6 +316,13 @@ public final class Enumerate {
 		@Override
 		public Boolean minBound() {
 			return Boolean.FALSE;
+		}
+
+		@Override
+		public String show( Boolean e ) {
+			return e == Boolean.FALSE
+				? e.toString()
+				: Boolean.TRUE.toString(); // to be nullsave
 		}
 
 	}
