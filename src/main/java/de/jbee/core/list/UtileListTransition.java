@@ -291,6 +291,11 @@ public final class UtileListTransition {
 		}
 
 		@Override
+		public void fill( int offset, Object[] array, int start, int length ) {
+			//TODO
+		}
+
+		@Override
 		public List<E> append( E e ) {
 			return reverseViewOf( list.prepand( e ) );
 		}
