@@ -65,6 +65,11 @@ public final class CoreList {
 			implements List<E> {
 
 		@Override
+		public void fill( int offset, Object[] array, int start, int length ) {
+			// no elements to fill - done without any action
+		}
+
+		@Override
 		public List<E> append( E e ) {
 			return prepand( e );
 		}
@@ -195,6 +200,21 @@ public final class CoreList {
 			return index >= l
 				? tail.at( index - l )
 				: element( index, l );
+		}
+
+		@Override
+		public void fill( int offset, Object[] array, int start, int length ) {
+			final int l = length();
+			if ( start < l ) {
+				int srcPos = stack.length - l - offset() + start;
+				int copyLength = Math.min( length, l );
+				System.arraycopy( stack, srcPos, array, offset, copyLength );
+				if ( start + length > l ) {
+					tail.fill( offset, array, 0, length - copyLength );
+				}
+			} else {
+				tail.fill( offset, array, start - l, length );
+			}
 		}
 
 		@Override
@@ -610,6 +630,16 @@ public final class CoreList {
 		}
 
 		@Override
+		public void fill( int offset, Object[] array, int start, int length ) {
+			if ( start == 0 ) {
+				array[offset] = element;
+				tail.fill( offset + 1, array, 0, length - 1 );
+			} else {
+				tail.fill( offset, array, start - 1, length );
+			}
+		}
+
+		@Override
 		public List<E> concat( List<E> other ) {
 			return thisWithTail( tail.concat( other ) );
 		}
@@ -733,6 +763,31 @@ public final class CoreList {
 				return singleton( at( 0 ), tail ).append( e );
 			}
 			return thisWithTail( tail.append( e ) );
+		}
+
+		@Override
+		public void fill( int offset, Object[] array, int start, int length ) {
+			final int l = length();
+			if ( start < l ) {
+				if ( ascending() ) {
+					int startOrd = firstOrdinal + start;
+					int endOrd = Math.min( lastOrdinal, startOrd + length - 1 );
+					for ( int ord = startOrd; ord <= endOrd; ord++ ) {
+						array[offset++] = type.toEnum( ord );
+					}
+				} else {
+					int startOrd = firstOrdinal - start;
+					int endOrd = Math.max( lastOrdinal, startOrd - length + 1 );
+					for ( int ord = startOrd; ord >= endOrd; ord-- ) {
+						array[offset++] = type.toEnum( ord );
+					}
+				}
+				if ( start + length > l ) {
+					tail.fill( offset, array, 0, length - ( l - start ) );
+				}
+			} else {
+				tail.fill( offset, array, start - l, length );
+			}
 		}
 
 		@Override

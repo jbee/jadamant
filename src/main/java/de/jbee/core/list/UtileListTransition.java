@@ -52,20 +52,20 @@ public final class UtileListTransition {
 	}
 
 	public ListTransition takesFromTo( int start, int end ) {
-		return sublist( start, end - start + 1 );
+		return sublists( start, end - start + 1 );
 	}
 
 	public ListTransition dropsFromTo( int start, int end ) {
-		return cutout( start, end );
+		return cutsOut( start, end );
 	}
 
-	public ListTransition cutout( int start, int end ) {
+	public ListTransition cutsOut( int start, int end ) {
 		return start == end
 			? deletes( start )
-			: concat( takesUpTo( start - 1 ), takesFrom( end + 1 ) );
+			: concats( takesUpTo( start - 1 ), takesFrom( end + 1 ) );
 	}
 
-	public ListTransition sublist( int start, int length ) {
+	public ListTransition sublists( int start, int length ) {
 		return new SublistTransition( start, length );
 	}
 
@@ -83,7 +83,7 @@ public final class UtileListTransition {
 		return new ConsecutivelyListTransition( fst, snd );
 	}
 
-	public ListTransition concat( ListTransition head, ListTransition tail ) {
+	public ListTransition concats( ListTransition head, ListTransition tail ) {
 		return new ConcatTranstion( head, tail );
 	}
 

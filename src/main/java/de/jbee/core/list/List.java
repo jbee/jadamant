@@ -1,6 +1,7 @@
 package de.jbee.core.list;
 
 import de.jbee.core.Appendable;
+import de.jbee.core.Arrayable;
 import de.jbee.core.Core;
 import de.jbee.core.IndexAccessible;
 import de.jbee.core.ModifiableSequence;
@@ -23,7 +24,7 @@ import de.jbee.util.ICluster;
  */
 public interface List<E>
 		extends ICluster<E>, IndexAccessible<E>, Prepandable<E>, Appendable<E>,
-		ModifiableSequence<E> {
+		ModifiableSequence<E>, Arrayable {
 
 	//TODO also add Arrayable
 
@@ -96,26 +97,9 @@ public interface List<E>
 
 	List<E> tidyUp();
 
-	//TODO head - tail
-
-	/**
-	 * Why is {@link #swap(int, int)} a API method ?
-	 * <p>
-	 * Many sort algorithms use the swap operation as a basic step to do their job. As part of the
-	 * API swaps can be done through a list wrapper by simply build a index mapping table and change
-	 * the indices therein. Therefore swap can become a very cheap O(1) operation which allows to
-	 * implement sort algorithms directly on the {@link List} API instead of copying data to another
-	 * data structure (that seamed appropriate for fast swaps) sort it and build a new result list.
-	 * </p>
-	 * <p>
-	 * FIXME bad idea. the mapping of that swapping list would have to behave immutable too. but
-	 * than its no cheap operation to change something in the mapping. has to be a in-place solution
-	 * that makes this very clear - not the List interface.
-	 * </p>
-	 */
-	//List<E> swap( int idx1, int idx2 );
-
 	List<E> concat( List<E> other );
+
+	//TODO head 
 
 	//TODO boolean any(Eq<? super E> eq, E e);
 
