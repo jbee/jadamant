@@ -26,8 +26,6 @@ public interface List<E>
 		extends ICluster<E>, IndexAccessible<E>, Prepandable<E>, Appendable<E>,
 		ModifiableSequence<E>, Arrayable {
 
-	//TODO also add Arrayable
-
 	/**
 	 * The operator to use in a {@link Object#toString()} when visualizing concatenation of lists.
 	 * Example:

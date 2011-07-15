@@ -14,12 +14,12 @@ public final class UtileEnumeratorFactory
 	}
 
 	@Override
-	public <E> UtileEnumerator<E> enumerate( Enum<E> type ) {
-		return new UtileEnumerator<E>( factory.enumerate( type ), type );
+	public <E> UtileEnumerator<E> enumerates( Enum<E> type ) {
+		return new UtileEnumerator<E>( factory.enumerates( type ), type );
 	}
 
-	public <E extends java.lang.Enum<E>> UtileEnumerator<E> enumerate( Class<E> type ) {
-		return enumerate( Enumerate.type( type ) );
+	public <E extends java.lang.Enum<E>> UtileEnumerator<E> enumerates( Class<E> type ) {
+		return enumerates( Enumerate.type( type ) );
 	}
 
 }

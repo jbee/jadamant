@@ -34,7 +34,7 @@ public final class Core {
 	public static final Lister list = new ProxyLister();
 
 	private static final ProxyEnumeratorFactory enumeratorProxy = new ProxyEnumeratorFactory(
-			CoreList.LISTER_FACTORY );
+			CoreList.STACK_LISTER_FACTORY );
 	public static final UtileEnumeratorFactory enumerator = new UtileEnumeratorFactory(
 			enumeratorProxy );
 
@@ -47,7 +47,7 @@ public final class Core {
 	public static final UtileEnumerator<Character> letters = utile( lettersProxy, LETTERS );
 
 	private static <T> ProxyEnumerator<T> proxy( Enum<T> type ) {
-		return new ProxyEnumerator<T>( enumerator.enumerate( type ) );
+		return new ProxyEnumerator<T>( enumerator.enumerates( type ) );
 	}
 
 	private static <T> UtileEnumerator<T> utile( Enumerator<T> e, Enum<T> type ) {
@@ -64,8 +64,22 @@ public final class Core {
 	/**
 	 * Change the lister used for number lists when created through the general {@link Enumerator}.
 	 */
-	static void setUp( Enumerator<Integer> numberLister ) {
-		numbersProxy.proxied = numberLister;
+	static void setUpNumbers( Enumerator<Integer> numberEnumerator ) {
+		numbersProxy.proxied = numberEnumerator;
+	}
+
+	/**
+	 * Change the lister used for number lists when created through the general {@link Enumerator}.
+	 */
+	static void setUpCharacters( Enumerator<Character> characterEnumerator ) {
+		charactersProxy.proxied = characterEnumerator;
+	}
+
+	/**
+	 * Change the lister used for number lists when created through the general {@link Enumerator}.
+	 */
+	static void setUpLetters( Enumerator<Character> letterEnumerator ) {
+		lettersProxy.proxied = letterEnumerator;
 	}
 
 	/**
@@ -162,8 +176,8 @@ public final class Core {
 		}
 
 		@Override
-		public <E> Enumerator<E> enumerate( Enum<E> type ) {
-			return proxied.enumerate( type );
+		public <E> Enumerator<E> enumerates( Enum<E> type ) {
+			return proxied.enumerates( type );
 		}
 	}
 

@@ -72,7 +72,7 @@ public final class UtileListTransition {
 	public ListTransition swaps( int idx1, int idx2 ) {
 		return idx1 == idx2
 			? none
-			: new SwapTranstion( idx1, idx2 );
+			: new SwapTransition( idx1, idx2 );
 	}
 
 	public ListTransition deletes( int index ) {
@@ -96,13 +96,13 @@ public final class UtileListTransition {
 		}
 	}
 
-	static final class SwapTranstion
+	static final class SwapTransition
 			implements ListTransition {
 
 		private final int idx1;
 		private final int idx2;
 
-		SwapTranstion( int idx1, int idx2 ) {
+		SwapTransition( int idx1, int idx2 ) {
 			super();
 			this.idx1 = idx1;
 			this.idx2 = idx2;
@@ -292,7 +292,12 @@ public final class UtileListTransition {
 
 		@Override
 		public void fill( int offset, Object[] array, int start, int length ) {
-			//TODO
+			int size = list.size();
+			if ( start < size ) {
+				for ( int i = start; i < start + length; i++ ) {
+					array[offset++] = at( i );
+				}
+			}
 		}
 
 		@Override

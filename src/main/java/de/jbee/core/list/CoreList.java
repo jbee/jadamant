@@ -25,7 +25,8 @@ import de.jbee.util.ICluster;
  */
 public final class CoreList {
 
-	public static final EnumeratorFactory LISTER_FACTORY = new StackEnumListerFactory();
+	public static final EnumeratorFactory STACK_LISTER_FACTORY = new StackEnumListerFactory();
+	public static final EnumeratorFactory ENUM_LISTER_FACTORY = new EnumListEnumListerFactory();
 	public static final Lister LISTER = new StackLister();
 	static final List<Object> EMPTY = new EmptyList<Object>();
 
@@ -392,32 +393,42 @@ public final class CoreList {
 		return v;
 	}
 
+	final static class EnumListEnumListerFactory
+			implements EnumeratorFactory {
+
+		@Override
+		public <E> Enumerator<E> enumerates( Enum<E> type ) {
+			return new EnumListEnumLister<E>( type );
+		}
+
+	}
+
 	final static class StackEnumListerFactory
 			implements EnumeratorFactory {
 
 		@Override
-		public <E> Enumerator<E> enumerate( Enum<E> type ) {
+		public <E> Enumerator<E> enumerates( Enum<E> type ) {
 			return new StackEnumLister<E>( type );
 		}
 
 	}
 
-	static final class StackEnumLister<E>
+	static abstract class StepwiseEnumerator<E>
 			implements Enumerator<E> {
 
 		private final Enum<E> type;
 
-		StackEnumLister( Enum<E> type ) {
+		StepwiseEnumerator( Enum<E> type ) {
 			super();
 			this.type = type;
 		}
 
 		@Override
-		public List<E> stepwiseFromTo( E first, E last, int increment ) {
+		public final List<E> stepwiseFromTo( E first, E last, int increment ) {
 			return ( increment != 1 )
-				? fromTo( first, alignLastToStep( first, last, increment ), Enumerate.stepwise(
-						type, first, increment ) )
-				: fromTo( first, last, type );
+				? fromToValidated( first, alignLastToStep( first, last, increment ),
+						Enumerate.stepwise( type, first, increment ) )
+				: fromToValidated( first, last, type );
 		}
 
 		private E alignLastToStep( E first, E last, int inc ) {
@@ -425,9 +436,38 @@ public final class CoreList {
 			return type.toEnum( lo - ( ( lo - type.toOrdinal( first ) ) % inc ) );
 		}
 
-		private List<E> fromTo( E first, E last, Enum<E> type ) {
+		private List<E> fromToValidated( E first, E last, Enum<E> type ) {
 			Enumerate.validateBounds( type, first );
 			Enumerate.validateBounds( type, last );
+			return fromTo( first, last, type );
+		}
+
+		abstract List<E> fromTo( E first, E last, Enum<E> type );
+	}
+
+	static final class EnumListEnumLister<E>
+			extends StepwiseEnumerator<E> {
+
+		EnumListEnumLister( Enum<E> type ) {
+			super( type );
+		}
+
+		@Override
+		List<E> fromTo( E first, E last, Enum<E> type ) {
+			return new EnumList<E>( type, first, last );
+		}
+
+	}
+
+	static final class StackEnumLister<E>
+			extends StepwiseEnumerator<E> {
+
+		StackEnumLister( Enum<E> type ) {
+			super( type );
+		}
+
+		@Override
+		List<E> fromTo( E first, E last, Enum<E> type ) {
 			int fo = type.toOrdinal( first );
 			int lo = type.toOrdinal( last );
 			if ( fo == lo ) { // length 1
@@ -935,9 +975,21 @@ public final class CoreList {
 
 		@Override
 		public String toString() {
-			return "[" + String.valueOf( type.toEnum( firstOrdinal ) ) + ".."
-					+ String.valueOf( type.toEnum( lastOrdinal ) ) + "]" + List.CONCAT_OPERATOR
-					+ tail.toString();
+			int l = length();
+			String res = "[";
+			if ( l > 0 ) {
+				res += String.valueOf( type.toEnum( firstOrdinal ) );
+			}
+			if ( l > 2 ) {
+				res += "," + String.valueOf( at( 1 ) );
+			}
+			if ( l > 1 ) {
+				res += ( l == 2 || l == 3 )
+					? ","
+					: "..";
+				res += String.valueOf( type.toEnum( lastOrdinal ) );
+			}
+			return res + "]" + List.CONCAT_OPERATOR + tail.toString();
 		}
 
 		private boolean ascending() {
