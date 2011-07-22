@@ -8,9 +8,6 @@ import static de.jbee.core.list.ListTransition.tail;
 
 import org.junit.Test;
 
-import de.jbee.core.list.List;
-import de.jbee.core.list.ListTransition;
-
 public class ProofList {
 
 	@Test
@@ -46,6 +43,7 @@ public class ProofList {
 		List<Integer> l1 = List.with.element( 1 );
 		List<Integer> l2 = List.with.elements( 1, 2, 3, 4 );
 		List<Integer> l4 = List.with.noElements();
+		List<Character> lc = List.with.charactersIn( "Hello" );
 	}
 
 	@Test

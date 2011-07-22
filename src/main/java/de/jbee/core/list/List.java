@@ -38,7 +38,7 @@ public interface List<E>
 	 */
 	char CONCAT_OPERATOR_SYMBOL = '+';
 
-	Lister with = Core.list;
+	UtileLister with = Core.list;
 	UtileEnumeratorFactory does = Core.enumerator;
 	UtileListTransition which = UtileListTransition.instance;
 

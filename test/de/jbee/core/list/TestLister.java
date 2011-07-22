@@ -8,9 +8,6 @@ import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 
-import de.jbee.core.list.List;
-import de.jbee.core.list.UtileEnumerator;
-
 public class TestLister {
 
 	static enum Weekday {
@@ -21,6 +18,17 @@ public class TestLister {
 		Friday,
 		Saturday,
 		Sunday
+	}
+
+	@Test
+	public void testCharactersIn() {
+		List<Character> l = List.with.charactersIn( "Hello" );
+		assertThat( 5, is( l.size() ) );
+		assertThat( 'H', is( l.at( 0 ) ) );
+		assertThat( 'e', is( l.at( 1 ) ) );
+		assertThat( 'l', is( l.at( 2 ) ) );
+		assertThat( 'l', is( l.at( 3 ) ) );
+		assertThat( 'o', is( l.at( 4 ) ) );
 	}
 
 	@Test

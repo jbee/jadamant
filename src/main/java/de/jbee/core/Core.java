@@ -12,6 +12,7 @@ import de.jbee.core.list.ListTransition;
 import de.jbee.core.list.Lister;
 import de.jbee.core.list.UtileEnumerator;
 import de.jbee.core.list.UtileEnumeratorFactory;
+import de.jbee.core.list.UtileLister;
 import de.jbee.core.type.Enum;
 import de.jbee.util.ICluster;
 
@@ -32,7 +33,8 @@ public final class Core {
 		throw new UnsupportedOperationException( "util" );
 	}
 
-	public static final Lister list = new ProxyLister();
+	private static final ProxyLister listProxy = new ProxyLister();
+	public static final UtileLister list = new UtileLister( listProxy );
 
 	private static final ProxyEnumeratorFactory enumeratorProxy = new ProxyEnumeratorFactory(
 			InitList.LISTER_FACTORY );
@@ -61,7 +63,7 @@ public final class Core {
 	 * Change the list implementation used by changing the general list factory.
 	 */
 	static void setUp( Lister lister ) {
-		( (ProxyLister) list ).factory = lister;
+		listProxy.factory = lister;
 	}
 
 	@SuppressWarnings ( "unchecked" )
