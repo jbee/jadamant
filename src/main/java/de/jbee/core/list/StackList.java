@@ -51,8 +51,6 @@ abstract class StackList<E>
 	final Object[] stack;
 
 	final List<E> tail;
-	public static final Lister LISTER = new StackList.StackLister();
-	public static final EnumeratorFactory STACK_LISTER_FACTORY = new StackList.StackEnumListerFactory();
 
 	StackList( int size, Object[] stack, List<E> tail ) {
 		super();
@@ -187,7 +185,7 @@ abstract class StackList<E>
 	abstract E element( int index, int l );
 
 	final List<E> empty() {
-		return StackList.LISTER.noElements();
+		return InitList.LISTER.noElements();
 	}
 
 	/**
@@ -290,14 +288,14 @@ abstract class StackList<E>
 			int fo = type.toOrdinal( first );
 			int lo = type.toOrdinal( last );
 			if ( fo == lo ) { // length 1
-				return StackList.LISTER.element( first );
+				return InitList.LISTER.element( first );
 			}
 			int length = Math.abs( fo - lo ) + 1;
 			if ( length == 2 ) {
-				return StackList.LISTER.element( last ).prepand( first );
+				return InitList.LISTER.element( last ).prepand( first );
 			}
 			int capacity = 2;
-			List<E> res = StackList.LISTER.noElements();
+			List<E> res = InitList.LISTER.noElements();
 			E cur = last;
 			final boolean asc = fo < lo;
 			int size = 0;

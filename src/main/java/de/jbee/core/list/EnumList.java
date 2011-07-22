@@ -12,7 +12,7 @@ import de.jbee.core.type.Enumerate;
 final class EnumList<E>
 		implements List<E> {
 
-	public static final EnumeratorFactory ENUM_LISTER_FACTORY = new EnumListEnumListerFactory();
+	public static final EnumeratorFactory LISTER_FACTORY = new EnumListEnumListerFactory();
 
 	@SuppressWarnings ( "unchecked" )
 	static <T extends java.lang.Enum<?>> List<T> enumList( T e ) {
@@ -27,7 +27,7 @@ final class EnumList<E>
 
 	EnumList( Enum<E> type, E first, E last ) {
 		this( type, type.toOrdinal( first ), type.toOrdinal( last ),
-				StackList.LISTER.<E> noElements() );
+				InitList.LISTER.<E> noElements() );
 	}
 
 	EnumList( Enum<E> type, int firstOrdianl, int lastOrdinal, List<E> tail ) {
@@ -275,7 +275,7 @@ final class EnumList<E>
 	}
 
 	private List<E> empty() {
-		return StackList.LISTER.noElements();
+		return InitList.LISTER.noElements();
 	}
 
 	private int ordinalMinus( int ordinal, int dec ) {

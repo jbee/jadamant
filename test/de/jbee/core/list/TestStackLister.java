@@ -9,6 +9,6 @@ public class TestStackLister
 
 	@BeforeClass
 	public static void setUp() {
-		Core.setUp( StackList.STACK_LISTER_FACTORY );
+		Core.setUp( InitList.LISTER_FACTORY );
 	}
 }

@@ -6,6 +6,7 @@ import static de.jbee.core.type.Enumerate.INTEGERS;
 import static de.jbee.core.type.Enumerate.LETTERS;
 import de.jbee.core.list.Enumerator;
 import de.jbee.core.list.EnumeratorFactory;
+import de.jbee.core.list.InitList;
 import de.jbee.core.list.List;
 import de.jbee.core.list.ListTransition;
 import de.jbee.core.list.Lister;
@@ -34,7 +35,7 @@ public final class Core {
 	public static final Lister list = new ProxyLister();
 
 	private static final ProxyEnumeratorFactory enumeratorProxy = new ProxyEnumeratorFactory(
-			List.LISTER_FACTORY );
+			InitList.LISTER_FACTORY );
 	public static final UtileEnumeratorFactory enumerator = new UtileEnumeratorFactory(
 			enumeratorProxy );
 
@@ -221,7 +222,7 @@ public final class Core {
 	static final class ProxyLister
 			implements Lister {
 
-		Lister factory = List.LISTER;
+		Lister factory = InitList.LISTER;
 
 		ProxyLister() {
 			// hide for singleton

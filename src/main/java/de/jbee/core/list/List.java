@@ -26,10 +26,6 @@ public interface List<E>
 		extends ICluster<E>, IndexAccessible<E>, Prepandable<E>, Appendable<E>,
 		ModifiableSequence<E>, Arrayable {
 
-	//TODO those two below shouldn't be here
-	EnumeratorFactory LISTER_FACTORY = StackList.STACK_LISTER_FACTORY;
-	Lister LISTER = StackList.LISTER;
-
 	/**
 	 * The operator to use in a {@link Object#toString()} when visualizing concatenation of lists.
 	 * Example:

@@ -107,7 +107,7 @@ final class SingleElementList<E>
 	public List<E> take( int count ) {
 		return count > 0
 			? thisWithTail( tail.take( count - 1 ) )
-			: StackList.LISTER.<E> noElements();
+			: InitList.LISTER.<E> noElements();
 	}
 
 	@Override
