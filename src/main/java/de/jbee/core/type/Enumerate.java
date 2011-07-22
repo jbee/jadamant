@@ -3,6 +3,8 @@ package de.jbee.core.type;
 import java.util.NoSuchElementException;
 
 import de.jbee.core.Nullsave;
+import de.jbee.core.list.Enumerator;
+import de.jbee.core.list.List;
 
 public final class Enumerate {
 
@@ -10,7 +12,7 @@ public final class Enumerate {
 	public static final Enum<Integer> INTEGERS = numbers( Integer.MIN_VALUE, Integer.MAX_VALUE );
 	public static final Enum<Integer> NATURALS = numbers( 0, Integer.MAX_VALUE );
 	public static final Enum<Integer> POSITIVES = numbers( 1, Integer.MAX_VALUE );
-	public static final Enum<Integer> NUMERARY = numbers( 0, 9 );
+	public static final Enum<Integer> DIGITS = numbers( 0, 9 );
 	public static final Enum<Character> LETTERS = characters( 'A', 'Z' );
 	public static final Enum<Character> CHARACTERS = characters( Character.MIN_VALUE,
 			Character.MAX_VALUE );
@@ -325,5 +327,37 @@ public final class Enumerate {
 				: Boolean.TRUE.toString(); // to be nullsave
 		}
 
+	}
+
+	public static abstract class StepwiseEnumerator<E>
+			implements Enumerator<E> {
+
+		private final Enum<E> type;
+
+		public StepwiseEnumerator( Enum<E> type ) {
+			super();
+			this.type = type;
+		}
+
+		@Override
+		public final List<E> stepwiseFromTo( E first, E last, int increment ) {
+			return ( increment != 1 )
+				? fromToValidated( first, alignLastToStep( first, last, increment ), stepwise(
+						type, first, increment ) )
+				: fromToValidated( first, last, type );
+		}
+
+		private E alignLastToStep( E first, E last, int inc ) {
+			int lo = type.toOrdinal( last );
+			return type.toEnum( lo - ( ( lo - type.toOrdinal( first ) ) % inc ) );
+		}
+
+		private List<E> fromToValidated( E first, E last, Enum<E> type ) {
+			validateBounds( type, first );
+			validateBounds( type, last );
+			return fromTo( first, last, type );
+		}
+
+		protected abstract List<E> fromTo( E first, E last, Enum<E> type );
 	}
 }

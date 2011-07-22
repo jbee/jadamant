@@ -1,4 +1,4 @@
-package de.jbee.core;
+package de.jbee.core.list;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;

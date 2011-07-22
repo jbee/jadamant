@@ -26,6 +26,10 @@ public interface List<E>
 		extends ICluster<E>, IndexAccessible<E>, Prepandable<E>, Appendable<E>,
 		ModifiableSequence<E>, Arrayable {
 
+	//TODO those two below shouldn't be here
+	EnumeratorFactory LISTER_FACTORY = StackList.STACK_LISTER_FACTORY;
+	Lister LISTER = StackList.LISTER;
+
 	/**
 	 * The operator to use in a {@link Object#toString()} when visualizing concatenation of lists.
 	 * Example:
@@ -45,6 +49,8 @@ public interface List<E>
 	UtileEnumerator<Integer> numbers = Core.numbers;
 	UtileEnumerator<Character> letters = Core.letters;
 	UtileEnumerator<Character> characters = Core.characters;
+
+	//TODO a util for string handling strings as list of characters
 
 	ListTransition reverse = ListTransition.reverse;
 

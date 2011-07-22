@@ -7,7 +7,7 @@ import java.util.Arrays;
  * 
  * @author Jan Bernitt (jan.bernitt@gmx.de)
  */
-public class Array {
+public final class Array {
 
 	private Array() {
 		throw new UnsupportedOperationException( "util" );

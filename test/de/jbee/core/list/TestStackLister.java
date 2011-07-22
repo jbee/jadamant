@@ -1,14 +1,14 @@
-package de.jbee.core;
+package de.jbee.core.list;
 
 import org.junit.BeforeClass;
 
-import de.jbee.core.list.CoreList;
+import de.jbee.core.Core;
 
 public class TestStackLister
 		extends TestLister {
 
 	@BeforeClass
 	public static void setUp() {
-		Core.setUp( CoreList.STACK_LISTER_FACTORY );
+		Core.setUp( StackList.STACK_LISTER_FACTORY );
 	}
 }

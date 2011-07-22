@@ -1,4 +1,4 @@
-package de.jbee.core;
+package de.jbee.core.list;
 
 import static de.jbee.core.Core.I;
 import static de.jbee.core.Core._;

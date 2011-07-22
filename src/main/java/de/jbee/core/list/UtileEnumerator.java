@@ -2,7 +2,7 @@ package de.jbee.core.list;
 
 import de.jbee.core.type.Enum;
 
-public final class UtileEnumerator<E>
+public class UtileEnumerator<E>
 		implements Enumerator<E> {
 
 	private final Enumerator<E> utilised;

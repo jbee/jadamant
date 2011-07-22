@@ -1,4 +1,4 @@
-package de.jbee.core;
+package de.jbee.core.list;
 
 import static de.jbee.core.type.Enumerate.INTEGERS;
 import static de.jbee.core.type.Enumerate.numbers;
@@ -8,7 +8,6 @@ import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 
-import de.jbee.core.list.CoreList;
 import de.jbee.core.list.List;
 import de.jbee.core.list.UtileEnumerator;
 
@@ -60,15 +59,15 @@ public class TestLister {
 
 	@Test
 	public void testNextHighestPowerOf2() {
-		assertThat( CoreList.nextHighestPowerOf2( 1 ), is( 1 ) );
-		assertThat( CoreList.nextHighestPowerOf2( 2 ), is( 2 ) );
-		assertThat( CoreList.nextHighestPowerOf2( 3 ), is( 4 ) );
-		assertThat( CoreList.nextHighestPowerOf2( 4 ), is( 4 ) );
-		assertThat( CoreList.nextHighestPowerOf2( 5 ), is( 8 ) );
-		assertThat( CoreList.nextHighestPowerOf2( 6 ), is( 8 ) );
-		assertThat( CoreList.nextHighestPowerOf2( 7 ), is( 8 ) );
-		assertThat( CoreList.nextHighestPowerOf2( 8 ), is( 8 ) );
-		assertThat( CoreList.nextHighestPowerOf2( 9 ), is( 16 ) );
+		assertThat( StackList.nextHighestPowerOf2( 1 ), is( 1 ) );
+		assertThat( StackList.nextHighestPowerOf2( 2 ), is( 2 ) );
+		assertThat( StackList.nextHighestPowerOf2( 3 ), is( 4 ) );
+		assertThat( StackList.nextHighestPowerOf2( 4 ), is( 4 ) );
+		assertThat( StackList.nextHighestPowerOf2( 5 ), is( 8 ) );
+		assertThat( StackList.nextHighestPowerOf2( 6 ), is( 8 ) );
+		assertThat( StackList.nextHighestPowerOf2( 7 ), is( 8 ) );
+		assertThat( StackList.nextHighestPowerOf2( 8 ), is( 8 ) );
+		assertThat( StackList.nextHighestPowerOf2( 9 ), is( 16 ) );
 	}
 
 	@Test

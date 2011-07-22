@@ -1,8 +1,8 @@
-package de.jbee.core;
+package de.jbee.core.list;
 
 import org.junit.BeforeClass;
 
-import de.jbee.core.list.CoreList;
+import de.jbee.core.Core;
 import de.jbee.core.type.Enumerate;
 
 public class TestEnumLister
@@ -10,7 +10,7 @@ public class TestEnumLister
 
 	@BeforeClass
 	public static void setUp() {
-		Core.setUp( CoreList.ENUM_LISTER_FACTORY );
+		Core.setUp( EnumList.ENUM_LISTER_FACTORY );
 		Core.setUpCharacters( Core.enumerator.enumerates( Enumerate.CHARACTERS ) );
 		Core.setUpLetters( Core.enumerator.enumerates( Enumerate.LETTERS ) );
 	}

@@ -1,9 +1,9 @@
 package de.jbee.core;
 
 import static de.jbee.core.type.Enumerate.CHARACTERS;
+import static de.jbee.core.type.Enumerate.DIGITS;
 import static de.jbee.core.type.Enumerate.INTEGERS;
 import static de.jbee.core.type.Enumerate.LETTERS;
-import de.jbee.core.list.CoreList;
 import de.jbee.core.list.Enumerator;
 import de.jbee.core.list.EnumeratorFactory;
 import de.jbee.core.list.List;
@@ -34,15 +34,17 @@ public final class Core {
 	public static final Lister list = new ProxyLister();
 
 	private static final ProxyEnumeratorFactory enumeratorProxy = new ProxyEnumeratorFactory(
-			CoreList.STACK_LISTER_FACTORY );
+			List.LISTER_FACTORY );
 	public static final UtileEnumeratorFactory enumerator = new UtileEnumeratorFactory(
 			enumeratorProxy );
 
 	private static final ProxyEnumerator<Integer> numbersProxy = proxy( INTEGERS );
+	private static final ProxyEnumerator<Integer> digitsProxy = proxy( DIGITS );
 	private static final ProxyEnumerator<Character> charactersProxy = proxy( CHARACTERS );
 	private static final ProxyEnumerator<Character> lettersProxy = proxy( LETTERS );
 
 	public static final UtileEnumerator<Integer> numbers = utile( numbersProxy, INTEGERS );
+	public static final UtileEnumerator<Integer> digits = utile( digitsProxy, DIGITS );
 	public static final UtileEnumerator<Character> characters = utile( charactersProxy, CHARACTERS );
 	public static final UtileEnumerator<Character> letters = utile( lettersProxy, LETTERS );
 
@@ -61,31 +63,49 @@ public final class Core {
 		( (ProxyLister) list ).factory = lister;
 	}
 
+	@SuppressWarnings ( "unchecked" )
+	static <T> void setUp( Class<T> type, Enumerator<T> enumerator ) {
+		if ( type == Integer.class ) {
+			setUpNumbers( (Enumerator<Integer>) enumerator );
+			setUpDigits( (Enumerator<Integer>) enumerator );
+		} else if ( type == Character.class ) {
+			setUpCharacters( (Enumerator<Character>) enumerator );
+			setUpLetters( (Enumerator<Character>) enumerator );
+		}
+	}
+
+	/**
+	 * Change the lister used for digit lists when created through the general {@link Enumerator}.
+	 */
+	public static void setUpDigits( Enumerator<Integer> digitEnumerator ) {
+		digitsProxy.proxied = digitEnumerator;
+	}
+
 	/**
 	 * Change the lister used for number lists when created through the general {@link Enumerator}.
 	 */
-	static void setUpNumbers( Enumerator<Integer> numberEnumerator ) {
+	public static void setUpNumbers( Enumerator<Integer> numberEnumerator ) {
 		numbersProxy.proxied = numberEnumerator;
 	}
 
 	/**
 	 * Change the lister used for number lists when created through the general {@link Enumerator}.
 	 */
-	static void setUpCharacters( Enumerator<Character> characterEnumerator ) {
+	public static void setUpCharacters( Enumerator<Character> characterEnumerator ) {
 		charactersProxy.proxied = characterEnumerator;
 	}
 
 	/**
 	 * Change the lister used for number lists when created through the general {@link Enumerator}.
 	 */
-	static void setUpLetters( Enumerator<Character> letterEnumerator ) {
+	public static void setUpLetters( Enumerator<Character> letterEnumerator ) {
 		lettersProxy.proxied = letterEnumerator;
 	}
 
 	/**
 	 * Change the factory creating new listers for custom {@link Enum}s.
 	 */
-	static void setUp( EnumeratorFactory factory ) {
+	public static void setUp( EnumeratorFactory factory ) {
 		enumeratorProxy.proxied = factory;
 	}
 
@@ -143,7 +163,7 @@ public final class Core {
 
 	public static <E> List<E> _( E e1, E e2, E e3, E e4, E e5, E e6 ) {
 		return list.element( e6 ).prepand( e5 ).prepand( e4 ).prepand( e3 ).prepand( e2 ).append(
-				e1 ); //FIXME seams not to work correct for 11, 19, 11, 22, 11, 12 
+				e1 );
 	}
 
 	public static <E> List<E> _( E e1, E e2, E e3, E e4, E e5, E e6, E e7 ) {
@@ -201,7 +221,7 @@ public final class Core {
 	static final class ProxyLister
 			implements Lister {
 
-		Lister factory = CoreList.LISTER;
+		Lister factory = List.LISTER;
 
 		ProxyLister() {
 			// hide for singleton
