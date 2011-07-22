@@ -9,8 +9,6 @@ import java.util.Random;
 
 import org.junit.Test;
 
-import de.jbee.core.list.List;
-
 public class TestList {
 
 	private static final Random RANDOM = new Random();
@@ -34,6 +32,20 @@ public class TestList {
 		List<Integer> l = List.with.noElements();
 		l = l.prepand( 1 ).prepand( 2 );
 		l.at( 2 );
+	}
+
+	@Test
+	public void testFill() {
+		verifyFillAll( List.with.elements( 1, 2, 3, 4, 5 ) );
+		verifyFillAll( List.with.elements( 9, 7, 6, 4, 3, 1 ) );
+	}
+
+	private void verifyFillAll( List<Integer> l ) {
+		Integer[] a = new Integer[l.size()];
+		l.fill( 0, a, 0, l.size() );
+		for ( int i = 0; i < a.length; i++ ) {
+			assertThat( a[i], is( l.at( i ) ) );
+		}
 	}
 
 	@Test

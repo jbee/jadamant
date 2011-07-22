@@ -81,7 +81,7 @@ abstract class StackList<E>
 			int copyLength = Math.min( length, l );
 			System.arraycopy( stack, srcPos, array, offset, copyLength );
 			if ( start + length > l ) {
-				tail.fill( offset, array, 0, length - copyLength );
+				tail.fill( offset + copyLength, array, 0, length - copyLength );
 			}
 		} else {
 			tail.fill( offset, array, start - l, length );
