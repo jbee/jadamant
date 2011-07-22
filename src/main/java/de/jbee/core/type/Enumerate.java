@@ -2,7 +2,7 @@ package de.jbee.core.type;
 
 import java.util.NoSuchElementException;
 
-import de.jbee.core.Nullsave;
+import de.jbee.core.dev.Nullsave;
 import de.jbee.core.list.Enumerator;
 import de.jbee.core.list.List;
 

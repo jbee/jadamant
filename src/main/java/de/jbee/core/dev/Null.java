@@ -1,4 +1,4 @@
-package de.jbee.core;
+package de.jbee.core.dev;
 
 public final class Null {
 

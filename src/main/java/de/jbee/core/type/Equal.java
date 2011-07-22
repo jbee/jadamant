@@ -1,7 +1,7 @@
 package de.jbee.core.type;
 
-import de.jbee.core.Null;
-import de.jbee.core.Nullsave;
+import de.jbee.core.dev.Null;
+import de.jbee.core.dev.Nullsave;
 
 public final class Equal {
 

@@ -2,9 +2,9 @@ package de.jbee.core.type;
 
 import java.util.Comparator;
 
-import de.jbee.core.Null;
-import de.jbee.core.Nullproof;
-import de.jbee.core.Nullsave;
+import de.jbee.core.dev.Null;
+import de.jbee.core.dev.Nullproof;
+import de.jbee.core.dev.Nullsave;
 
 /**
  * All types of orders are ascending by default. You will not find a descending version. Therefore

@@ -6,7 +6,7 @@ package de.jbee.core.list;
 import java.util.Iterator;
 
 import de.jbee.core.IndexAccess;
-import de.jbee.core.Nonnull;
+import de.jbee.core.dev.Nonnull;
 
 final class SingleElementList<E>
 		implements List<E> {

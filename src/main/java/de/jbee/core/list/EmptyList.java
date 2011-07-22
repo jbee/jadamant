@@ -5,7 +5,7 @@ package de.jbee.core.list;
 
 import java.util.Iterator;
 
-import de.jbee.core.Nonnull;
+import de.jbee.core.dev.Nonnull;
 import de.jbee.core.type.Enumerate;
 
 final class EmptyList<E>

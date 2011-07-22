@@ -6,7 +6,7 @@ package de.jbee.core.list;
 import java.util.Iterator;
 
 import de.jbee.core.IndexAccess;
-import de.jbee.core.Nonnull;
+import de.jbee.core.dev.Nonnull;
 import de.jbee.core.type.Enum;
 import de.jbee.core.type.Enumerate;
 import de.jbee.util.ICluster;

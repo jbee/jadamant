@@ -1,4 +1,4 @@
-package de.jbee.core;
+package de.jbee.core.dev;
 
 /**
  * Marker interface to indicate that an implementation is null-save. Therefore it has to accept null
