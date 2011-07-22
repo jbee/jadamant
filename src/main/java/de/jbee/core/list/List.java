@@ -36,7 +36,7 @@ public interface List<E>
 	 * 
 	 * is a list containing the sequence 1,2,36,9 in 2 sublists chained together.
 	 */
-	char CONCAT_OPERATOR = '+';
+	char CONCAT_OPERATOR_SYMBOL = '+';
 
 	Lister with = Core.list;
 	UtileEnumeratorFactory does = Core.enumerator;

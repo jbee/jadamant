@@ -179,7 +179,7 @@ abstract class StackList<E>
 			b.append( ',' );
 			b.append( String.valueOf( at( i ) ) );
 		}
-		return "[" + b.substring( 1 ) + "]" + List.CONCAT_OPERATOR + tail.toString();
+		return "[" + b.substring( 1 ) + "]" + List.CONCAT_OPERATOR_SYMBOL + tail.toString();
 	}
 
 	abstract E element( int index, int l );

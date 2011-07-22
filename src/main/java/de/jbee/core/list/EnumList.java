@@ -243,7 +243,7 @@ final class EnumList<E>
 				: "..";
 			res += String.valueOf( type.toEnum( lastOrdinal ) );
 		}
-		return res + "]" + List.CONCAT_OPERATOR + tail.toString();
+		return res + "]" + List.CONCAT_OPERATOR_SYMBOL + tail.toString();
 	}
 
 	private boolean ascending() {

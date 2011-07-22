@@ -120,7 +120,7 @@ final class SingleElementList<E>
 
 	@Override
 	public String toString() {
-		return "[" + String.valueOf( element ) + "]" + List.CONCAT_OPERATOR + tail.toString();
+		return "[" + String.valueOf( element ) + "]" + List.CONCAT_OPERATOR_SYMBOL + tail.toString();
 	}
 
 	private List<E> thisWithTail( List<E> tail ) {
