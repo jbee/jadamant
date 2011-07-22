@@ -31,13 +31,13 @@ abstract class StackList<E>
 		implements List<E> {
 
 	static <E> List<E> primary( int size, Object[] stack, List<E> tail ) {
-		return new StackList.PrimaryStackList<E>( size, stack, tail );
+		return new PrimaryStackList<E>( size, stack, tail );
 	}
 
 	// TODO hide secondary methods since only primary and secondary itself should build them
 
 	static <E> List<E> secondary( int size, int offset, Object[] stack, List<E> tail ) {
-		return new StackList.SecondaryStackList<E>( size, offset, stack, tail );
+		return new SecondaryStackList<E>( size, offset, stack, tail );
 	}
 
 	static <E> List<E> secondary( int size, Object[] stack, List<E> tail ) {
