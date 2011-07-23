@@ -15,7 +15,6 @@ public interface ListTransition {
 	ListTransition reverse = UtileListTransition.reverse;
 	ListTransition tail = UtileListTransition.tail;
 
-	//TODO rename to "on" ?
 	<E> List<E> from( List<E> list );
 
 }

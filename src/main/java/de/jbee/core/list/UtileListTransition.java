@@ -4,87 +4,111 @@ import java.util.Iterator;
 
 import de.jbee.core.IndexAccess;
 
-public final class UtileListTransition {
-
-	static final UtileListTransition instance = new UtileListTransition();
-
-	private UtileListTransition() {
-		// enforce singleton
-	}
+public class UtileListTransition
+		implements ListTransition {
 
 	public static final ListTransition none = new NoneTranstion();
 	public static final ListTransition reverse = new ReverseListTransition();
-	public static final ListTransition tail = new DropLListTransition( 1 );
-	public static final ListTransition init = new DropRListTransition( 1 );
+	public static final ListTransition tail = new DropFirstListTransition( 1 );
+	public static final ListTransition init = new DropLastListTransition( 1 );
 
-	public ListTransition dropsLeft( int count ) {
-		return count == 1
+	static final UtileListTransition instance = new UtileListTransition( none );
+
+	private final ListTransition utilised;
+
+	private UtileListTransition( ListTransition utilised ) {
+		this.utilised = utilised;
+		// enforce singleton
+	}
+
+	@Override
+	public <E> List<E> from( List<E> list ) {
+		return utilised.from( list );
+	}
+
+	private UtileListTransition followedBy( ListTransition next ) {
+		if ( next == none ) {
+			return this;
+		}
+		return new UtileListTransition( utilised == none
+			? deutilised( next )
+			: consec( utilised, deutilised( next ) ) );
+	}
+
+	private ListTransition deutilised( ListTransition t ) {
+		return t instanceof UtileListTransition
+			? ( (UtileListTransition) t ).utilised
+			: t;
+	}
+
+	public UtileListTransition dropsFirst( int count ) {
+		return followedBy( count == 1
 			? tail
-			: new DropLListTransition( count );
+			: new DropFirstListTransition( count ) );
 	}
 
-	public ListTransition dropsRight( int count ) {
-		return new DropRListTransition( count );
+	public UtileListTransition dropsLast( int count ) {
+		return followedBy( new DropLastListTransition( count ) );
 	}
 
-	public ListTransition takesLeft( int count ) {
-		return new TakeLListTransition( count );
+	public UtileListTransition takesFirst( int count ) {
+		return followedBy( new TakeFirstListTransition( count ) );
 	}
 
-	public ListTransition takesRight( int count ) {
-		return new TakeRListTransition( count );
+	public UtileListTransition takesLast( int count ) {
+		return followedBy( new TakeLastListTransition( count ) );
 	}
 
-	public ListTransition takesFrom( int index ) {
-		return dropsLeft( index );
+	public UtileListTransition takesFrom( int index ) {
+		return dropsFirst( index );
 	}
 
-	public ListTransition takesUpTo( int index ) {
-		return takesLeft( index );
+	public UtileListTransition takesUpTo( int index ) {
+		return takesFirst( index );
 	}
 
-	public ListTransition dropsFrom( int index ) {
-		return takesLeft( index );
+	public UtileListTransition dropsFrom( int index ) {
+		return takesFirst( index );
 	}
 
-	public ListTransition dropsUpTo( int index ) {
-		return dropsLeft( index );
+	public UtileListTransition dropsUpTo( int index ) {
+		return dropsFirst( index );
 	}
 
-	public ListTransition takesFromTo( int start, int end ) {
+	public UtileListTransition takesFromTo( int start, int end ) {
 		return sublists( start, end - start + 1 );
 	}
 
-	public ListTransition dropsFromTo( int start, int end ) {
+	public UtileListTransition dropsFromTo( int start, int end ) {
 		return cutsOut( start, end );
 	}
 
-	public ListTransition cutsOut( int start, int end ) {
+	public UtileListTransition cutsOut( int start, int end ) {
 		return start == end
 			? deletes( start )
 			: concats( takesUpTo( start - 1 ), takesFrom( end + 1 ) );
 	}
 
-	public ListTransition sublists( int start, int length ) {
-		return new SublistTransition( start, length );
+	public UtileListTransition sublists( int start, int length ) {
+		return followedBy( new SublistTransition( start, length ) );
 	}
 
-	public ListTransition swaps( int idx1, int idx2 ) {
-		return idx1 == idx2
+	public UtileListTransition swaps( int idx1, int idx2 ) {
+		return followedBy( idx1 == idx2
 			? none
-			: new SwapTransition( idx1, idx2 );
+			: new SwapTransition( idx1, idx2 ) );
 	}
 
-	public ListTransition deletes( int index ) {
-		return new DeleteTransition( index );
+	public UtileListTransition deletes( int index ) {
+		return followedBy( new DeleteTransition( index ) );
+	}
+
+	public UtileListTransition concats( ListTransition head, ListTransition tail ) {
+		return followedBy( new ConcatTranstion( head, tail ) );
 	}
 
 	public ListTransition consec( ListTransition fst, ListTransition snd ) {
 		return new ConsecutivelyListTransition( fst, snd );
-	}
-
-	public ListTransition concats( ListTransition head, ListTransition tail ) {
-		return new ConcatTranstion( head, tail );
 	}
 
 	static final class NoneTranstion
@@ -182,12 +206,12 @@ public final class UtileListTransition {
 
 	}
 
-	static final class TakeLListTransition
+	static final class TakeFirstListTransition
 			implements ListTransition {
 
 		private final int count;
 
-		TakeLListTransition( int count ) {
+		TakeFirstListTransition( int count ) {
 			super();
 			this.count = count;
 		}
@@ -199,12 +223,12 @@ public final class UtileListTransition {
 
 	}
 
-	static final class DropLListTransition
+	static final class DropFirstListTransition
 			implements ListTransition {
 
 		private final int count;
 
-		DropLListTransition( int count ) {
+		DropFirstListTransition( int count ) {
 			super();
 			this.count = count;
 		}
@@ -216,12 +240,12 @@ public final class UtileListTransition {
 
 	}
 
-	static final class TakeRListTransition
+	static final class TakeLastListTransition
 			implements ListTransition {
 
 		private final int count;
 
-		TakeRListTransition( int count ) {
+		TakeLastListTransition( int count ) {
 			super();
 			this.count = count;
 		}
@@ -232,12 +256,12 @@ public final class UtileListTransition {
 		}
 	}
 
-	static final class DropRListTransition
+	static final class DropLastListTransition
 			implements ListTransition {
 
 		private final int count;
 
-		DropRListTransition( int count ) {
+		DropLastListTransition( int count ) {
 			super();
 			this.count = count;
 		}
