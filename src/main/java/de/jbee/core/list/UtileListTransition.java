@@ -30,9 +30,7 @@ public class UtileListTransition
 		if ( next == none ) {
 			return this;
 		}
-		return new UtileListTransition( utilised == none
-			? deutilised( next )
-			: consec( utilised, deutilised( next ) ) );
+		return new UtileListTransition( consec( utilised, next ) );
 	}
 
 	private ListTransition deutilised( ListTransition t ) {
@@ -83,6 +81,14 @@ public class UtileListTransition
 		return cutsOut( start, end );
 	}
 
+	public UtileListTransition trims( int count ) {
+		return followedBy( consec( dropsFirst( count ), dropsLast( count ) ) );
+	}
+
+	public UtileListTransition chops( int start, int end ) {
+		return cutsOut( start, end );
+	}
+
 	public UtileListTransition cutsOut( int start, int end ) {
 		return start == end
 			? deletes( start )
@@ -108,6 +114,14 @@ public class UtileListTransition
 	}
 
 	public ListTransition consec( ListTransition fst, ListTransition snd ) {
+		fst = deutilised( fst );
+		snd = deutilised( snd );
+		if ( fst == none ) {
+			return snd;
+		}
+		if ( snd == none ) {
+			return fst;
+		}
 		return new ConsecutivelyListTransition( fst, snd );
 	}
 
