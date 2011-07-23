@@ -30,6 +30,9 @@ import de.jbee.util.ICluster;
 abstract class StackList<E>
 		implements List<E> {
 
+	static final Lister LISTER = new StackLister();
+	static final EnumeratorFactory ENUMERATOR_FACTORY = new StackListEnumeratorFactory();
+
 	static <E> List<E> primary( int size, Object[] stack, List<E> tail ) {
 		return new PrimaryStackList<E>( size, stack, tail );
 	}
@@ -266,20 +269,20 @@ abstract class StackList<E>
 
 	}
 
-	final static class StackEnumListerFactory
+	static final class StackListEnumeratorFactory
 			implements EnumeratorFactory {
 
 		@Override
 		public <E> Enumerator<E> enumerates( Enum<E> type ) {
-			return new StackEnumLister<E>( type );
+			return new StackListEnumerator<E>( type );
 		}
 
 	}
 
-	static final class StackEnumLister<E>
+	static final class StackListEnumerator<E>
 			extends Enumerate.StepwiseEnumerator<E> {
 
-		StackEnumLister( Enum<E> type ) {
+		StackListEnumerator( Enum<E> type ) {
 			super( type );
 		}
 

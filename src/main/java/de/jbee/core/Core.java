@@ -37,7 +37,7 @@ public final class Core {
 	public static final UtileLister list = new UtileLister( listProxy );
 
 	private static final ProxyEnumeratorFactory enumeratorProxy = new ProxyEnumeratorFactory(
-			InitList.LISTER_FACTORY );
+			InitList.ENUMERATOR_FACTORY );
 	public static final UtileEnumeratorFactory enumerator = new UtileEnumeratorFactory(
 			enumeratorProxy );
 

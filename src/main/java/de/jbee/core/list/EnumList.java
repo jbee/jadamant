@@ -12,7 +12,7 @@ import de.jbee.core.type.Enumerate;
 final class EnumList<E>
 		implements List<E> {
 
-	public static final EnumeratorFactory LISTER_FACTORY = new EnumListEnumListerFactory();
+	static final EnumeratorFactory ENUMERATOR_FACTORY = new EnumListEnumeratorFactory();
 
 	@SuppressWarnings ( "unchecked" )
 	static <T extends java.lang.Enum<?>> List<T> enumList( T e ) {
@@ -300,20 +300,20 @@ final class EnumList<E>
 		return new EnumList<E>( type, firstOrdinal, lastOrdinal, tail );
 	}
 
-	static final class EnumListEnumListerFactory
+	static final class EnumListEnumeratorFactory
 			implements EnumeratorFactory {
 
 		@Override
 		public <E> Enumerator<E> enumerates( Enum<E> type ) {
-			return new EnumList.EnumListEnumLister<E>( type );
+			return new EnumList.EnumListEnumerator<E>( type );
 		}
 
 	}
 
-	static final class EnumListEnumLister<E>
+	static final class EnumListEnumerator<E>
 			extends Enumerate.StepwiseEnumerator<E> {
 
-		EnumListEnumLister( Enum<E> type ) {
+		EnumListEnumerator( Enum<E> type ) {
 			super( type );
 		}
 

@@ -40,6 +40,11 @@ public class TestList {
 		verifyFillAll( List.with.elements( 9, 7, 6, 4, 3, 1 ) );
 	}
 
+	@Test
+	public void testFillEnumStack() {
+		verifyFillAll( List.numbers.fromTo( 1, 4 ).concat( List.with.elements( 6, 9, 2 ) ) );
+	}
+
 	private void verifyFillAll( List<Integer> l ) {
 		Integer[] a = new Integer[l.size()];
 		l.fill( 0, a, 0, l.size() );

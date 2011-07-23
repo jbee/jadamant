@@ -10,7 +10,7 @@ public class TestEnumLister
 
 	@BeforeClass
 	public static void setUp() {
-		Core.setUp( EnumList.LISTER_FACTORY );
+		Core.setUp( EnumList.ENUMERATOR_FACTORY );
 		Core.setUpCharacters( Core.enumerator.enumerates( Enumerate.CHARACTERS ) );
 		Core.setUpLetters( Core.enumerator.enumerates( Enumerate.LETTERS ) );
 	}
