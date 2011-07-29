@@ -63,6 +63,9 @@ public class TestLister {
 		System.out.println( l3 );
 		List<Weekday> l4 = weekdays.fromTo( Weekday.Friday, Weekday.Tuesday );
 		System.out.println( l4 );
+		System.out.println( weekdays.fromToCircular( Weekday.Friday, Weekday.Tuesday ) );
+		System.out.println( weekdays.fromToCircular( Weekday.Friday, Weekday.Friday ) );
+		System.out.println( weekdays.fromToCircular( Weekday.Tuesday, Weekday.Friday ) );
 	}
 
 	@Test

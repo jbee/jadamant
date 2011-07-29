@@ -18,7 +18,6 @@ public class UtileListTransition
 
 	private UtileListTransition( ListTransition utilised ) {
 		this.utilised = utilised;
-		// enforce singleton
 	}
 
 	@Override
@@ -71,6 +70,10 @@ public class UtileListTransition
 
 	public UtileListTransition dropsUpTo( int index ) {
 		return dropsFirst( index );
+	}
+
+	public UtileListTransition slice( int startInclusive, int endExclusive ) {
+		return takesFromTo( startInclusive, endExclusive - 1 );
 	}
 
 	public UtileListTransition takesFromTo( int start, int end ) {

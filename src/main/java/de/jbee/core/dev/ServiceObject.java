@@ -5,6 +5,9 @@ package de.jbee.core.dev;
  * <p>
  * There is always a interface to decouple {@link ServiceObject}s.
  * </p>
+ * <ul>
+ * <li>A service is a (usually state-less) action of some kind</li>
+ * </ul>
  * 
  * @author Jan Bernitt (jan.bernitt@gmx.de)
  * 

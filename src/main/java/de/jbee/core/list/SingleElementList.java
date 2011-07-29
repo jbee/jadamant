@@ -12,6 +12,7 @@ final class SingleElementList<E>
 		implements List<E> {
 
 	static <E> List<E> with( E element, List<E> tail ) {
+		Nonnull.element( element );
 		return new SingleElementList<E>( element, tail );
 	}
 
@@ -88,13 +89,13 @@ final class SingleElementList<E>
 	@Override
 	public List<E> prepand( E e ) {
 		Nonnull.element( e );
-		return StackList.primary( size() + 1, StackList.stack( e, 2 ), this );
+		return StackList.tidy( size() + 1, StackList.stack( e, 2 ), this );
 	}
 
 	@Override
 	public List<E> replaceAt( int index, E e ) {
 		return index == 0
-			? SingleElementList.with( e, tail )
+			? with( e, tail )
 			: thisWithTail( tail.replaceAt( index - 1, e ) );
 	}
 
@@ -107,7 +108,7 @@ final class SingleElementList<E>
 	public List<E> take( int count ) {
 		return count > 0
 			? thisWithTail( tail.take( count - 1 ) )
-			: InitList.LISTER.<E> noElements();
+			: List.with.<E> noElements();
 	}
 
 	@Override
@@ -120,7 +121,8 @@ final class SingleElementList<E>
 
 	@Override
 	public String toString() {
-		return "[" + String.valueOf( element ) + "]" + List.CONCAT_OPERATOR_SYMBOL + tail.toString();
+		return "[" + String.valueOf( element ) + "]" + List.CONCAT_OPERATOR_SYMBOL
+				+ tail.toString();
 	}
 
 	private List<E> thisWithTail( List<E> tail ) {

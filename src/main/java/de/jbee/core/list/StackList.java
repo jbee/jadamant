@@ -33,18 +33,44 @@ abstract class StackList<E>
 	static final Lister LISTER = new StackLister();
 	static final EnumeratorFactory ENUMERATOR_FACTORY = new StackListEnumeratorFactory();
 
-	static <E> List<E> primary( int size, Object[] stack, List<E> tail ) {
-		return new PrimaryStackList<E>( size, stack, tail );
+	//TODO move to some kind of util
+	public static int nextHighestPowerOf2( int number ) {
+		number--;
+		number |= number >> 1;
+		number |= number >> 2;
+		number |= number >> 4;
+		number |= number >> 8;
+		number |= number >> 16;
+		number++;
+		return number;
 	}
 
 	// TODO hide secondary methods since only primary and secondary itself should build them
 
-	static <E> List<E> secondary( int size, int offset, Object[] stack, List<E> tail ) {
-		return new SecondaryStackList<E>( size, offset, stack, tail );
+	static <E> List<E> tidy( int size, Object[] stack, List<E> tail ) {
+		return new TidyStackList<E>( size, stack, tail );
 	}
 
-	static <E> List<E> secondary( int size, Object[] stack, List<E> tail ) {
-		return secondary( size, 0, stack, tail );
+	static <E> List<E> untidy( int size, int offset, Object[] stack, List<E> tail ) {
+		return new UntidyStackList<E>( size, offset, stack, tail );
+	}
+
+	static <E> List<E> untidy( int size, Object[] stack, List<E> tail ) {
+		return untidy( size, 0, stack, tail );
+	}
+
+	//TODO move to array util class 
+	static <E> Object[] stack( E initial, int length ) {
+		Object[] stack = new Object[length];
+		stack[length - 1] = initial;
+		return stack;
+	}
+
+	//TODO move to a array util and method
+	final Object[] stackCopyFrom( int start, int length ) {
+		Object[] copy = new Object[stack.length];
+		System.arraycopy( stack, start, copy, start, length );
+		return copy;
 	}
 
 	/**
@@ -52,7 +78,6 @@ abstract class StackList<E>
 	 */
 	final int size;
 	final Object[] stack;
-
 	final List<E> tail;
 
 	StackList( int size, Object[] stack, List<E> tail ) {
@@ -77,6 +102,44 @@ abstract class StackList<E>
 	}
 
 	@Override
+	public List<E> concat( List<E> other ) {
+		return thisWith( size + other.size(), tail.concat( other ) );
+	}
+
+	@Override
+	public List<E> deleteAt( int index ) {
+		//FIXME negative index ?
+		final int length = length();
+		if ( index == 0 ) { // first of this stack
+			return length == 1
+				? tail
+				: untidy( size - 1, stack, tail );
+		}
+		if ( index >= length ) { // not in this stack
+			return thisWith( size - 1, tail.deleteAt( index - length ) );
+		}
+		if ( index == length - 1 ) { // last of this stack
+			return untidy( size - 1, 1, stack, tail );
+		}
+		// somewhere in between our stack ;(
+		return untidy( size - 1, length - index, stack, untidy( size - 1 - index, stack, tail ) );
+	}
+
+	@Override
+	public List<E> drop( int count ) {
+		if ( count <= 0 ) {
+			return this;
+		}
+		if ( count >= size ) {
+			return empty();
+		}
+		final int length = length();
+		return count >= length
+			? tail.drop( count - length )
+			: untidy( size - count, stack, tail );
+	}
+
+	@Override
 	public void fill( int offset, Object[] array, int start, int length ) {
 		final int l = length();
 		if ( start < l ) {
@@ -92,52 +155,18 @@ abstract class StackList<E>
 	}
 
 	@Override
-	public List<E> concat( List<E> other ) {
-		return thisWith( size + other.size(), tail.concat( other ) );
-	}
-
-	@Override
-	public List<E> deleteAt( int index ) {
-		//FIXME negative index ?
-		final int length = length();
-		if ( index == 0 ) { // first of this stack
-			return length == 1
-				? tail
-				: secondary( size - 1, stack, tail );
-		}
-		if ( index >= length ) { // not in this stack
-			return shrink1( tail.deleteAt( index - length ) );
-		}
-		if ( index == length - 1 ) { // last of this stack
-			return secondary( size - 1, 1, stack, tail );
-		}
-		// somewhere in between our stack ;(
-		return secondary( size - 1, length - index, stack,
-				secondary( size - 1 - index, stack, tail ) );
-	}
-
-	@Override
-	public List<E> drop( int count ) {
-		if ( count <= 0 ) {
-			return this;
-		}
-		if ( count >= size ) {
-			return empty();
-		}
-		final int length = length();
-		return count >= length
-			? tail.drop( count - length )
-			: secondary( size - count, stack, tail );
-	}
-
-	@Override
 	public List<E> insertAt( int index, E e ) {
 		if ( index == 0 ) {
 			return prepand( e );
 		}
-		final int length = length();
-		// TODO Auto-generated method stub
-		return null;
+		final int l = length();
+		if ( index >= l ) {
+			return thisWith( size + 1, tail.insertAt( index - l, e ) );
+		}
+		if ( index == l - 1 ) {
+			return thisWith( size + 1, tail.prepand( e ) );
+		}
+		return take( index - 1 ).concat( drop( index + 1 ).prepand( e ) );
 	}
 
 	@Override
@@ -148,6 +177,22 @@ abstract class StackList<E>
 	@Override
 	public final Iterator<E> iterator() {
 		return IndexAccess.iterator( this, 0, size );
+	}
+
+	@Override
+	public List<E> replaceAt( int index, E e ) {
+		final int l = length();
+		if ( index >= l ) {
+			return thisWith( size, tail.replaceAt( index - l, e ) );
+		}
+		Nonnull.element( e );
+		if ( index == 0 ) {
+			return drop( 1 ).prepand( e );
+		}
+		if ( index == l - 1 ) {
+			return take( l - 1 ).concat( tail.prepand( e ) );
+		}
+		return take( index - 1 ).concat( drop( index + 1 ).prepand( e ) );
 	}
 
 	@Override
@@ -168,7 +213,7 @@ abstract class StackList<E>
 			return thisWith( length, empty() );
 		}
 		if ( count < length ) { // took parts of this stack
-			return secondary( count, ( length - count ) + offset(), stack, empty() );
+			return untidy( count, ( length - count ) + offset(), stack, empty() );
 		}
 		// took this hole stack and parts of the tails elements
 		return thisWith( count, tail.take( count - length ) );
@@ -198,83 +243,131 @@ abstract class StackList<E>
 		return size - tail.size();
 	}
 
-	abstract List<E> thisWith( int size, List<E> tail );
-
 	abstract int offset();
 
 	/**
-	 * keeps master when master and branch when branch list - change is in the tail. just replace
-	 * the tail and reduce overall size by one. The elements in this stack remains since tail size
-	 * is shrinking 1.
+	 * keeps tidy or untidy since the change is in the tail. just replace the tail and reduce
+	 * overall size by one. The elements and length of this stack are reused as before.
 	 */
-	final List<E> shrink1( List<E> tail ) {
-		return thisWith( size - 1, tail );
-	}
+	abstract List<E> thisWith( int size, List<E> tail );
 
-	public static int nextHighestPowerOf2( int v ) {
-		v--;
-		v |= v >> 1;
-		v |= v >> 2;
-		v |= v >> 4;
-		v |= v >> 8;
-		v |= v >> 16;
-		v++;
-		return v;
-	}
+	static final class TidyStackList<E>
+			extends StackList<E> {
 
-	static <E> Object[] stack( E initial, int length ) {
-		Object[] stack = new Object[length];
-		stack[length - 1] = initial;
-		return stack;
-	}
+		TidyStackList( int size, Object[] stack, List<E> tail ) {
+			super( size, stack, tail );
+		}
 
-	static class StackLister
-			implements Lister {
-
-		@Override
-		public <E> List<E> element( E e ) {
-			return this.<E> noElements().prepand( e );
+		public List<E> prepand( E e ) {
+			Nonnull.element( e );
+			final int length = length();
+			int index = occupationIndex( length );
+			if ( index < 0 ) { // stack capacity exceeded
+				return grow1( StackList.stack( e, stack.length * 2 ), this );
+			}
+			if ( prepandedOccupying( e, index ) ) {
+				return grow1( stack, tail );
+			}
+			if ( length > stack.length / 2 ) {
+				return grow1( StackList.stack( e, stack.length * 2 ), untidy( size, stack, tail ) );
+			}
+			Object[] copy = stackCopyFrom( index + 1, length );
+			copy[index] = e;
+			return grow1( copy, tail );
 		}
 
 		@Override
-		public <E> List<E> elements( E... elems ) {
-			List<E> res = noElements();
-			for ( int i = elems.length - 1; i >= 0; i-- ) {
-				res = res.prepand( elems[i] );
+		public List<E> tidyUp() {
+			List<E> tidyTail = tail.tidyUp();
+			int length = length();
+			synchronized ( stack ) {
+				if ( notOccupied( occupationIndex( length ) ) ) {
+					return tidyTail == tail
+						? this
+						: tidy( size, stack, tidyTail );
+				}
+
 			}
-			return res;
+			return tidy( size, stackCopyFrom( 0, length ), tail );
+		}
+
+		@SuppressWarnings ( "unchecked" )
+		@Override
+		final E element( int index, int l ) {
+			return (E) stack[stack.length - l + index];
 		}
 
 		@Override
-		public <E> List<E> elements( ICluster<E> elems ) {
-			if ( elems.isEmpty() ) {
-				return noElements();
-			}
-			final int size = elems.size();
-			if ( size == 1 ) {
-				return element( elems.iterator().next() );
-			}
-			Object[] stack = new Object[StackList.nextHighestPowerOf2( size )];
-			int index = stack.length - size;
-			for ( E e : elems ) {
-				stack[index++] = e;
-			}
-			return primary( size, stack, this.<E> noElements() );
+		final int offset() {
+			return 0;
 		}
 
 		@Override
-		public <E> List<E> noElements() {
-			return EmptyList.instance();
+		final List<E> thisWith( int size, List<E> tail ) {
+			return tidy( size, stack, tail );
+		}
+
+		private List<E> grow1( Object[] stack, List<E> tail ) {
+			return tidy( size + 1, stack, tail );
+		}
+
+		private boolean notOccupied( int index ) {
+			return stack[index] == null;
+		}
+
+		private int occupationIndex( final int length ) {
+			return stack.length - 1 - length;
+		}
+
+		private boolean prepandedOccupying( E e, int index ) {
+			synchronized ( stack ) {
+				if ( notOccupied( index ) ) {
+					stack[index] = e;
+					return true;
+				}
+				return false;
+			}
 		}
 
 	}
 
-	static final class StackListEnumeratorFactory
-			implements EnumeratorFactory {
+	static final class UntidyStackList<E>
+			extends StackList<E> {
+
+		private final int offset;
+
+		UntidyStackList( int size, int offset, Object[] stack, List<E> tail ) {
+			super( size, stack, tail );
+			this.offset = offset;
+		}
 
 		@Override
-		public <E> Enumerator<E> enumerates( Enum<E> type ) {
-			return new StackListEnumerator<E>( type );
+		public List<E> prepand( E e ) {
+			return tidy( size + 1, stack( e, stack.length * 2 ), this );
+		}
+
+		@Override
+		public List<E> tidyUp() {
+			Object[] s = new Object[stack.length];
+			final int l = length();
+			System.arraycopy( stack, stack.length - l - offset, s, stack.length - l, l );
+			return tidy( size, s, tail.tidyUp() );
+		}
+
+		@SuppressWarnings ( "unchecked" )
+		@Override
+		E element( int index, int l ) {
+			return (E) stack[stack.length - l + index - offset];
+		}
+
+		@Override
+		final int offset() {
+			return offset;
+		}
+
+		@Override
+		List<E> thisWith( int size, List<E> tail ) {
+			return untidy( size, offset, stack, tail );
 		}
 
 	}
@@ -316,7 +409,7 @@ abstract class StackList<E>
 							: type.succ( cur );
 					}
 				}
-				res = new PrimaryStackList<E>( size, stack, res );
+				res = new TidyStackList<E>( size, stack, res );
 				capacity += capacity;
 			}
 			return res;
@@ -324,146 +417,53 @@ abstract class StackList<E>
 
 	}
 
-	private static final class PrimaryStackList<E>
-			extends StackList<E> {
-
-		PrimaryStackList( int size, Object[] stack, List<E> tail ) {
-			super( size, stack, tail );
-		}
-
-		public List<E> prepand( E e ) {
-			Nonnull.element( e );
-			final int length = length();
-			int index = occupationIndex( length );
-			if ( index < 0 ) { // stack capacity exceeded
-				return grow1( StackList.stack( e, stack.length * 2 ), this );
-			}
-			if ( prepandedOccupying( e, index ) ) {
-				return grow1( stack, tail );
-			}
-			if ( length > stack.length / 2 ) {
-				return grow1( StackList.stack( e, stack.length * 2 ), secondary( size, stack, tail ) );
-			}
-			Object[] copy = stackCopyFrom( index + 1, length );
-			copy[index] = e;
-			return grow1( copy, tail );
-		}
-
-		private int occupationIndex( final int length ) {
-			return stack.length - 1 - length;
-		}
+	static final class StackListEnumeratorFactory
+			implements EnumeratorFactory {
 
 		@Override
-		public List<E> replaceAt( int index, E e ) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public List<E> tidyUp() {
-			List<E> tidyTail = tail.tidyUp();
-			int length = length();
-			synchronized ( stack ) {
-				if ( notOccupied( occupationIndex( length ) ) ) {
-					return tidyTail == tail
-						? this
-						: primary( size, stack, tidyTail );
-				}
-
-			}
-			return primary( size, stackCopyFrom( 0, length ), tail );
-		}
-
-		@SuppressWarnings ( "unchecked" )
-		@Override
-		final E element( int index, int l ) {
-			return (E) stack[stack.length - l + index];
-		}
-
-		@Override
-		final List<E> thisWith( int size, List<E> tail ) {
-			return primary( size, stack, tail );
-		}
-
-		@Override
-		final int offset() {
-			return 0;
-		}
-
-		private List<E> grow1( Object[] stack, List<E> tail ) {
-			return primary( size + 1, stack, tail );
-		}
-
-		private boolean prepandedOccupying( E e, int index ) {
-			synchronized ( stack ) {
-				if ( notOccupied( index ) ) {
-					stack[index] = e;
-					return true;
-				}
-				return false;
-			}
-		}
-
-		private boolean notOccupied( int index ) {
-			return stack[index] == null;
-		}
-
-		private Object[] stackCopyFrom( int start, int length ) {
-			Object[] copy = new Object[stack.length];
-			System.arraycopy( stack, start, copy, start, length );
-			return copy;
+		public <E> Enumerator<E> enumerates( Enum<E> type ) {
+			return new StackListEnumerator<E>( type );
 		}
 
 	}
 
-	static final class SecondaryStackList<E>
-			extends StackList<E> {
+	static class StackLister
+			implements Lister {
 
-		private final int offset;
-
-		SecondaryStackList( int size, int offset, Object[] stack, List<E> tail ) {
-			super( size, stack, tail );
-			this.offset = offset;
+		@Override
+		public <E> List<E> element( E e ) {
+			return this.<E> noElements().prepand( e );
 		}
 
 		@Override
-		public List<E> deleteAt( int index ) {
-			// TODO Auto-generated method stub
-			return null;
+		public <E> List<E> elements( E... elems ) {
+			List<E> res = noElements();
+			for ( int i = elems.length - 1; i >= 0; i-- ) {
+				res = res.prepand( elems[i] );
+			}
+			return res;
 		}
 
 		@Override
-		public List<E> prepand( E e ) {
-			// TODO Auto-generated method stub
-			return null;
+		public <E> List<E> elements( ICluster<E> elems ) {
+			if ( elems.isEmpty() ) {
+				return noElements();
+			}
+			final int size = elems.size();
+			if ( size == 1 ) {
+				return element( elems.iterator().next() );
+			}
+			Object[] stack = new Object[StackList.nextHighestPowerOf2( size )];
+			int index = stack.length - size;
+			for ( E e : elems ) {
+				stack[index++] = e;
+			}
+			return tidy( size, stack, this.<E> noElements() );
 		}
 
 		@Override
-		public List<E> replaceAt( int index, E e ) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public List<E> tidyUp() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@SuppressWarnings ( "unchecked" )
-		@Override
-		E element( int index, int l ) {
-			return (E) stack[stack.length - l + index - offset];
-		}
-
-		@Override
-		List<E> thisWith( int size, List<E> tail ) {
-			return secondary( size, offset, stack, tail );
-		}
-
-		@Override
-		final int offset() {
-			return offset;
+		public <E> List<E> noElements() {
+			return EmptyList.instance();
 		}
 
 	}

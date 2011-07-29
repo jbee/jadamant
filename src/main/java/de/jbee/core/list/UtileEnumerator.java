@@ -34,6 +34,18 @@ public class UtileEnumerator<E>
 		return stepwiseFromTo( first, last, incrementBetween( first, then ) );
 	}
 
+	public List<E> fromToCircular( E first, E last ) {
+		int lastOrd = type.toOrdinal( last );
+		int firstOrd = type.toOrdinal( first );
+		if ( lastOrd == firstOrd ) {
+			return fromTo( type.minBound(), type.maxBound() );
+		}
+		if ( lastOrd > firstOrd ) {
+			return fromTo( first, type.minBound() ).concat( fromTo( type.maxBound(), last ) );
+		}
+		return fromTo( first, type.maxBound() ).concat( fromTo( type.minBound(), last ) );
+	}
+
 	private int incrementBetween( E first, E then ) {
 		return type.toOrdinal( then ) - type.toOrdinal( first );
 	}

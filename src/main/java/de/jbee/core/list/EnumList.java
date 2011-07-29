@@ -6,6 +6,7 @@ package de.jbee.core.list;
 import java.util.Iterator;
 
 import de.jbee.core.IndexAccess;
+import de.jbee.core.dev.Nonnull;
 import de.jbee.core.type.Enum;
 import de.jbee.core.type.Enumerate;
 
@@ -40,6 +41,7 @@ final class EnumList<E>
 
 	@Override
 	public List<E> append( E e ) {
+		Nonnull.element( e );
 		final int eOrdinal = type.toOrdinal( e );
 		if ( tail.isEmpty() ) {
 			final int nextOrdinal = lastPlus( 1 );
@@ -149,7 +151,7 @@ final class EnumList<E>
 
 	@Override
 	public List<E> insertAt( int index, E e ) {
-		//TODO nonnull ?
+		Nonnull.element( e );
 		if ( index == 0 ) {
 			SingleElementList.with( e, this );
 		}
@@ -174,6 +176,7 @@ final class EnumList<E>
 
 	@Override
 	public List<E> prepand( E e ) {
+		Nonnull.element( e );
 		final int priorOrdinal = firstMinus( 1 );
 		final int eOrdinal = type.toOrdinal( e );
 		if ( eOrdinal == priorOrdinal ) {
@@ -193,8 +196,18 @@ final class EnumList<E>
 
 	@Override
 	public List<E> replaceAt( int index, E e ) {
-		// TODO Auto-generated method stub
-		return null;
+		final int l = length();
+		if ( index >= l ) {
+			thisWithTail( tail.replaceAt( index - l, e ) );
+		}
+		E ei = at( index );
+		if ( ei == e ) { // not use equals - equality is maybe defines different
+			return this;
+		}
+		if ( index == 0 ) {
+			return drop( 1 ).prepand( e );
+		}
+		return take( index - 1 ).concat( SingleElementList.with( e, drop( index + 1 ) ) );
 	}
 
 	@Override
