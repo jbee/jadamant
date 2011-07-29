@@ -27,8 +27,7 @@ final class EnumList<E>
 	private final int lastOrdinal;
 
 	EnumList( Enum<E> type, E first, E last ) {
-		this( type, type.toOrdinal( first ), type.toOrdinal( last ),
-				InitList.LISTER.<E> noElements() );
+		this( type, type.toOrdinal( first ), type.toOrdinal( last ), List.with.<E> noElements() );
 	}
 
 	EnumList( Enum<E> type, int firstOrdianl, int lastOrdinal, List<E> tail ) {
@@ -53,7 +52,7 @@ final class EnumList<E>
 		if ( size == 1 ) { // check for a desc sequence
 			return firstMinus( 1 ) == eOrdinal
 				? list( firstOrdinal, eOrdinal )
-				: SingleElementList.with( at( 0 ), empty() ).append( e );
+				: SingleElementList.with( at( 0 ) ).append( e );
 		}
 		if ( length() == 1 ) {
 			return SingleElementList.with( at( 0 ), tail ).append( e );
@@ -186,7 +185,7 @@ final class EnumList<E>
 		if ( size == 1 ) { // check a descending sequence
 			return firstPlus( 1 ) == eOrdinal
 				? list( eOrdinal, lastOrdinal )
-				: SingleElementList.with( at( 0 ), empty() ).prepand( e );
+				: SingleElementList.with( at( 0 ) ).prepand( e );
 		}
 		if ( length() == 1 ) {
 			return SingleElementList.with( at( 0 ), tail ).prepand( e );
@@ -288,7 +287,7 @@ final class EnumList<E>
 	}
 
 	private List<E> empty() {
-		return InitList.LISTER.noElements();
+		return List.with.noElements();
 	}
 
 	private int ordinalMinus( int ordinal, int dec ) {

@@ -233,7 +233,7 @@ abstract class StackList<E>
 	abstract E element( int index, int l );
 
 	final List<E> empty() {
-		return InitList.LISTER.noElements();
+		return List.with.noElements();
 	}
 
 	/**
@@ -384,14 +384,14 @@ abstract class StackList<E>
 			int fo = type.toOrdinal( first );
 			int lo = type.toOrdinal( last );
 			if ( fo == lo ) { // length 1
-				return InitList.LISTER.element( first );
+				return LISTER.element( first );
 			}
 			int length = Math.abs( fo - lo ) + 1;
 			if ( length == 2 ) {
-				return InitList.LISTER.element( last ).prepand( first );
+				return LISTER.element( last ).prepand( first );
 			}
 			int capacity = 2;
-			List<E> res = InitList.LISTER.noElements();
+			List<E> res = LISTER.noElements();
 			E cur = last;
 			final boolean asc = fo < lo;
 			int size = 0;
