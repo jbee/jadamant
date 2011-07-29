@@ -16,7 +16,7 @@ final class EnumList<E>
 	static final EnumeratorFactory ENUMERATOR_FACTORY = new EnumListEnumeratorFactory();
 
 	@SuppressWarnings ( "unchecked" )
-	static <T extends java.lang.Enum<?>> List<T> enumList( T e ) {
+	static <T extends java.lang.Enum<?>> List<T> withElement( T e ) {
 		Class<? extends java.lang.Enum<?>> c = e.getDeclaringClass();
 		return new EnumList<T>( (Enum<T>) Enumerate.type( c ), e, e );
 	}

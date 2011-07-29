@@ -432,7 +432,7 @@ abstract class StackList<E>
 
 		@Override
 		public <E> List<E> element( E e ) {
-			return this.<E> noElements().prepand( e );
+			return SingleElementList.with( e );
 		}
 
 		@Override
@@ -458,7 +458,7 @@ abstract class StackList<E>
 			for ( E e : elems ) {
 				stack[index++] = e;
 			}
-			return tidy( size, stack, this.<E> noElements() );
+			return tidy( size, stack, EmptyList.<E> instance() );
 		}
 
 		@Override

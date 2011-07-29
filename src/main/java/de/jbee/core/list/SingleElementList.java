@@ -11,13 +11,16 @@ import de.jbee.core.dev.Nonnull;
 final class SingleElementList<E>
 		implements List<E> {
 
+	static <E> List<E> with( E element ) {
+		return with( element, List.with.<E> noElements() );
+	}
+
 	static <E> List<E> with( E element, List<E> tail ) {
 		Nonnull.element( element );
 		return new SingleElementList<E>( element, tail );
 	}
 
 	private final E element;
-
 	private final List<E> tail;
 
 	private SingleElementList( E element, List<E> tail ) {

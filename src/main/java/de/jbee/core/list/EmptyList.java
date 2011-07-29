@@ -82,7 +82,7 @@ final class EmptyList<E>
 	@SuppressWarnings ( "unchecked" )
 	private <T> List<E> enumList( E e ) {
 		java.lang.Enum<?> v = (java.lang.Enum<?>) e;
-		return (List<E>) EnumList.enumList( v );
+		return (List<E>) EnumList.withElement( v );
 	}
 
 	@SuppressWarnings ( "unchecked" )
