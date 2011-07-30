@@ -9,7 +9,26 @@ public class UtileListElement {
 	static final ListElement LAST = new AtIndexElement( -1 );
 	static final ListElement HEAD = FIRST;
 
+	/**
+	 * Always returns a element which yields {@link ListElement#NOT_CONTAINED} if index is negative.
+	 * 
+	 * @see #pos(int)
+	 */
 	ListElement at( int index ) {
+		return index < 0
+			? NONE
+			: index == 0
+				? HEAD
+				: new AtIndexElement( index );
+	}
+
+	/**
+	 * Same as {@link #at(int)} for positive index values. Negative index values start from the
+	 * lists end so -1 is the last element of the list, -2 the one before and so on.
+	 * 
+	 * @see #at(int)
+	 */
+	ListElement pos( int index ) {
 		return index == -1
 			? LAST
 			: index == 0
