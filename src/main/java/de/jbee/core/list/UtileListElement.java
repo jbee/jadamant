@@ -12,7 +12,7 @@ public class UtileListElement {
 	/**
 	 * Always returns a element which yields {@link ListElement#NOT_CONTAINED} if index is negative.
 	 * 
-	 * @see #pos(int)
+	 * @see #on(int)
 	 */
 	ListElement at( int index ) {
 		return index < 0
@@ -28,7 +28,7 @@ public class UtileListElement {
 	 * 
 	 * @see #at(int)
 	 */
-	ListElement pos( int index ) {
+	ListElement on( int index ) {
 		return index == -1
 			? LAST
 			: index == 0

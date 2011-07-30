@@ -22,11 +22,11 @@ public class TestListElement {
 	@Test
 	public void testPosListElement() {
 		List<Integer> l = List.with.elements( 5, 6, 7 );
-		assertThat( List.element.pos( 2 ).in( l ), is( 2 ) );
-		assertThat( List.element.pos( 0 ).in( l ), is( 0 ) );
-		assertThat( List.element.pos( -1 ).in( l ), is( 2 ) );
-		assertThat( List.element.pos( -5 ).in( l ), is( -1 ) );
-		assertThat( List.element.pos( 3 ).in( l ), is( -1 ) );
+		assertThat( List.element.on( 2 ).in( l ), is( 2 ) );
+		assertThat( List.element.on( 0 ).in( l ), is( 0 ) );
+		assertThat( List.element.on( -1 ).in( l ), is( 2 ) );
+		assertThat( List.element.on( -5 ).in( l ), is( -1 ) );
+		assertThat( List.element.on( 3 ).in( l ), is( -1 ) );
 	}
 
 	@Test
