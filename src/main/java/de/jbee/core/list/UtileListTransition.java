@@ -3,6 +3,7 @@ package de.jbee.core.list;
 import java.util.Iterator;
 
 import de.jbee.core.IndexAccess;
+import de.jbee.util.ICondition;
 
 public class UtileListTransition
 		implements ListTransition {
@@ -32,10 +33,20 @@ public class UtileListTransition
 		return new UtileListTransition( consec( utilised, next ) );
 	}
 
-	private ListTransition deutilised( ListTransition t ) {
+	private ListTransition plain( ListTransition t ) {
 		return t instanceof UtileListTransition
 			? ( (UtileListTransition) t ).utilised
 			: t;
+	}
+
+	//TODO some kind of dropWhile working with a condition types with the list type -> other interface
+	public UtileListTransition dropsWhile( ICondition<Object> condition ) {
+		return followedBy( new DropWhileListTransition( condition ) );
+	}
+
+	//TODO some kind of takeWhile working with a condition types with the list type -> other interface
+	public UtileListTransition takesWhile( ICondition<Object> condition ) {
+		return followedBy( new TakeWhileListTransition( condition ) );
 	}
 
 	public UtileListTransition dropsFirst( int count ) {
@@ -117,8 +128,8 @@ public class UtileListTransition
 	}
 
 	public ListTransition consec( ListTransition fst, ListTransition snd ) {
-		fst = deutilised( fst );
-		snd = deutilised( snd );
+		fst = plain( fst );
+		snd = plain( snd );
 		if ( fst == none ) {
 			return snd;
 		}
@@ -305,6 +316,51 @@ public class UtileListTransition
 		@Override
 		public <E> List<E> from( List<E> list ) {
 			return snd.from( fst.from( list ) );
+		}
+	}
+
+	static final class TakeWhileListTransition
+			implements ListTransition {
+
+		final ICondition<Object> condition;
+
+		TakeWhileListTransition( ICondition<Object> condition ) {
+			super();
+			this.condition = condition;
+		}
+
+		@Override
+		public <E> List<E> from( List<E> list ) {
+			int size = list.size();
+			for ( int i = 0; i < size; i++ ) {
+				if ( condition.fulfilledBy( list.at( i ) ) ) {
+					return list.take( i );
+				}
+			}
+			return list;
+		}
+
+	}
+
+	static final class DropWhileListTransition
+			implements ListTransition {
+
+		final ICondition<Object> condition;
+
+		DropWhileListTransition( ICondition<Object> condition ) {
+			super();
+			this.condition = condition;
+		}
+
+		@Override
+		public <E> List<E> from( List<E> list ) {
+			int size = list.size();
+			for ( int i = 0; i < size; i++ ) {
+				if ( condition.fulfilledBy( list.at( i ) ) ) {
+					return list.drop( i );
+				}
+			}
+			return list.drop( size ); // will return the empty list
 		}
 	}
 

@@ -17,6 +17,8 @@ public class UtileListElement {
 				: new AtIndexElement( index );
 	}
 
+	//TODO same as eq with condition interface
+
 	ListElement eq( Object sample, Eq<Object> equality ) {
 		return nthEq( 1, sample, equality );
 	}
