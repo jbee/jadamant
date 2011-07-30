@@ -1,12 +1,7 @@
 package de.jbee.core.list;
 
-public interface ListPredicate<T> {
+public interface ListPredicate<E> {
 
-	boolean eval( List<T> l );
+	boolean eval( List<E> l );
 
-	// contains
-
-	// endsWith(List)
-
-	// startsWith(List)
 }

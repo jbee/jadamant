@@ -1,6 +1,7 @@
 package de.jbee.core.type;
 
 import de.jbee.core.dev.Null;
+import de.jbee.core.dev.Nullproof;
 import de.jbee.core.dev.Nullsave;
 
 public final class Equal {
@@ -9,17 +10,23 @@ public final class Equal {
 		throw new UnsupportedOperationException( "util" );
 	}
 
-	public static final Eq<Object> identity = new IdenticalEqual();
-	public static final Eq<Object> equality = nullsave( new EqualityEqual() );
-	public static final Eq<Object> objectId = nullsave( new ObjectIdEqual() );
+	public static final Eq<Object> identity = new SameIdentityEquality();
+	public static final Eq<Object> equality = nullsave( new EqualsEquality() );
+	public static final Eq<Object> objectId = nullsave( new SameObjectIdEquality() );
 
 	public static <T> Eq<T> nullsave( Eq<T> eq ) {
 		return Null.isSave( eq )
 			? eq
-			: new NullsaveEqual<T>( eq );
+			: new NullsaveEquality<T>( eq );
 	}
 
-	static final class IdenticalEqual
+	public static <T> Eq<T> not( Eq<T> eq ) {
+		return eq instanceof NotEquality<?>
+			? ( (NotEquality<T>) eq ).eq
+			: new NotEquality<T>( eq );
+	}
+
+	static final class SameIdentityEquality
 			implements Eq<Object>, Nullsave {
 
 		@Override
@@ -29,7 +36,7 @@ public final class Equal {
 
 	}
 
-	static final class ObjectIdEqual
+	static final class SameObjectIdEquality
 			implements Eq<Object> {
 
 		@Override
@@ -39,7 +46,7 @@ public final class Equal {
 		}
 	}
 
-	static final class EqualityEqual
+	static final class EqualsEquality
 			implements Eq<Object> {
 
 		@Override
@@ -49,12 +56,34 @@ public final class Equal {
 
 	}
 
-	static final class NullsaveEqual<T>
-			implements Eq<T>, Nullsave {
+	static final class NotEquality<T>
+			implements Eq<T>, Nullproof {
 
 		final Eq<T> eq;
 
-		NullsaveEqual( Eq<T> eq ) {
+		NotEquality( Eq<T> eq ) {
+			super();
+			this.eq = eq;
+		}
+
+		@Override
+		public boolean eq( T one, T other ) {
+			return !eq.eq( one, other );
+		}
+
+		@Override
+		public boolean isNullsave() {
+			return Null.isSave( eq );
+		}
+
+	}
+
+	static final class NullsaveEquality<T>
+			implements Eq<T>, Nullsave {
+
+		private final Eq<T> eq;
+
+		NullsaveEquality( Eq<T> eq ) {
 			super();
 			this.eq = eq;
 		}

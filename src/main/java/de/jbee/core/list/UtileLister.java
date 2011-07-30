@@ -1,5 +1,6 @@
 package de.jbee.core.list;
 
+import de.jbee.core.Array;
 import de.jbee.util.ICluster;
 
 public class UtileLister
@@ -41,4 +42,9 @@ public class UtileLister
 		return elements( elems );
 	}
 
+	public <E> List<E> replicate( int n, E e ) {
+		Object[] stack = new Object[StackList.nextHighestPowerOf2( n )];
+		Array.fill( stack, e, stack.length - n, n );
+		return StackList.tidy( n, stack, utilised.<E> noElements() );
+	}
 }
