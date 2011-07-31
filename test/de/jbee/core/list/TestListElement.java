@@ -15,9 +15,9 @@ public class TestListElement {
 		List<Integer> l = List.with.elements( 5, 6, 7 );
 		assertThat( List.element.at( 2 ).in( l ), is( 2 ) );
 		assertThat( List.element.at( 0 ).in( l ), is( 0 ) );
-		assertThat( List.element.at( -1 ).in( l ), is( -1 ) );
-		assertThat( List.element.at( -5 ).in( l ), is( -1 ) );
-		assertThat( List.element.at( 3 ).in( l ), is( -1 ) );
+		assertThat( List.element.at( -1 ).in( l ), is( NOT_CONTAINED ) );
+		assertThat( List.element.at( -5 ).in( l ), is( NOT_CONTAINED ) );
+		assertThat( List.element.at( 3 ).in( l ), is( NOT_CONTAINED ) );
 	}
 
 	@Test
@@ -26,8 +26,8 @@ public class TestListElement {
 		assertThat( List.element.on( 2 ).in( l ), is( 2 ) );
 		assertThat( List.element.on( 0 ).in( l ), is( 0 ) );
 		assertThat( List.element.on( -1 ).in( l ), is( 2 ) );
-		assertThat( List.element.on( -5 ).in( l ), is( -1 ) );
-		assertThat( List.element.on( 3 ).in( l ), is( -1 ) );
+		assertThat( List.element.on( -5 ).in( l ), is( NOT_CONTAINED ) );
+		assertThat( List.element.on( 3 ).in( l ), is( NOT_CONTAINED ) );
 	}
 
 	@Test
@@ -36,6 +36,7 @@ public class TestListElement {
 		assertThat( List.element.nthEq( 1, 3, Equal.equality ).in( l ), is( 0 ) );
 		assertThat( List.element.nthEq( 2, 3, Equal.equality ).in( l ), is( 2 ) );
 		assertThat( List.element.nthEq( 3, 3, Equal.equality ).in( l ), is( 4 ) );
+		assertThat( List.element.nthEq( 1, 5, Equal.equality ).in( l ), is( NOT_CONTAINED ) );
 	}
 
 	@Test
@@ -43,7 +44,7 @@ public class TestListElement {
 		assertThat( List.head.in( List.with.elements( 42, 3, 5 ) ), is( 0 ) );
 		assertThat( List.head.in( List.with.elements( 42, 3 ) ), is( 0 ) );
 		assertThat( List.head.in( List.with.elements( 42 ) ), is( 0 ) );
-		assertThat( List.head.in( List.with.noElements() ), is( -1 ) );
+		assertThat( List.head.in( List.with.noElements() ), is( NOT_CONTAINED ) );
 	}
 
 	@Test
