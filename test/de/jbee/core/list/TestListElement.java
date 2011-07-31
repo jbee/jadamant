@@ -1,5 +1,6 @@
 package de.jbee.core.list;
 
+import static de.jbee.core.list.ListElement.NOT_CONTAINED;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -43,5 +44,13 @@ public class TestListElement {
 		assertThat( List.head.in( List.with.elements( 42, 3 ) ), is( 0 ) );
 		assertThat( List.head.in( List.with.elements( 42 ) ), is( 0 ) );
 		assertThat( List.head.in( List.with.noElements() ), is( -1 ) );
+	}
+
+	@Test
+	public void testDuplicateListElement() {
+		List<Integer> l = List.with.elements( 1, 2, 3, 4, 2, 5, 3, 6 );
+		assertThat( List.element.duplicate( 0, Equal.equality ).in( l ), is( 4 ) );
+		assertThat( List.element.duplicate( 2, Equal.equality ).in( l ), is( 6 ) );
+		assertThat( List.element.duplicate( 3, Equal.equality ).in( l ), is( NOT_CONTAINED ) );
 	}
 }

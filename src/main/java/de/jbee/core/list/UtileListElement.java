@@ -1,13 +1,18 @@
 package de.jbee.core.list;
 
 import de.jbee.core.type.Eq;
+import de.jbee.core.type.Equal;
 
 public class UtileListElement {
 
 	static final ListElement NONE = new NoListElement();
-	static final ListElement FIRST = new AtIndexElement( 0 );
-	static final ListElement LAST = new AtIndexElement( -1 );
+	static final ListElement FIRST = new OnPositionListElement( 0 );
+	static final ListElement LAST = new OnPositionListElement( -1 );
 	static final ListElement HEAD = FIRST;
+
+	ListElement nextTo( int index ) {
+		return at( index + 1 );
+	}
 
 	/**
 	 * Always returns a element which yields {@link ListElement#NOT_CONTAINED} if index is negative.
@@ -19,21 +24,21 @@ public class UtileListElement {
 			? NONE
 			: index == 0
 				? HEAD
-				: new AtIndexElement( index );
+				: new OnPositionListElement( index );
 	}
 
 	/**
-	 * Same as {@link #at(int)} for positive index values. Negative index values start from the
-	 * lists end so -1 is the last element of the list, -2 the one before and so on.
+	 * Same as {@link #at(int)} for positive pos values. Negative pos values start from the lists
+	 * end so -1 is the last element of the list, -2 the one before and so on.
 	 * 
 	 * @see #at(int)
 	 */
-	ListElement on( int index ) {
-		return index == -1
+	ListElement on( int pos ) {
+		return pos == -1
 			? LAST
-			: index == 0
+			: pos == 0
 				? HEAD
-				: new AtIndexElement( index );
+				: new OnPositionListElement( pos );
 	}
 
 	//TODO same as eq with condition interface
@@ -45,7 +50,19 @@ public class UtileListElement {
 	ListElement nthEq( int n, Object sample, Eq<Object> equality ) {
 		return n == 0
 			? NONE
-			: new NthEqualElement( n, sample, equality, 1 );
+			: new NthEqualListElement( n, sample, equality, 1 );
+	}
+
+	ListElement duplicate() {
+		return duplicate( Equal.equality );
+	}
+
+	ListElement duplicate( Eq<Object> eq ) {
+		return duplicate( 0, eq );
+	}
+
+	ListElement duplicate( int start, Eq<Object> eq ) {
+		return new DuplicateListElement( start, eq );
 	}
 
 	static final class NoListElement
@@ -58,27 +75,54 @@ public class UtileListElement {
 
 	}
 
-	static final class AtIndexElement
+	static final class DuplicateListElement
 			implements ListElement {
 
-		private final int idx;
+		private final int start;
+		private final Eq<Object> eq;
 
-		AtIndexElement( int idx ) {
+		DuplicateListElement( int start, Eq<Object> eq ) {
 			super();
-			this.idx = idx;
+			this.start = start;
+			this.eq = eq;
 		}
 
 		@Override
 		public <E> int in( List<E> list ) {
-			return Math.abs( idx ) < list.size()
-				? idx < 0
-					? list.size() + idx
-					: idx
+			int size = list.size();
+			for ( int i = start; i < size - 1; i++ ) {
+				final E e = list.at( i );
+				for ( int j = i + 1; j < size; j++ ) {
+					if ( eq.eq( e, list.at( j ) ) ) {
+						return j;
+					}
+				}
+			}
+			return NOT_CONTAINED;
+		}
+	}
+
+	static final class OnPositionListElement
+			implements ListElement {
+
+		private final int pos;
+
+		OnPositionListElement( int pos ) {
+			super();
+			this.pos = pos;
+		}
+
+		@Override
+		public <E> int in( List<E> list ) {
+			return Math.abs( pos ) < list.size()
+				? pos < 0
+					? list.size() + pos
+					: pos
 				: NOT_CONTAINED;
 		}
 	}
 
-	static final class NthEqualElement
+	static final class NthEqualListElement
 			implements ListElement {
 
 		private final int n;
@@ -86,7 +130,7 @@ public class UtileListElement {
 		private final Object sample;
 		private final Eq<Object> equality;
 
-		NthEqualElement( int n, Object sample, Eq<Object> equality, int step ) {
+		NthEqualListElement( int n, Object sample, Eq<Object> equality, int step ) {
 			super();
 			this.n = n;
 			this.step = step;
