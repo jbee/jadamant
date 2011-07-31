@@ -102,8 +102,4 @@ public interface List<E>
 
 	List<E> concat( List<E> other );
 
-	//TODO head 
-
-	//TODO boolean any(Eq<? super E> eq, E e);
-
 }

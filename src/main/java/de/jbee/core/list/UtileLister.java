@@ -42,6 +42,27 @@ public class UtileLister
 		return elements( elems );
 	}
 
+	/**
+	 * lines breaks a string up into a list of strings at newline characters. The resulting strings
+	 * do not contain newlines.
+	 */
+	public List<String> linesIn( String text ) {
+		if ( text == null || text.isEmpty() ) {
+			return noElements();
+		}
+		return elements( text.split( "\n+" ) );
+	}
+
+	/**
+	 * words breaks a string up into a list of words, which were delimited by white space.
+	 */
+	public List<String> wordsIn( String text ) {
+		if ( text == null || text.isEmpty() ) {
+			return noElements();
+		}
+		return elements( text.split( "\\s+" ) );
+	}
+
 	public <E> List<E> replicate( int n, E e ) {
 		Object[] stack = new Object[StackList.nextHighestPowerOf2( n )];
 		Array.fill( stack, e, stack.length - n, n );

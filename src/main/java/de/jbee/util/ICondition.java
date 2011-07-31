@@ -7,6 +7,8 @@ package de.jbee.util;
  * @author Jan Bernitt (jan.bernitt@gmx.de)
  * 
  * @param <T>
+ * 
+ *            TODO rename to Predicate
  */
 public interface ICondition<T> {
 

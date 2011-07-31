@@ -139,6 +139,8 @@ public class UtileListTransition
 		return new ConsecutivelyListTransition( fst, snd );
 	}
 
+	//TODO sort / filter(Predicate)
+
 	static final class NoneTranstion
 			implements ListTransition {
 

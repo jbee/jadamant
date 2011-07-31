@@ -23,12 +23,37 @@ public class TestLister {
 	@Test
 	public void testCharactersIn() {
 		List<Character> l = List.with.charactersIn( "Hello" );
-		assertThat( 5, is( l.size() ) );
-		assertThat( 'H', is( l.at( 0 ) ) );
-		assertThat( 'e', is( l.at( 1 ) ) );
-		assertThat( 'l', is( l.at( 2 ) ) );
-		assertThat( 'l', is( l.at( 3 ) ) );
-		assertThat( 'o', is( l.at( 4 ) ) );
+		assertThat( l.size(), is( 5 ) );
+		assertThat( l.at( 0 ), is( 'H' ) );
+		assertThat( l.at( 1 ), is( 'e' ) );
+		assertThat( l.at( 2 ), is( 'l' ) );
+		assertThat( l.at( 3 ), is( 'l' ) );
+		assertThat( l.at( 4 ), is( 'o' ) );
+	}
+
+	@Test
+	public void testLinesIn() {
+		List<String> l = List.with.linesIn( "Hello\nMr. Fancy Pancy!\nClown" );
+		assertThat( l.size(), is( 3 ) );
+		assertThat( l.at( 0 ), is( "Hello" ) );
+		assertThat( l.at( 1 ), is( "Mr. Fancy Pancy!" ) );
+		assertThat( l.at( 2 ), is( "Clown" ) );
+	}
+
+	@Test
+	public void testWordsIn() {
+		List<String> l = List.with.wordsIn( "This is the end!\nMy only friend - the end" );
+		assertThat( l.size(), is( 10 ) );
+		assertThat( l.at( 0 ), is( "This" ) );
+		assertThat( l.at( 1 ), is( "is" ) );
+		assertThat( l.at( 2 ), is( "the" ) );
+		assertThat( l.at( 3 ), is( "end!" ) );
+		assertThat( l.at( 4 ), is( "My" ) );
+		assertThat( l.at( 5 ), is( "only" ) );
+		assertThat( l.at( 6 ), is( "friend" ) );
+		assertThat( l.at( 7 ), is( "-" ) );
+		assertThat( l.at( 8 ), is( "the" ) );
+		assertThat( l.at( 9 ), is( "end" ) );
 	}
 
 	@Test
