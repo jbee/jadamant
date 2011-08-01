@@ -94,10 +94,18 @@ public final class Order {
 		@SuppressWarnings ( "unchecked" )
 		@Override
 		public Ordering ord( Object one, Object other ) {
-			if ( type.isInstance( one ) && type.isInstance( other ) ) {
+			final boolean instOne = type.isInstance( one );
+			final boolean instOther = type.isInstance( other );
+			if ( instOne && instOther ) {
 				return ord.ord( (T) one, (T) other );
 			}
-			return Ordering.LT;
+			if ( instOne ) {
+				return Ordering.GT;
+			}
+			if ( instOther ) {
+				return Ordering.LT;
+			}
+			return Ordering.EQ;
 		}
 
 		@Override

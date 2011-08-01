@@ -18,6 +18,8 @@ public class UtileLister
 		return utilised.element( e );
 	}
 
+	//TODO utility methods for primitive array types ? -> List<Integer> elements(int...)
+
 	@Override
 	public <E> List<E> elements( E... elems ) {
 		return utilised.elements( elems );

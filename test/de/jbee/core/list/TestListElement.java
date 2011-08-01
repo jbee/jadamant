@@ -65,6 +65,16 @@ public class TestListElement {
 	}
 
 	@Test
+	public void testMaximumListElementMistypedOrder() {
+		List<Character> l = List.with.charactersIn( "Hello" );
+		Ord<Object> ord = Order.typesave( Integer.class, Order.numerical );
+		assertThat( List.element.maximum( ord ).indexIn( l ), is( NOT_CONTAINED ) );
+		// just check that a proper order would do it:
+		ord = Order.typesave( Character.class, Order.abecedarian );
+		assertThat( List.element.maximum( ord ).indexIn( l ), is( 4 ) );
+	}
+
+	@Test
 	public void testMinimumListElement() {
 		List<Integer> l = List.with.elements( 2, 5, 1, 3, 8, 4 );
 		Ord<Object> ord = Order.typesave( Integer.class, Order.numerical );

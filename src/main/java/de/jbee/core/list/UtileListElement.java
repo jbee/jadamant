@@ -1,5 +1,6 @@
 package de.jbee.core.list;
 
+import de.jbee.core.dev.Null;
 import de.jbee.core.type.Eq;
 import de.jbee.core.type.Equal;
 import de.jbee.core.type.Ord;
@@ -108,6 +109,19 @@ public class UtileListElement {
 					bestIndex = i;
 				}
 			}
+			if ( bestIndex == 0 ) { // does best just "win" because we started with it ?
+				if ( Null.isSave( ord ) ) {
+					if ( ord.ord( null, best ) == ord.ord( best, null ) ) {
+						return NOT_CONTAINED;
+					}
+				} else if ( list.size() > 1 ) {
+					E other = list.at( 1 );
+					if ( ord.ord( best, other ) == ord.ord( other, best ) ) {
+						return NOT_CONTAINED;
+					}
+				}
+				// sadly than there is no way to tell if best is just the best because its the first
+			}
 			return bestIndex;
 		}
 
@@ -123,7 +137,7 @@ public class UtileListElement {
 
 		@Override
 		<E> boolean improving( Ordering ordering ) {
-			return ordering == Ordering.GT;
+			return ordering == Ordering.GT; // because the right (actual) arg is less the left is GT
 		}
 
 	}
