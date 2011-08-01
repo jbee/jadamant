@@ -7,51 +7,68 @@ import static org.junit.Assert.assertThat;
 import org.junit.Test;
 
 import de.jbee.core.type.Equal;
+import de.jbee.core.type.Ord;
+import de.jbee.core.type.Order;
 
 public class TestListElement {
 
 	@Test
 	public void testAtListElement() {
 		List<Integer> l = List.with.elements( 5, 6, 7 );
-		assertThat( List.element.at( 2 ).in( l ), is( 2 ) );
-		assertThat( List.element.at( 0 ).in( l ), is( 0 ) );
-		assertThat( List.element.at( -1 ).in( l ), is( NOT_CONTAINED ) );
-		assertThat( List.element.at( -5 ).in( l ), is( NOT_CONTAINED ) );
-		assertThat( List.element.at( 3 ).in( l ), is( NOT_CONTAINED ) );
+		assertThat( List.element.at( 2 ).indexIn( l ), is( 2 ) );
+		assertThat( List.element.at( 0 ).indexIn( l ), is( 0 ) );
+		assertThat( List.element.at( -1 ).indexIn( l ), is( NOT_CONTAINED ) );
+		assertThat( List.element.at( -5 ).indexIn( l ), is( NOT_CONTAINED ) );
+		assertThat( List.element.at( 3 ).indexIn( l ), is( NOT_CONTAINED ) );
 	}
 
 	@Test
 	public void testPosListElement() {
 		List<Integer> l = List.with.elements( 5, 6, 7 );
-		assertThat( List.element.on( 2 ).in( l ), is( 2 ) );
-		assertThat( List.element.on( 0 ).in( l ), is( 0 ) );
-		assertThat( List.element.on( -1 ).in( l ), is( 2 ) );
-		assertThat( List.element.on( -5 ).in( l ), is( NOT_CONTAINED ) );
-		assertThat( List.element.on( 3 ).in( l ), is( NOT_CONTAINED ) );
+		assertThat( List.element.on( 2 ).indexIn( l ), is( 2 ) );
+		assertThat( List.element.on( 0 ).indexIn( l ), is( 0 ) );
+		assertThat( List.element.on( -1 ).indexIn( l ), is( 2 ) );
+		assertThat( List.element.on( -5 ).indexIn( l ), is( NOT_CONTAINED ) );
+		assertThat( List.element.on( 3 ).indexIn( l ), is( NOT_CONTAINED ) );
 	}
 
 	@Test
 	public void testNthListElement() {
 		List<Integer> l = List.with.elements( 3, 4, 3, 4, 3 );
-		assertThat( List.element.nthEq( 1, 3, Equal.equality ).in( l ), is( 0 ) );
-		assertThat( List.element.nthEq( 2, 3, Equal.equality ).in( l ), is( 2 ) );
-		assertThat( List.element.nthEq( 3, 3, Equal.equality ).in( l ), is( 4 ) );
-		assertThat( List.element.nthEq( 1, 5, Equal.equality ).in( l ), is( NOT_CONTAINED ) );
+		assertThat( List.element.nthEq( 1, 3, Equal.equality ).indexIn( l ), is( 0 ) );
+		assertThat( List.element.nthEq( 2, 3, Equal.equality ).indexIn( l ), is( 2 ) );
+		assertThat( List.element.nthEq( 3, 3, Equal.equality ).indexIn( l ), is( 4 ) );
+		assertThat( List.element.nthEq( 1, 5, Equal.equality ).indexIn( l ), is( NOT_CONTAINED ) );
 	}
 
 	@Test
 	public void testHeadListElement() {
-		assertThat( List.head.in( List.with.elements( 42, 3, 5 ) ), is( 0 ) );
-		assertThat( List.head.in( List.with.elements( 42, 3 ) ), is( 0 ) );
-		assertThat( List.head.in( List.with.elements( 42 ) ), is( 0 ) );
-		assertThat( List.head.in( List.with.noElements() ), is( NOT_CONTAINED ) );
+		assertThat( List.head.indexIn( List.with.elements( 42, 3, 5 ) ), is( 0 ) );
+		assertThat( List.head.indexIn( List.with.elements( 42, 3 ) ), is( 0 ) );
+		assertThat( List.head.indexIn( List.with.elements( 42 ) ), is( 0 ) );
+		assertThat( List.head.indexIn( List.with.noElements() ), is( NOT_CONTAINED ) );
 	}
 
 	@Test
 	public void testDuplicateListElement() {
 		List<Integer> l = List.with.elements( 1, 2, 3, 4, 2, 5, 3, 6 );
-		assertThat( List.element.duplicate( 0, Equal.equality ).in( l ), is( 4 ) );
-		assertThat( List.element.duplicate( 2, Equal.equality ).in( l ), is( 6 ) );
-		assertThat( List.element.duplicate( 3, Equal.equality ).in( l ), is( NOT_CONTAINED ) );
+		assertThat( List.element.duplicate( 0 ).indexIn( l ), is( 4 ) );
+		assertThat( List.element.duplicate( 2 ).indexIn( l ), is( 6 ) );
+		assertThat( List.element.duplicate( 3 ).indexIn( l ), is( NOT_CONTAINED ) );
 	}
+
+	@Test
+	public void testMaximumListElement() {
+		List<Integer> l = List.with.elements( 2, 5, 1, 3, 8, 4 );
+		Ord<Object> ord = Order.typesave( Integer.class, Order.numerical );
+		assertThat( List.element.maximum( ord ).indexIn( l ), is( 4 ) );
+	}
+
+	@Test
+	public void testMinimumListElement() {
+		List<Integer> l = List.with.elements( 2, 5, 1, 3, 8, 4 );
+		Ord<Object> ord = Order.typesave( Integer.class, Order.numerical );
+		assertThat( List.element.minimum( ord ).indexIn( l ), is( 2 ) );
+	}
+
 }

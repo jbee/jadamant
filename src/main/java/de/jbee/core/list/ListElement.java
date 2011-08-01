@@ -14,6 +14,6 @@ public interface ListElement {
 	 * 
 	 * @return the index of the element found or {@link #NOT_CONTAINED} if no element matched.
 	 */
-	<E> int in( List<E> list );
+	<E> int indexIn( List<E> list );
 
 }

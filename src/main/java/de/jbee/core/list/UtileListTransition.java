@@ -139,7 +139,7 @@ public class UtileListTransition
 		return new ConsecutivelyListTransition( fst, snd );
 	}
 
-	//TODO sort / filter(Predicate)
+	//TODO sort/sortBy(Ord) / filter(Predicate) / intersect(List)/intersectBy(Eq,List) / nub/nubBy(Eq) / union(List)/unionBy(Eq,List)
 
 	static final class NoneTranstion
 			implements ListTransition {

@@ -2,6 +2,8 @@ package de.jbee.core.list;
 
 import de.jbee.core.type.Eq;
 import de.jbee.core.type.Equal;
+import de.jbee.core.type.Ord;
+import de.jbee.core.type.Ordering;
 
 public class UtileListElement {
 
@@ -41,7 +43,11 @@ public class UtileListElement {
 				: new OnPositionListElement( pos );
 	}
 
-	//TODO same as eq with condition interface
+	//TODO same as eq with condition interface -> find(ICondition)
+
+	//TODO minimum/minimumBy(Ord) - maximum/maximumBy(Ord)
+
+	//TODO insert/insertBy(Ord) -> der index, an welchem das element einsortiert würde, wäre die liste mit ord sortiert
 
 	ListElement eq( Object sample, Eq<Object> equality ) {
 		return nthEq( 1, sample, equality );
@@ -65,11 +71,82 @@ public class UtileListElement {
 		return new DuplicateListElement( start, eq );
 	}
 
+	ListElement duplicate( int start ) {
+		return duplicate( start, Equal.equality );
+	}
+
+	ListElement minimum( Ord<Object> ord ) {
+		return new MinimumListElement( ord );
+	}
+
+	ListElement maximum( Ord<Object> ord ) {
+		return new MaximimListElement( ord );
+	}
+
+	static abstract class OrderingListElement
+			implements ListElement {
+
+		private final Ord<Object> ord;
+
+		OrderingListElement( Ord<Object> ord ) {
+			super();
+			this.ord = ord;
+		}
+
+		@Override
+		public <E> int indexIn( List<E> list ) {
+			if ( list.isEmpty() ) {
+				return NOT_CONTAINED;
+			}
+			int bestIndex = 0;
+			E best = list.at( bestIndex );
+			int size = list.size();
+			for ( int i = 1; i < size; i++ ) {
+				E e = list.at( i );
+				if ( improving( ord.ord( best, e ) ) ) {
+					best = e;
+					bestIndex = i;
+				}
+			}
+			return bestIndex;
+		}
+
+		abstract <E> boolean improving( Ordering ordering );
+	}
+
+	static final class MinimumListElement
+			extends OrderingListElement {
+
+		MinimumListElement( Ord<Object> ord ) {
+			super( ord );
+		}
+
+		@Override
+		<E> boolean improving( Ordering ordering ) {
+			return ordering == Ordering.GT;
+		}
+
+	}
+
+	static final class MaximimListElement
+			extends OrderingListElement {
+
+		MaximimListElement( Ord<Object> ord ) {
+			super( ord );
+		}
+
+		@Override
+		<E> boolean improving( Ordering ordering ) {
+			return ordering == Ordering.LT;
+		}
+
+	}
+
 	static final class NoListElement
 			implements ListElement {
 
 		@Override
-		public <E> int in( List<E> list ) {
+		public <E> int indexIn( List<E> list ) {
 			return NOT_CONTAINED;
 		}
 
@@ -88,7 +165,7 @@ public class UtileListElement {
 		}
 
 		@Override
-		public <E> int in( List<E> list ) {
+		public <E> int indexIn( List<E> list ) {
 			int size = list.size();
 			for ( int i = start; i < size - 1; i++ ) {
 				final E e = list.at( i );
@@ -113,7 +190,7 @@ public class UtileListElement {
 		}
 
 		@Override
-		public <E> int in( List<E> list ) {
+		public <E> int indexIn( List<E> list ) {
 			return Math.abs( pos ) < list.size()
 				? pos < 0
 					? list.size() + pos
@@ -142,7 +219,7 @@ public class UtileListElement {
 		}
 
 		@Override
-		public <E> int in( List<E> list ) {
+		public <E> int indexIn( List<E> list ) {
 			if ( list.isEmpty() ) {
 				return NOT_CONTAINED;
 			}

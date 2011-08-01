@@ -29,6 +29,10 @@ public final class Order {
 		return new CompareableOrder<T>();
 	}
 
+	public static <T> Ord<Object> typesave( Class<T> type, Ord<? super T> ord ) {
+		return new TypesaveOrder<T>( type, ord );
+	}
+
 	public static <T> Ord<T> desc( Ord<T> ord ) {
 		if ( ord instanceof InverseOrder<?> ) {
 			return desc( ( (InverseOrder<T>) ord ).ord );
@@ -71,6 +75,34 @@ public final class Order {
 		public Ordering ord( Object one, Object other ) {
 			return Ordering.valueOf( System.identityHashCode( one )
 					- System.identityHashCode( other ) );
+		}
+
+	}
+
+	static final class TypesaveOrder<T>
+			implements Ord<Object>, Nullproof {
+
+		final Class<T> type;
+		final Ord<? super T> ord;
+
+		TypesaveOrder( Class<T> type, Ord<? super T> ord ) {
+			super();
+			this.type = type;
+			this.ord = ord;
+		}
+
+		@SuppressWarnings ( "unchecked" )
+		@Override
+		public Ordering ord( Object one, Object other ) {
+			if ( type.isInstance( one ) && type.isInstance( other ) ) {
+				return ord.ord( (T) one, (T) other );
+			}
+			return Ordering.LT;
+		}
+
+		@Override
+		public boolean isNullsave() {
+			return Null.isSave( ord );
 		}
 
 	}
