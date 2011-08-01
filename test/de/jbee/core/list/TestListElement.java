@@ -75,6 +75,15 @@ public class TestListElement {
 	}
 
 	@Test
+	public void testMaximumListElementMixed() {
+		List<Object> l = List.with.<Object> elements( 1, 2, 'c', "blue" );
+		Ord<Object> intOrd = Order.typesave( Integer.class, Order.numerical );
+		assertThat( List.element.maximum( intOrd ).indexIn( l ), is( 1 ) );
+		Ord<Object> charOrd = Order.typesave( Character.class, Order.abecedarian );
+		assertThat( List.element.maximum( charOrd ).indexIn( l ), is( 2 ) );
+	}
+
+	@Test
 	public void testMinimumListElement() {
 		List<Integer> l = List.with.elements( 2, 5, 1, 3, 8, 4 );
 		Ord<Object> ord = Order.typesave( Integer.class, Order.numerical );
