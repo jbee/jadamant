@@ -10,6 +10,22 @@ public enum Ordering {
 		return this == EQ;
 	}
 
+	public boolean isLt() {
+		return this == LT;
+	}
+
+	public boolean isGt() {
+		return this == GT;
+	}
+
+	public boolean isLe() {
+		return this != GT;
+	}
+
+	public boolean isGe() {
+		return this != LT;
+	}
+
 	public int intValue() {
 		return this == LT
 			? -1
