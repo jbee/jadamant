@@ -6,7 +6,6 @@ import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 
-import de.jbee.core.type.Equal;
 import de.jbee.core.type.Ord;
 import de.jbee.core.type.Order;
 
@@ -35,18 +34,18 @@ public class TestListElement {
 	@Test
 	public void testNthListElement() {
 		List<Integer> l = List.with.elements( 3, 4, 3, 4, 3 );
-		assertThat( List.element.nthEq( 1, 3, Equal.equality ).indexIn( l ), is( 0 ) );
-		assertThat( List.element.nthEq( 2, 3, Equal.equality ).indexIn( l ), is( 2 ) );
-		assertThat( List.element.nthEq( 3, 3, Equal.equality ).indexIn( l ), is( 4 ) );
-		assertThat( List.element.nthEq( 1, 5, Equal.equality ).indexIn( l ), is( NOT_CONTAINED ) );
+		assertThat( List.element.nthEq( 1, 3 ).indexIn( l ), is( 0 ) );
+		assertThat( List.element.nthEq( 2, 3 ).indexIn( l ), is( 2 ) );
+		assertThat( List.element.nthEq( 3, 3 ).indexIn( l ), is( 4 ) );
+		assertThat( List.element.nthEq( 1, 5 ).indexIn( l ), is( NOT_CONTAINED ) );
 	}
 
 	@Test
 	public void testHeadListElement() {
-		assertThat( List.head.indexIn( List.with.elements( 42, 3, 5 ) ), is( 0 ) );
-		assertThat( List.head.indexIn( List.with.elements( 42, 3 ) ), is( 0 ) );
-		assertThat( List.head.indexIn( List.with.elements( 42 ) ), is( 0 ) );
-		assertThat( List.head.indexIn( List.with.noElements() ), is( NOT_CONTAINED ) );
+		assertThat( List.element.head().indexIn( List.with.elements( 42, 3, 5 ) ), is( 0 ) );
+		assertThat( List.element.head().indexIn( List.with.elements( 42, 3 ) ), is( 0 ) );
+		assertThat( List.element.head().indexIn( List.with.elements( 42 ) ), is( 0 ) );
+		assertThat( List.element.head().indexIn( List.with.noElements() ), is( NOT_CONTAINED ) );
 	}
 
 	@Test
@@ -76,11 +75,11 @@ public class TestListElement {
 
 	@Test
 	public void testMaximumListElementMixed() {
-		List<Object> l = List.with.<Object> elements( 1, 2, 'c', "blue" );
+		List<Object> l = List.with.<Object> elements( 1, 2, 'c', "blue", 'd', "e" );
 		Ord<Object> intOrd = Order.typesave( Integer.class, Order.numerical );
 		assertThat( List.element.maximum( intOrd ).indexIn( l ), is( 1 ) );
 		Ord<Object> charOrd = Order.typesave( Character.class, Order.abecedarian );
-		assertThat( List.element.maximum( charOrd ).indexIn( l ), is( 2 ) );
+		assertThat( List.element.maximum( charOrd ).indexIn( l ), is( 4 ) );
 	}
 
 	@Test

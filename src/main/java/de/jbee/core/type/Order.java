@@ -80,7 +80,7 @@ public final class Order {
 	}
 
 	static final class TypesaveOrder<T>
-			implements Ord<Object>, Nullproof {
+			implements Ord<Object>, Nullsave {
 
 		final Class<T> type;
 		final Ord<? super T> ord;
@@ -106,11 +106,6 @@ public final class Order {
 				return Ordering.LT;
 			}
 			return Ordering.EQ;
-		}
-
-		@Override
-		public boolean isNullsave() {
-			return Null.isSave( ord );
 		}
 
 	}

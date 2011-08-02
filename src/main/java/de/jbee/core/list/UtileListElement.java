@@ -13,6 +13,10 @@ public class UtileListElement {
 	static final ListElement LAST = new OnPositionListElement( -1 );
 	static final ListElement HEAD = FIRST;
 
+	ListElement head() {
+		return HEAD;
+	}
+
 	ListElement nextTo( int index ) {
 		return at( index + 1 );
 	}
@@ -52,6 +56,10 @@ public class UtileListElement {
 
 	ListElement eq( Object sample, Eq<Object> equality ) {
 		return nthEq( 1, sample, equality );
+	}
+
+	ListElement nthEq( int n, Object sample ) {
+		return nthEq( n, sample, Equal.equality );
 	}
 
 	ListElement nthEq( int n, Object sample, Eq<Object> equality ) {
@@ -116,7 +124,8 @@ public class UtileListElement {
 					}
 				} else if ( list.size() > 1 ) {
 					E other = list.at( 1 );
-					if ( ord.ord( best, other ) == ord.ord( other, best ) ) {
+					Ordering order = ord.ord( best, other );
+					if ( !order.isEq() && order == ord.ord( other, best ) ) {
 						return NOT_CONTAINED;
 					}
 				}

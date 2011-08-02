@@ -49,8 +49,6 @@ public interface List<E>
 
 	//TODO a util for string handling strings as list of characters
 
-	ListElement head = ListElement.head;
-
 	ListTransition reverse = ListTransition.reverse;
 
 	ListTransition tail = ListTransition.tail;
