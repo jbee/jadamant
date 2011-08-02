@@ -57,36 +57,36 @@ public class TestListElement {
 	}
 
 	@Test
-	public void testMaximumListElement() {
+	public void testMaximumByListElement() {
 		List<Integer> l = List.with.elements( 2, 5, 1, 3, 8, 4 );
 		Ord<Object> ord = Order.typesave( Integer.class, Order.numerical );
-		assertThat( List.element.maximum( ord ).indexIn( l ), is( 4 ) );
+		assertThat( List.element.maximumBy( ord ).indexIn( l ), is( 4 ) );
 	}
 
 	@Test
-	public void testMaximumListElementMistypedOrder() {
+	public void testMaximumByListElementMistypedOrder() {
 		List<Character> l = List.with.charactersIn( "Hello" );
 		Ord<Object> ord = Order.typesave( Integer.class, Order.numerical );
-		assertThat( List.element.maximum( ord ).indexIn( l ), is( NOT_CONTAINED ) );
+		assertThat( List.element.maximumBy( ord ).indexIn( l ), is( NOT_CONTAINED ) );
 		// just check that a proper order would do it:
 		ord = Order.typesave( Character.class, Order.abecedarian );
-		assertThat( List.element.maximum( ord ).indexIn( l ), is( 4 ) );
+		assertThat( List.element.maximumBy( ord ).indexIn( l ), is( 4 ) );
 	}
 
 	@Test
-	public void testMaximumListElementMixed() {
+	public void testMaximumByListElementMixed() {
 		List<Object> l = List.with.<Object> elements( 1, 2, 'c', "blue", 'd', "e" );
 		Ord<Object> intOrd = Order.typesave( Integer.class, Order.numerical );
-		assertThat( List.element.maximum( intOrd ).indexIn( l ), is( 1 ) );
+		assertThat( List.element.maximumBy( intOrd ).indexIn( l ), is( 1 ) );
 		Ord<Object> charOrd = Order.typesave( Character.class, Order.abecedarian );
-		assertThat( List.element.maximum( charOrd ).indexIn( l ), is( 4 ) );
+		assertThat( List.element.maximumBy( charOrd ).indexIn( l ), is( 4 ) );
 	}
 
 	@Test
-	public void testMinimumListElement() {
+	public void testMinimumByListElement() {
 		List<Integer> l = List.with.elements( 2, 5, 1, 3, 8, 4 );
 		Ord<Object> ord = Order.typesave( Integer.class, Order.numerical );
-		assertThat( List.element.minimum( ord ).indexIn( l ), is( 2 ) );
+		assertThat( List.element.minimumBy( ord ).indexIn( l ), is( 2 ) );
 	}
 
 }

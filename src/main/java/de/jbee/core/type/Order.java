@@ -19,6 +19,8 @@ public final class Order {
 		throw new UnsupportedOperationException( "util" );
 	}
 
+	public static final Ord<Object> natural = nullsave( new NaturalOrder() );
+
 	public static final Ord<Sortable> sortable = new SortableOrder();
 	public static final Ord<Number> numerical = new NumericalOrder();
 	public static final Ord<Character> abecedarian = new AbecedarianOrder();
@@ -66,6 +68,36 @@ public final class Order {
 
 	public static <T> Ord<T> nullsLast( Ord<T> ord ) {
 		return inverse( nullsave( inverse( ord ) ) );
+	}
+
+	static final class NaturalOrder
+			implements Ord<Object> {
+
+		@SuppressWarnings ( "unchecked" )
+		@Override
+		public Ordering ord( Object one, Object other ) {
+			if ( one instanceof Sortable && other instanceof Sortable ) {
+				return sortable.ord( (Sortable) one, (Sortable) other );
+			}
+			if ( one instanceof Comparable<?> && other instanceof Comparable<?>
+					&& one.getClass() == other.getClass() ) {
+				return compare( (Comparable) one, (Comparable) other );
+			}
+			if ( one instanceof Number && other instanceof Number ) {
+				return numerical.ord( (Number) one, (Number) other );
+			}
+			if ( one instanceof CharSequence && other instanceof CharSequence ) {
+				return alphabetical.ord( (CharSequence) one, (CharSequence) other );
+			}
+			if ( one instanceof Character && other instanceof Character ) {
+				return abecedarian.ord( (Character) one, (Character) other );
+			}
+			return identity.ord( one, other );
+		}
+
+		private <T extends Comparable<T>> Ordering compare( T one, T other ) {
+			return Order.<T> byCompare().ord( one, other );
+		}
 	}
 
 	static final class IdentityOrder

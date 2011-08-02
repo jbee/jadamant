@@ -4,6 +4,7 @@ import de.jbee.core.dev.Null;
 import de.jbee.core.type.Eq;
 import de.jbee.core.type.Equal;
 import de.jbee.core.type.Ord;
+import de.jbee.core.type.Order;
 import de.jbee.core.type.Ordering;
 
 public class UtileListElement {
@@ -84,11 +85,19 @@ public class UtileListElement {
 		return duplicate( start, Equal.equality );
 	}
 
-	ListElement minimum( Ord<Object> ord ) {
+	ListElement minimum() {
+		return maximumBy( Order.natural );
+	}
+
+	ListElement minimumBy( Ord<Object> ord ) {
 		return new MinimumListElement( ord );
 	}
 
-	ListElement maximum( Ord<Object> ord ) {
+	ListElement maximum() {
+		return maximumBy( Order.natural );
+	}
+
+	ListElement maximumBy( Ord<Object> ord ) {
 		return new MaximimListElement( ord );
 	}
 
