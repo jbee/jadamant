@@ -24,4 +24,18 @@ public class TestListTranstion {
 				hasEqualElementsAsIn( List.with.<Integer> noElements() ) );
 	}
 
+	@Test
+	public void testSorts() {
+		List<Integer> l = List.with.elements( 4, 5, 7, 3, 1, 8 );
+		assertThat( List.which.sorts().from( l ), hasEqualElementsAsIn( List.with.elements( 1, 3,
+				4, 5, 7, 8 ) ) );
+	}
+
+	@Test
+	public void testNubs() {
+		List<Integer> l = List.with.elements( 4, 5, 4, 6, 5, 7 );
+		assertThat( List.which.nubs().from( l ), hasEqualElementsAsIn( List.with.elements( 4, 5, 6,
+				7 ) ) );
+	}
+
 }

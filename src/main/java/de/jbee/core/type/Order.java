@@ -1,5 +1,6 @@
 package de.jbee.core.type;
 
+import java.util.Arrays;
 import java.util.Comparator;
 
 import de.jbee.core.dev.Null;
@@ -8,7 +9,7 @@ import de.jbee.core.dev.Nullsave;
 
 /**
  * All types of orders are ascending by default. You will not find a descending version. Therefore
- * you can invert every order by applying the {@link InverseOrder} wrapper.
+ * you can invert every order by applying the {@link InverseOrder} proxy.
  * 
  * @author Jan Bernitt (jan.bernitt@gmx.de)
  * 
@@ -19,6 +20,18 @@ public final class Order {
 		throw new UnsupportedOperationException( "util" );
 	}
 
+	/**
+	 * <p>
+	 * This order might result in what you expect under no special circumstances. In fact there is
+	 * no 'natural' order in general. Its just the most common understanding of a 'correct' ordering
+	 * in the most common cases where this leads to the most expected result. So in some cases this
+	 * order might deliver quite unexpected results.
+	 * </p>
+	 * <p>
+	 * Please do not misunderstand the existence of this order. It acts as an default order where no
+	 * order should or could be passed as argument. <b>If you know better - don't use this!</b>
+	 * </p>
+	 */
 	public static final Ord<Object> natural = nullsave( new NaturalOrder() );
 
 	public static final Ord<Sortable> sortable = new SortableOrder();
@@ -26,6 +39,7 @@ public final class Order {
 	public static final Ord<Character> abecedarian = new AbecedarianOrder();
 	public static final Ord<CharSequence> alphabetical = new AlphabeticalOrder();
 	public static final Ord<Object> identity = new IdentityOrder();
+	public static final Ord<java.lang.Enum<?>> enumerative = new EnumerativeOrder();
 
 	public static <T extends Comparable<T>> Ord<T> byCompare() {
 		return new CompareableOrder<T>();
@@ -70,6 +84,27 @@ public final class Order {
 		return inverse( nullsave( inverse( ord ) ) );
 	}
 
+	public static <T> void sort( T[] array, Ord<T> ord ) {
+		Arrays.sort( array, new OrderComparator<T>( ord ) );
+	}
+
+	static final class OrderComparator<T>
+			implements Comparator<T> {
+
+		private final Ord<T> ord;
+
+		OrderComparator( Ord<T> ord ) {
+			super();
+			this.ord = ord;
+		}
+
+		@Override
+		public int compare( T one, T other ) {
+			return ord.ord( one, other ).intValue();
+		}
+
+	}
+
 	static final class NaturalOrder
 			implements Ord<Object> {
 
@@ -79,9 +114,8 @@ public final class Order {
 			if ( one instanceof Sortable && other instanceof Sortable ) {
 				return sortable.ord( (Sortable) one, (Sortable) other );
 			}
-			if ( one instanceof Comparable<?> && other instanceof Comparable<?>
-					&& one.getClass() == other.getClass() ) {
-				return compare( (Comparable) one, (Comparable) other );
+			if ( one.getClass().isEnum() && other.getClass().isEnum() ) {
+				return enumerative.ord( (java.lang.Enum<?>) one, (java.lang.Enum<?>) other );
 			}
 			if ( one instanceof Number && other instanceof Number ) {
 				return numerical.ord( (Number) one, (Number) other );
@@ -92,12 +126,30 @@ public final class Order {
 			if ( one instanceof Character && other instanceof Character ) {
 				return abecedarian.ord( (Character) one, (Character) other );
 			}
+			if ( one instanceof Comparable<?> && other instanceof Comparable<?>
+					&& one.getClass() == other.getClass() ) {
+				return compare( (Comparable) one, (Comparable) other );
+			}
 			return identity.ord( one, other );
 		}
 
 		private <T extends Comparable<T>> Ordering compare( T one, T other ) {
 			return Order.<T> byCompare().ord( one, other );
 		}
+	}
+
+	static final class EnumerativeOrder
+			implements Ord<java.lang.Enum<?>> {
+
+		@Override
+		public Ordering ord( java.lang.Enum<?> one, java.lang.Enum<?> other ) {
+			if ( one.getDeclaringClass() == other.getDeclaringClass() ) {
+				return Ordering.valueOf( one.ordinal() - other.ordinal() );
+			}
+			return alphabetical.ord( one.getClass().getCanonicalName(),
+					other.getClass().getCanonicalName() );
+		}
+
 	}
 
 	static final class IdentityOrder
@@ -160,7 +212,7 @@ public final class Order {
 			if ( other == null ) {
 				return Ordering.GT;
 			}
-			return ord( one, other );
+			return ord.ord( one, other );
 		}
 
 	}

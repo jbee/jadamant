@@ -3,10 +3,9 @@ package de.jbee.core.list;
 import de.jbee.core.Appendable;
 import de.jbee.core.Arrayable;
 import de.jbee.core.Core;
-import de.jbee.core.IndexAccessible;
 import de.jbee.core.ModifiableSequence;
 import de.jbee.core.Prepandable;
-import de.jbee.util.ICluster;
+import de.jbee.core.Sequence;
 
 /**
  * Lists are immutable and use a persistent data-structure whereby they are thread-save by
@@ -23,8 +22,7 @@ import de.jbee.util.ICluster;
  * 
  */
 public interface List<E>
-		extends ICluster<E>, IndexAccessible<E>, Prepandable<E>, Appendable<E>,
-		ModifiableSequence<E>, Arrayable {
+		extends Prepandable<E>, Appendable<E>, Sequence<E>, ModifiableSequence<E>, Arrayable {
 
 	/**
 	 * The operator to use in a {@link Object#toString()} when visualizing concatenation of lists.

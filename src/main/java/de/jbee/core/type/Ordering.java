@@ -34,6 +34,14 @@ public enum Ordering {
 				: 1;
 	}
 
+	public static Ordering ascOf( Sortable one, Sortable other ) {
+		return valueOf( one.ordinal() - other.ordinal() );
+	}
+
+	public static Ordering descOf( Sortable one, Sortable other ) {
+		return valueOf( other.ordinal() - one.ordinal() );
+	}
+
 	public static Ordering valueOf( int value ) {
 		return value < 0
 			? LT

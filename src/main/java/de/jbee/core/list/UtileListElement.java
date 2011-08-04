@@ -1,5 +1,6 @@
 package de.jbee.core.list;
 
+import de.jbee.core.Sequence;
 import de.jbee.core.dev.Null;
 import de.jbee.core.type.Eq;
 import de.jbee.core.type.Equal;
@@ -112,7 +113,7 @@ public class UtileListElement {
 		}
 
 		@Override
-		public <E> int indexIn( List<E> list ) {
+		public <E> int indexIn( Sequence<E> list ) {
 			if ( list.isEmpty() ) {
 				return NOT_CONTAINED;
 			}
@@ -178,7 +179,7 @@ public class UtileListElement {
 			implements ListElement {
 
 		@Override
-		public <E> int indexIn( List<E> list ) {
+		public <E> int indexIn( Sequence<E> list ) {
 			return NOT_CONTAINED;
 		}
 
@@ -197,7 +198,7 @@ public class UtileListElement {
 		}
 
 		@Override
-		public <E> int indexIn( List<E> list ) {
+		public <E> int indexIn( Sequence<E> list ) {
 			int size = list.size();
 			for ( int i = start; i < size - 1; i++ ) {
 				final E e = list.at( i );
@@ -222,7 +223,7 @@ public class UtileListElement {
 		}
 
 		@Override
-		public <E> int indexIn( List<E> list ) {
+		public <E> int indexIn( Sequence<E> list ) {
 			return Math.abs( pos ) < list.size()
 				? pos < 0
 					? list.size() + pos
@@ -251,7 +252,7 @@ public class UtileListElement {
 		}
 
 		@Override
-		public <E> int indexIn( List<E> list ) {
+		public <E> int indexIn( Sequence<E> list ) {
 			if ( list.isEmpty() ) {
 				return NOT_CONTAINED;
 			}

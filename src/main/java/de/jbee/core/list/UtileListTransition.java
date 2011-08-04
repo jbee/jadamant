@@ -3,15 +3,19 @@ package de.jbee.core.list;
 import java.util.Iterator;
 
 import de.jbee.core.IndexAccess;
+import de.jbee.core.type.Eq;
+import de.jbee.core.type.Equal;
+import de.jbee.core.type.Ord;
+import de.jbee.core.type.Order;
 import de.jbee.util.ICondition;
 
 public class UtileListTransition
 		implements ListTransition {
 
 	public static final ListTransition none = new NoneTranstion();
-	public static final ListTransition reverse = new ReverseListTransition();
-	public static final ListTransition tail = new DropFirstListTransition( 1 );
-	public static final ListTransition init = new DropLastListTransition( 1 );
+	public static final ListTransition reverse = new ReversingTransition();
+	public static final ListTransition tail = new DropFirstNTransition( 1 );
+	public static final ListTransition init = new DropLastNListTransition( 1 );
 
 	static final UtileListTransition instance = new UtileListTransition( none );
 
@@ -41,30 +45,30 @@ public class UtileListTransition
 
 	//TODO some kind of dropWhile working with a condition types with the list type -> other interface
 	public UtileListTransition dropsWhile( ICondition<Object> condition ) {
-		return followedBy( new DropWhileListTransition( condition ) );
+		return followedBy( new DropWhileTransition( condition ) );
 	}
 
 	//TODO some kind of takeWhile working with a condition types with the list type -> other interface
 	public UtileListTransition takesWhile( ICondition<Object> condition ) {
-		return followedBy( new TakeWhileListTransition( condition ) );
+		return followedBy( new TakeWhileTransition( condition ) );
 	}
 
 	public UtileListTransition dropsFirst( int count ) {
 		return followedBy( count == 1
 			? tail
-			: new DropFirstListTransition( count ) );
+			: new DropFirstNTransition( count ) );
 	}
 
 	public UtileListTransition dropsLast( int count ) {
-		return followedBy( new DropLastListTransition( count ) );
+		return followedBy( new DropLastNListTransition( count ) );
 	}
 
 	public UtileListTransition takesFirst( int count ) {
-		return followedBy( new TakeFirstListTransition( count ) );
+		return followedBy( new TakeFirstNTransition( count ) );
 	}
 
 	public UtileListTransition takesLast( int count ) {
-		return followedBy( new TakeLastListTransition( count ) );
+		return followedBy( new TakeLastNTransition( count ) );
 	}
 
 	public UtileListTransition takesFrom( int index ) {
@@ -119,8 +123,24 @@ public class UtileListTransition
 			: new SwapTransition( idx1, idx2 ) );
 	}
 
+	public UtileListTransition sorts() {
+		return sortsBy( Order.natural );
+	}
+
+	public UtileListTransition sortsBy( Ord<Object> ord ) {
+		return followedBy( new SortingTransition( ord ) );
+	}
+
+	public UtileListTransition nubs() {
+		return nubsBy( Equal.equality );
+	}
+
+	public UtileListTransition nubsBy( Eq<Object> eq ) {
+		return followedBy( new NubTranstion( eq ) );
+	}
+
 	public UtileListTransition deletes( int index ) {
-		return followedBy( new DeleteTransition( index ) );
+		return followedBy( new DeleteIndexTransition( index ) );
 	}
 
 	public UtileListTransition concats( ListTransition head, ListTransition tail ) {
@@ -136,10 +156,10 @@ public class UtileListTransition
 		if ( snd == none ) {
 			return fst;
 		}
-		return new ConsecutivelyListTransition( fst, snd );
+		return new ConsecutivelyTransition( fst, snd );
 	}
 
-	//TODO sort/sortBy(Ord) / filter(Predicate) / intersect(List)/intersectBy(Eq,List) / nub/nubBy(Eq) / union(List)/unionBy(Eq,List)
+	//TODO filter(Predicate) / intersect(List)/intersectBy(Eq,List) / nub/nubBy(Eq) / union(List)/unionBy(Eq,List)
 
 	static final class NoneTranstion
 			implements ListTransition {
@@ -169,12 +189,35 @@ public class UtileListTransition
 		}
 	}
 
-	static final class DeleteTransition
+	static final class NubTranstion
+			implements ListTransition {
+
+		private final Eq<Object> eq;
+
+		NubTranstion( Eq<Object> eq ) {
+			super();
+			this.eq = eq;
+		}
+
+		@Override
+		public <E> List<E> from( List<E> list ) {
+			List<E> res = list;
+			int index = List.element.duplicate( eq ).indexIn( res );
+			while ( index != ListElement.NOT_CONTAINED ) {
+				res = res.deleteAt( index );
+				index = List.element.duplicate( eq ).indexIn( res );
+			}
+			return res;
+		}
+
+	}
+
+	static final class DeleteIndexTransition
 			implements ListTransition {
 
 		private final int index;
 
-		DeleteTransition( int index ) {
+		DeleteIndexTransition( int index ) {
 			super();
 			this.index = index;
 		}
@@ -236,12 +279,12 @@ public class UtileListTransition
 
 	}
 
-	static final class TakeFirstListTransition
+	static final class TakeFirstNTransition
 			implements ListTransition {
 
 		private final int count;
 
-		TakeFirstListTransition( int count ) {
+		TakeFirstNTransition( int count ) {
 			super();
 			this.count = count;
 		}
@@ -253,12 +296,12 @@ public class UtileListTransition
 
 	}
 
-	static final class DropFirstListTransition
+	static final class DropFirstNTransition
 			implements ListTransition {
 
 		private final int count;
 
-		DropFirstListTransition( int count ) {
+		DropFirstNTransition( int count ) {
 			super();
 			this.count = count;
 		}
@@ -270,12 +313,12 @@ public class UtileListTransition
 
 	}
 
-	static final class TakeLastListTransition
+	static final class TakeLastNTransition
 			implements ListTransition {
 
 		private final int count;
 
-		TakeLastListTransition( int count ) {
+		TakeLastNTransition( int count ) {
 			super();
 			this.count = count;
 		}
@@ -286,12 +329,12 @@ public class UtileListTransition
 		}
 	}
 
-	static final class DropLastListTransition
+	static final class DropLastNListTransition
 			implements ListTransition {
 
 		private final int count;
 
-		DropLastListTransition( int count ) {
+		DropLastNListTransition( int count ) {
 			super();
 			this.count = count;
 		}
@@ -303,13 +346,13 @@ public class UtileListTransition
 
 	}
 
-	static final class ConsecutivelyListTransition
+	static final class ConsecutivelyTransition
 			implements ListTransition {
 
 		final ListTransition fst;
 		final ListTransition snd;
 
-		ConsecutivelyListTransition( ListTransition fst, ListTransition snd ) {
+		ConsecutivelyTransition( ListTransition fst, ListTransition snd ) {
 			super();
 			this.fst = fst;
 			this.snd = snd;
@@ -321,12 +364,12 @@ public class UtileListTransition
 		}
 	}
 
-	static final class TakeWhileListTransition
+	static final class TakeWhileTransition
 			implements ListTransition {
 
 		final ICondition<Object> condition;
 
-		TakeWhileListTransition( ICondition<Object> condition ) {
+		TakeWhileTransition( ICondition<Object> condition ) {
 			super();
 			this.condition = condition;
 		}
@@ -344,12 +387,12 @@ public class UtileListTransition
 
 	}
 
-	static final class DropWhileListTransition
+	static final class DropWhileTransition
 			implements ListTransition {
 
 		final ICondition<Object> condition;
 
-		DropWhileListTransition( ICondition<Object> condition ) {
+		DropWhileTransition( ICondition<Object> condition ) {
 			super();
 			this.condition = condition;
 		}
@@ -366,7 +409,7 @@ public class UtileListTransition
 		}
 	}
 
-	static final class ReverseListTransition
+	static final class ReversingTransition
 			implements ListTransition {
 
 		@Override
@@ -375,6 +418,29 @@ public class UtileListTransition
 				return ( (ReversingList<E>) list ).list;
 			}
 			return new ReversingList<E>( list );
+		}
+
+	}
+
+	static final class SortingTransition
+			implements ListTransition {
+
+		private final Ord<Object> ord;
+
+		SortingTransition( Ord<Object> ord ) {
+			super();
+			this.ord = ord;
+		}
+
+		@Override
+		public <E> List<E> from( List<E> list ) {
+			if ( list.size() < 2 ) {
+				return list;
+			}
+			Object[] elems = new Object[list.size()];
+			list.fill( 0, elems, 0, list.size() );
+			Order.sort( elems, ord );
+			return StackList.tidy( list.size(), elems, list.take( 0 ) );
 		}
 
 	}
