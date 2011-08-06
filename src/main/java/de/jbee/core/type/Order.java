@@ -86,7 +86,7 @@ public final class Order {
 	}
 
 	public static <T> void sort( T[] array, Ord<T> ord ) {
-		Arrays.sort( array, new OrderComparator<T>( ord ) );
+		Arrays.sort( array, new OrderAdapterComparator<T>( ord ) );
 	}
 
 	public static <T> Ord<T> sub( Ord<? super T> primary, Ord<? super T> secondary ) {
@@ -105,24 +105,24 @@ public final class Order {
 		return new EqualUnequalOrder<T>( eq, value );
 	}
 
-	public static <T> Ord<T> unfulfilledFulfilled( ICondition<T> condition ) {
-		return fulfilledUnfulfilled( Fulfills.not( condition ) );
+	public static <T> Ord<T> unfulfillingFulfilling( ICondition<T> condition ) {
+		return fulfillingUnfulfilling( Fulfills.not( condition ) );
 	}
 
-	public static <T> Ord<T> fulfilledUnfulfilled( ICondition<T> condition ) {
-		return new FulfilledUnfulfilledOrder<T>( condition );
+	public static <T> Ord<T> fulfillingUnfulfilling( ICondition<T> condition ) {
+		return new FulfillingUnfulfillingOrder<T>( condition );
 	}
 
 	private Order() {
 		throw new UnsupportedOperationException( "util" );
 	}
 
-	static final class FulfilledUnfulfilledOrder<T>
+	static final class FulfillingUnfulfillingOrder<T>
 			implements Ord<T> {
 
 		private final ICondition<T> condition;
 
-		FulfilledUnfulfilledOrder( ICondition<T> condition ) {
+		FulfillingUnfulfillingOrder( ICondition<T> condition ) {
 			super();
 			this.condition = condition;
 		}
@@ -365,12 +365,12 @@ public final class Order {
 
 	}
 
-	static final class OrderComparator<T>
+	static final class OrderAdapterComparator<T>
 			implements Comparator<T> {
 
 		private final Ord<T> ord;
 
-		OrderComparator( Ord<T> ord ) {
+		OrderAdapterComparator( Ord<T> ord ) {
 			super();
 			this.ord = ord;
 		}
