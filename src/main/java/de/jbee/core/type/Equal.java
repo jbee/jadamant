@@ -10,8 +10,20 @@ public final class Equal {
 		throw new UnsupportedOperationException( "util" );
 	}
 
+	/**
+	 * Two objects count as equal if <code>one == other</code> is <code>true</code>.
+	 */
 	public static final Eq<Object> identity = new SameIdentityEquality();
-	public static final Eq<Object> equality = nullsave( new EqualsEquality() );
+	/**
+	 * Two objects count as equal if <code>one.equals(other)</code> is <code>true</code>.
+	 * 
+	 * @see #equals(Object)
+	 */
+	public static final Eq<Object> equals = nullsave( new EqualsEquality() );
+	/**
+	 * Two objects count as equal if {@link System#identityHashCode(Object)} results in the same
+	 * hash code and both objects are instances of the same class.
+	 */
 	public static final Eq<Object> objectId = nullsave( new SameObjectIdEquality() );
 
 	public static <T> Eq<T> nullsave( Eq<T> eq ) {

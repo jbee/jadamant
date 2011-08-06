@@ -124,7 +124,7 @@ public class UtileListTransition
 	}
 
 	public UtileListTransition sorts() {
-		return sortsBy( Order.natural );
+		return sortsBy( Order.inherent );
 	}
 
 	public UtileListTransition sortsBy( Ord<Object> ord ) {
@@ -132,7 +132,7 @@ public class UtileListTransition
 	}
 
 	public UtileListTransition nubs() {
-		return nubsBy( Equal.equality );
+		return nubsBy( Equal.equals );
 	}
 
 	public UtileListTransition nubsBy( Eq<Object> eq ) {

@@ -135,4 +135,15 @@ public class TestUtileListIndex {
 		assertThat( List.indexFor.nthBefore( 1, List.indexFor.maximum() ).in( l ), is( 3 ) );
 		assertThat( List.indexFor.nthBefore( 2, List.indexFor.maximum() ).in( l ), is( 2 ) );
 	}
+
+	@Test
+	public void testInsertListIndex() {
+		List<Integer> l = List.with.elements( 1, 2, 3, 5, 6, 9, 12 );
+		assertThat( List.indexFor.insert( 0 ).in( l ), is( 0 ) );
+		assertThat( List.indexFor.insert( 1 ).in( l ), is( 0 ) );
+		assertThat( List.indexFor.insert( 2 ).in( l ), is( 1 ) );
+		assertThat( List.indexFor.insert( 4 ).in( l ), is( 3 ) );
+		assertThat( List.indexFor.insert( 7 ).in( l ), is( 5 ) );
+		assertThat( List.indexFor.insert( 13 ).in( l ), is( 7 ) );
+	}
 }

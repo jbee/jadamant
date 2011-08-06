@@ -29,10 +29,10 @@ public final class Order {
 	 * </p>
 	 * <p>
 	 * Please do not misunderstand the existence of this order. It acts as an default order where no
-	 * order should or could be passed as argument. <b>If you know better - don't use this!</b>
+	 * order should or could be passed or be used. <b>If you know better - don't use this!</b>
 	 * </p>
 	 */
-	public static final Ord<Object> natural = nullsave( new NaturalOrder() );
+	public static final Ord<Object> inherent = nullsave( new InherentOrder() );
 
 	public static final Ord<Sortable> sortable = new SortableOrder();
 	public static final Ord<Number> numerical = new NumericalOrder();
@@ -105,7 +105,7 @@ public final class Order {
 
 	}
 
-	static final class NaturalOrder
+	static final class InherentOrder
 			implements Ord<Object> {
 
 		@SuppressWarnings ( "unchecked" )

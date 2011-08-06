@@ -68,36 +68,34 @@ public class UtileListIndex {
 
 	//TODO same as eq with condition interface -> find(ICondition)
 
-	//TODO insert/insertBy(Ord) -> der index, an welchem das element einsortiert würde, wäre die liste mit ord sortiert
-
-	ListIndex elem( Object sample ) {
-		return elem( sample, Equal.equality );
+	ListIndex elem( Object e ) {
+		return elem( e, Equal.equals );
 	}
 
-	ListIndex elem( Object sample, Eq<Object> eq ) {
-		return nthElem( 1, sample, eq );
+	ListIndex elem( Object e, Eq<Object> eq ) {
+		return nthElem( 1, e, eq );
 	}
 
-	ListIndex notElem( Object sample, Eq<Object> eq ) {
-		return elem( sample, Equal.not( eq ) );
+	ListIndex notElem( Object e, Eq<Object> eq ) {
+		return elem( e, Equal.not( eq ) );
 	}
 
-	ListIndex notElem( Object sample ) {
-		return notElem( sample, Equal.equality );
+	ListIndex notElem( Object e ) {
+		return notElem( e, Equal.equals );
 	}
 
-	ListIndex nthElem( int n, Object sample ) {
-		return nthElem( n, sample, Equal.equality );
+	ListIndex nthElem( int n, Object e ) {
+		return nthElem( n, e, Equal.equals );
 	}
 
-	ListIndex nthElem( int n, Object sample, Eq<Object> equality ) {
+	ListIndex nthElem( int n, Object e, Eq<Object> eq ) {
 		return n == 0
 			? NONE
-			: new NthEqualListIndex( n, sample, equality, 1 );
+			: new NthEqualListIndex( n, e, eq, 1 );
 	}
 
 	ListIndex duplicate() {
-		return duplicate( Equal.equality );
+		return duplicate( Equal.equals );
 	}
 
 	ListIndex duplicate( Eq<Object> eq ) {
@@ -109,19 +107,27 @@ public class UtileListIndex {
 	}
 
 	ListIndex duplicateFrom( int start ) {
-		return duplicate( start, Equal.equality );
+		return duplicate( start, Equal.equals );
 	}
 
 	ListIndex duplicateFor( int index ) {
-		return duplicateFor( index, Equal.equality );
+		return duplicateFor( index, Equal.equals );
 	}
 
 	ListIndex duplicateFor( int index, Eq<Object> eq ) {
 		return new DuplicateForIndexListIndex( index, eq );
 	}
 
+	ListIndex insert( Object e ) {
+		return new InsertListIndex( e, Order.inherent );
+	}
+
+	ListIndex insert( Object e, Ord<Object> ord ) {
+		return new InsertListIndex( e, ord );
+	}
+
 	ListIndex minimum() {
-		return minimumBy( Order.natural );
+		return minimumBy( Order.inherent );
 	}
 
 	ListIndex minimumBy( Ord<Object> ord ) {
@@ -129,7 +135,7 @@ public class UtileListIndex {
 	}
 
 	ListIndex maximum() {
-		return maximumBy( Order.natural );
+		return maximumBy( Order.inherent );
 	}
 
 	ListIndex maximumBy( Ord<Object> ord ) {
@@ -151,6 +157,50 @@ public class UtileListIndex {
 		@Override
 		public <E> int in( Sequence<E> list ) {
 			return List.indexFor.elemAt( index.in( list ) + offset ).in( list );
+		}
+	}
+
+	static final class InsertListIndex
+			implements ListIndex {
+
+		private final Object key;
+		private final Ord<Object> ord;
+
+		InsertListIndex( Object key, Ord<Object> ord ) {
+			super();
+			this.key = key;
+			this.ord = ord;
+		}
+
+		@Override
+		public <E> int in( Sequence<E> list ) {
+			if ( list.isEmpty() ) {
+				return 0;
+			}
+			int pos = binarySearch( list, 0, list.size(), key, ord );
+			return pos < 0
+				? -pos - 1
+				: pos;
+		}
+
+		//TODO find a place for such utils like binarySearch and sort (which is in Order now)
+		static <E> int binarySearch( Sequence<E> list, int startInclusive, int endExcluisve,
+				Object key, Ord<Object> ord ) {
+			int low = startInclusive;
+			int high = endExcluisve - 1;
+			while ( low <= high ) {
+				int mid = ( low + high ) >>> 1;
+				E midVal = list.at( mid );
+				Ordering cmp = ord.ord( midVal, key );
+				if ( cmp.isLt() ) {
+					low = mid + 1;
+				} else if ( cmp.isGt() ) {
+					high = mid - 1;
+				} else {
+					return mid; // key found
+				}
+			}
+			return - ( low + 1 ); // key not found.
 		}
 	}
 
