@@ -45,7 +45,7 @@ public final class Order {
 		return new CompareableOrder<T>();
 	}
 
-	public static <T> Ord<Object> typesave( Class<T> type, Ord<? super T> ord ) {
+	public static <T> Ord<Object> typesave( Ord<? super T> ord, Class<T> type ) {
 		return new TypesaveOrder<T>( type, ord );
 	}
 

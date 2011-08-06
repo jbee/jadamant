@@ -33,7 +33,7 @@ public class TestListTranstion {
 
 	@Test
 	public void testNubs() {
-		List<Integer> l = List.with.elements( 4, 5, 4, 6, 5, 7 );
+		List<Integer> l = List.with.elements( 4, 5, 4, 6, 5, 7, 4 );
 		assertThat( List.which.nubs().from( l ), hasEqualElementsAsIn( List.with.elements( 4, 5, 6,
 				7 ) ) );
 	}

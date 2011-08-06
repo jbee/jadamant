@@ -43,7 +43,8 @@ public interface List<E>
 	UtileEnumerator<Integer> numbers = Core.numbers;
 	UtileEnumerator<Character> letters = Core.letters;
 	UtileEnumerator<Character> characters = Core.characters;
-	UtileListElement element = new UtileListElement();
+
+	UtileListIndex indexFor = new UtileListIndex();
 
 	//TODO a util for string handling strings as list of characters
 

@@ -3,13 +3,13 @@ package de.jbee.core.list;
 import de.jbee.core.Sequence;
 
 /**
- * A {@link ListElement} is a function that resolves the index of a specific element in a
+ * A {@link ListIndex} is a function that resolves the index of a specific element in a
  * {@link Sequence} like a {@link List}.
  * 
  * @author Jan Bernitt (jan.bernitt@gmx.de)
  * 
  */
-public interface ListElement {
+public interface ListIndex {
 
 	/**
 	 * The result indicates, that a element is not contained in the list.
@@ -19,6 +19,6 @@ public interface ListElement {
 	/**
 	 * @return the index of the element found or {@link #NOT_CONTAINED} if no element matched.
 	 */
-	<E> int indexIn( Sequence<E> list );
+	<E> int in( Sequence<E> list );
 
 }
