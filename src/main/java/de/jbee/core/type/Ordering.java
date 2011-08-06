@@ -34,6 +34,18 @@ public enum Ordering {
 				: 1;
 	}
 
+	static Ordering trueFalse( boolean one, boolean other ) {
+		return one == other
+			? EQ
+			: one
+				? GT
+				: LT;
+	}
+
+	static Ordering falseTrue( boolean one, boolean other ) {
+		return trueFalse( other, one );
+	}
+
 	public static Ordering ascOf( Sortable one, Sortable other ) {
 		return valueOf( one.ordinal() - other.ordinal() );
 	}

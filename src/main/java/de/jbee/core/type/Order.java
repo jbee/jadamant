@@ -10,6 +10,8 @@ import java.util.Date;
 import de.jbee.core.dev.Null;
 import de.jbee.core.dev.Nullproof;
 import de.jbee.core.dev.Nullsave;
+import de.jbee.util.Fulfills;
+import de.jbee.util.ICondition;
 
 /**
  * All types of orders are ascending by default. You will not find a descending version. Therefore
@@ -95,8 +97,59 @@ public final class Order {
 		return new TypesaveOrder<T>( type, ord );
 	}
 
+	public static <T> Ord<T> unequalEqualTo( T value, Eq<T> eq ) {
+		return equalUnequalTo( value, Equal.not( eq ) );
+	}
+
+	public static <T> Ord<T> equalUnequalTo( T value, Eq<T> eq ) {
+		return new EqualUnequalOrder<T>( eq, value );
+	}
+
+	public static <T> Ord<T> unfulfilledFulfilled( ICondition<T> condition ) {
+		return fulfilledUnfulfilled( Fulfills.not( condition ) );
+	}
+
+	public static <T> Ord<T> fulfilledUnfulfilled( ICondition<T> condition ) {
+		return new FulfilledUnfulfilledOrder<T>( condition );
+	}
+
 	private Order() {
 		throw new UnsupportedOperationException( "util" );
+	}
+
+	static final class FulfilledUnfulfilledOrder<T>
+			implements Ord<T> {
+
+		private final ICondition<T> condition;
+
+		FulfilledUnfulfilledOrder( ICondition<T> condition ) {
+			super();
+			this.condition = condition;
+		}
+
+		@Override
+		public Ordering ord( T one, T other ) {
+			return Ordering.trueFalse( condition.fulfilledBy( one ), condition.fulfilledBy( other ) );
+		}
+	}
+
+	static final class EqualUnequalOrder<T>
+			implements Ord<T> {
+
+		private final Eq<T> eq;
+		private final T value;
+
+		EqualUnequalOrder( Eq<T> eq, T value ) {
+			super();
+			this.eq = eq;
+			this.value = value;
+		}
+
+		@Override
+		public Ordering ord( T one, T other ) {
+			return Ordering.trueFalse( eq.eq( one, value ), eq.eq( other, value ) );
+		}
+
 	}
 
 	static final class AbecedarianOrder
