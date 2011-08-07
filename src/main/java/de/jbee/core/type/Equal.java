@@ -24,7 +24,7 @@ public final class Equal {
 	 * Two objects count as equal if {@link System#identityHashCode(Object)} results in the same
 	 * hash code and both objects are instances of the same class.
 	 */
-	public static final Eq<Object> objectId = nullsave( new SameObjectIdEquality() );
+	public static final Eq<Object> objectId = nullsave( new ObjectIdEquality() );
 
 	public static <T> Eq<T> nullsave( Eq<T> eq ) {
 		return Null.isSave( eq )
@@ -48,7 +48,7 @@ public final class Equal {
 
 	}
 
-	static final class SameObjectIdEquality
+	static final class ObjectIdEquality
 			implements Eq<Object> {
 
 		@Override

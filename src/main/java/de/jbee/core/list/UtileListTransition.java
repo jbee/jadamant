@@ -204,7 +204,7 @@ public class UtileListTransition
 			List<E> res = list;
 			int i = 0;
 			while ( i < res.size() ) {
-				int index = List.indexFor.duplicateFor( i, eq ).in( res );
+				int index = List.indexFor.duplicateOfBy( i, eq ).in( res );
 				if ( index == ListIndex.NOT_CONTAINED ) {
 					i++;
 				} else {

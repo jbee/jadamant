@@ -95,26 +95,26 @@ public class UtileListIndex {
 	}
 
 	ListIndex duplicate() {
-		return duplicate( Equal.equals );
+		return duplicateBy( Equal.equals );
 	}
 
-	ListIndex duplicate( Eq<Object> eq ) {
-		return duplicate( 0, eq );
+	ListIndex duplicateBy( Eq<Object> eq ) {
+		return duplicateFromBy( 0, eq );
 	}
 
-	ListIndex duplicate( int start, Eq<Object> eq ) {
+	ListIndex duplicateFromBy( int start, Eq<Object> eq ) {
 		return new DuplicateListIndex( start, eq );
 	}
 
 	ListIndex duplicateFrom( int start ) {
-		return duplicate( start, Equal.equals );
+		return duplicateFromBy( start, Equal.equals );
 	}
 
-	ListIndex duplicateFor( int index ) {
-		return duplicateFor( index, Equal.equals );
+	ListIndex duplicateOf( int index ) {
+		return duplicateOfBy( index, Equal.equals );
 	}
 
-	ListIndex duplicateFor( int index, Eq<Object> eq ) {
+	ListIndex duplicateOfBy( int index, Eq<Object> eq ) {
 		return new DuplicateForIndexListIndex( index, eq );
 	}
 
@@ -122,7 +122,7 @@ public class UtileListIndex {
 		return new InsertListIndex( e, Order.inherent );
 	}
 
-	ListIndex insert( Object e, Ord<Object> ord ) {
+	ListIndex insertBy( Object e, Ord<Object> ord ) {
 		return new InsertListIndex( e, ord );
 	}
 
@@ -331,7 +331,7 @@ public class UtileListIndex {
 		public <E> int in( Sequence<E> list ) {
 			int size = list.size();
 			for ( int i = start; i < size - 1; i++ ) {
-				int index = List.indexFor.duplicateFor( i, eq ).in( list );
+				int index = List.indexFor.duplicateOfBy( i, eq ).in( list );
 				if ( index != NOT_CONTAINED ) {
 					return index;
 				}

@@ -66,11 +66,11 @@ public class TestUtileListIndex {
 	@Test
 	public void testDuplicateForIndexListIndex() {
 		List<Integer> l = List.with.elements( 1, 2, 3, 4, 2, 5, 3, 6 );
-		assertThat( List.indexFor.duplicateFor( 0 ).in( l ), is( NOT_CONTAINED ) );
-		assertThat( List.indexFor.duplicateFor( 1 ).in( l ), is( 4 ) );
-		assertThat( List.indexFor.duplicateFor( 2 ).in( l ), is( 6 ) );
-		assertThat( List.indexFor.duplicateFor( 3 ).in( l ), is( NOT_CONTAINED ) );
-		assertThat( List.indexFor.duplicateFor( 4 ).in( l ), is( NOT_CONTAINED ) );
+		assertThat( List.indexFor.duplicateOf( 0 ).in( l ), is( NOT_CONTAINED ) );
+		assertThat( List.indexFor.duplicateOf( 1 ).in( l ), is( 4 ) );
+		assertThat( List.indexFor.duplicateOf( 2 ).in( l ), is( 6 ) );
+		assertThat( List.indexFor.duplicateOf( 3 ).in( l ), is( NOT_CONTAINED ) );
+		assertThat( List.indexFor.duplicateOf( 4 ).in( l ), is( NOT_CONTAINED ) );
 	}
 
 	@Test
