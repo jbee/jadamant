@@ -43,6 +43,10 @@ public class UtileListTransition
 			: t;
 	}
 
+	public ListTransition plain() {
+		return utilised;
+	}
+
 	//TODO some kind of dropWhile working with a condition types with the list type -> other interface
 	public UtileListTransition dropsWhile( ICondition<Object> condition ) {
 		return followedBy( new DropWhileTransition( condition ) );
@@ -120,7 +124,7 @@ public class UtileListTransition
 	public UtileListTransition swaps( int idx1, int idx2 ) {
 		return followedBy( idx1 == idx2
 			? none
-			: new SwapTransition( idx1, idx2 ) );
+			: new SwapTransition( idx2, idx1 ) );
 	}
 
 	public UtileListTransition sorts() {
@@ -177,15 +181,19 @@ public class UtileListTransition
 		private final int idx2;
 
 		SwapTransition( int idx1, int idx2 ) {
-			super();
-			this.idx1 = idx1;
-			this.idx2 = idx2;
+			super(); // swap indices so that idx1 is always smaller - that will change higher index first
+			this.idx1 = idx1 <= idx2
+				? idx1
+				: idx2;
+			this.idx2 = idx2 >= idx1
+				? idx2
+				: idx1;
 		}
 
 		@Override
 		public <E> List<E> from( List<E> list ) {
-			final E e1 = list.at( idx1 );
-			return list.replaceAt( idx1, list.at( idx2 ) ).replaceAt( idx2, e1 );
+			final E e1 = list.at( idx2 );
+			return list.replaceAt( idx2, list.at( idx1 ) ).replaceAt( idx1, e1 );
 		}
 	}
 

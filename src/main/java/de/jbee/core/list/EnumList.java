@@ -206,7 +206,7 @@ final class EnumList<E>
 		if ( index == 0 ) {
 			return drop( 1 ).prepand( e );
 		}
-		return take( index - 1 ).concat( SingleElementList.with( e, drop( index + 1 ) ) );
+		return take( index ).concat( SingleElementList.with( e, drop( index + 1 ) ) );
 	}
 
 	@Override

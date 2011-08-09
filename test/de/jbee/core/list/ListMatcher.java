@@ -6,7 +6,7 @@ import org.hamcrest.Matcher;
 
 public class ListMatcher {
 
-	static <E> Matcher<List<E>> hasEqualElementsAsIn( List<E> expected ) {
+	public static <E> Matcher<List<E>> hasEqualElementsAsIn( List<E> expected ) {
 		return new EqualElementsMatcher<E>( expected );
 	}
 

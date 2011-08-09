@@ -153,35 +153,35 @@ public final class Core {
 	}
 
 	public static <E> List<E> _( E e1, E e2, E e3 ) {
-		return list.element( e3 ).prepand( e2 ).append( e1 );
+		return list.element( e3 ).prepand( e2 ).prepand( e1 );
 	}
 
 	public static <E> List<E> _( E e1, E e2, E e3, E e4 ) {
-		return list.element( e4 ).prepand( e3 ).prepand( e2 ).append( e1 );
+		return list.element( e4 ).prepand( e3 ).prepand( e2 ).prepand( e1 );
 	}
 
 	public static <E> List<E> _( E e1, E e2, E e3, E e4, E e5 ) {
-		return list.element( e5 ).prepand( e4 ).prepand( e3 ).prepand( e2 ).append( e1 );
+		return list.element( e5 ).prepand( e4 ).prepand( e3 ).prepand( e2 ).prepand( e1 );
 	}
 
 	public static <E> List<E> _( E e1, E e2, E e3, E e4, E e5, E e6 ) {
-		return list.element( e6 ).prepand( e5 ).prepand( e4 ).prepand( e3 ).prepand( e2 ).append(
+		return list.element( e6 ).prepand( e5 ).prepand( e4 ).prepand( e3 ).prepand( e2 ).prepand(
 				e1 );
 	}
 
 	public static <E> List<E> _( E e1, E e2, E e3, E e4, E e5, E e6, E e7 ) {
 		return list.element( e7 ).prepand( e6 ).prepand( e5 ).prepand( e4 ).prepand( e3 ).prepand(
-				e2 ).append( e1 );
+				e2 ).prepand( e1 );
 	}
 
 	public static <E> List<E> _( E e1, E e2, E e3, E e4, E e5, E e6, E e7, E e8 ) {
 		return list.element( e8 ).prepand( e7 ).prepand( e6 ).prepand( e5 ).prepand( e4 ).prepand(
-				e3 ).prepand( e2 ).append( e1 );
+				e3 ).prepand( e2 ).prepand( e1 );
 	}
 
 	public static <E> List<E> _( E e1, E e2, E e3, E e4, E e5, E e6, E e7, E e8, E e9 ) {
 		return list.element( e9 ).prepand( e8 ).prepand( e7 ).prepand( e6 ).prepand( e5 ).prepand(
-				e4 ).prepand( e3 ).prepand( e2 ).append( e1 );
+				e4 ).prepand( e3 ).prepand( e2 ).prepand( e1 );
 	}
 
 	public static ListTransition ſ( ListTransition fst, ListTransition snd ) {

@@ -13,4 +13,5 @@ public interface Sequence<E>
 		extends IndexAccessible<E>, ICluster<E> {
 
 	// Guarantee both interfaces
+
 }
