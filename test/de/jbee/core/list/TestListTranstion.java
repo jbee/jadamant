@@ -2,6 +2,7 @@ package de.jbee.core.list;
 
 import static de.jbee.core.Core._;
 import static de.jbee.core.list.ListMatcher.hasEqualElementsAsIn;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
@@ -30,6 +31,12 @@ public class TestListTranstion {
 		List<Integer> l = List.with.elements( 4, 5, 7, 3, 1, 8 );
 		assertThat( List.which.sorts().from( l ), hasEqualElementsAsIn( List.with.elements( 1, 3,
 				4, 5, 7, 8 ) ) );
+	}
+
+	@Test
+	public void testShuffle() {
+		List<Integer> l = List.with.elements( 4, 5, 7, 3, 1, 8 );
+		assertThat( List.which.shuffle.from( l ), not( hasEqualElementsAsIn( l ) ) );
 	}
 
 	@Test

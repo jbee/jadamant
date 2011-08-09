@@ -1,6 +1,7 @@
 package de.jbee.core;
 
 import java.util.Arrays;
+import java.util.Random;
 
 /**
  * My array util.
@@ -8,6 +9,8 @@ import java.util.Arrays;
  * @author Jan Bernitt (jan.bernitt@gmx.de)
  */
 public final class Array {
+
+	private static Random rnd;
 
 	private Array() {
 		throw new UnsupportedOperationException( "util" );
@@ -51,5 +54,20 @@ public final class Array {
 		if ( dest < end ) {
 			System.arraycopy( a, src, a, dest, end - dest );
 		}
+	}
+
+	public static void shuffle( Object[] a ) {
+		if ( rnd == null ) {
+			rnd = new Random();
+		}
+		for ( int i = a.length; i > 1; i-- ) {
+			swap( a, i - 1, rnd.nextInt( i ) );
+		}
+	}
+
+	private static void swap( Object[] a, int i, int j ) {
+		Object tmp = a[i];
+		a[i] = a[j];
+		a[j] = tmp;
 	}
 }

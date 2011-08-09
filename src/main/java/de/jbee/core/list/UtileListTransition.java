@@ -2,6 +2,7 @@ package de.jbee.core.list;
 
 import java.util.Iterator;
 
+import de.jbee.core.Array;
 import de.jbee.core.IndexAccess;
 import de.jbee.core.type.Eq;
 import de.jbee.core.type.Equal;
@@ -16,6 +17,7 @@ public class UtileListTransition
 	public static final ListTransition reverse = new ReversingTransition();
 	public static final ListTransition tail = new DropFirstNTransition( 1 );
 	public static final ListTransition init = new DropLastNTransition( 1 );
+	public static final ListTransition shuffle = new ShuffleTransition();
 
 	static final UtileListTransition instance = new UtileListTransition( none );
 
@@ -195,6 +197,28 @@ public class UtileListTransition
 			final E e1 = list.at( idx2 );
 			return list.replaceAt( idx2, list.at( idx1 ) ).replaceAt( idx1, e1 );
 		}
+	}
+
+	static final class ShuffleTransition
+			extends FillAndArrangeTranstion {
+
+		@Override
+		public <E> List<E> from( List<E> list ) {
+			int size = list.size();
+			if ( size < 2 ) {
+				return list;
+			}
+			if ( size == 2 ) {
+				return List.which.swaps( 0, 1 ).from( list );
+			}
+			return arrangedStackList( list );
+		}
+
+		@Override
+		protected <E> void arrange( List<E> src, Object[] dest, int destStart ) {
+			Array.shuffle( dest );
+		}
+
 	}
 
 	static final class NubTransition
@@ -434,8 +458,22 @@ public class UtileListTransition
 
 	}
 
-	static final class SortingTransition
+	static abstract class FillAndArrangeTranstion
 			implements ListTransition {
+
+		protected final <E> List<E> arrangedStackList( List<E> list ) {
+			int size = list.size();
+			Object[] elems = new Object[StackList.nextHighestPowerOf2( size )];
+			list.fill( elems.length - size, elems, 0, size );
+			arrange( list, elems, elems.length - size );
+			return StackList.tidy( list.size(), elems, list.take( 0 ) );
+		}
+
+		protected abstract <E> void arrange( List<E> src, Object[] dest, int destStart );
+	}
+
+	static final class SortingTransition
+			extends FillAndArrangeTranstion {
 
 		private final Ord<Object> ord;
 
@@ -450,12 +488,13 @@ public class UtileListTransition
 			if ( size < 2 ) {
 				return list;
 			}
-			Object[] elems = new Object[StackList.nextHighestPowerOf2( size )];
-			list.fill( 0, elems, 0, size );
-			Order.sort( elems, ord );
-			return StackList.tidy( list.size(), elems, list.take( 0 ) );
+			return arrangedStackList( list );
 		}
 
+		@Override
+		public <E> void arrange( List<E> src, Object[] dest, int destStart ) {
+			Order.sort( dest, ord ); //FIXME consider start
+		}
 	}
 
 	final static class ReversingList<E>
