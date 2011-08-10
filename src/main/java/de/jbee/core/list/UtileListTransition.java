@@ -215,8 +215,8 @@ public class UtileListTransition
 		}
 
 		@Override
-		protected <E> void arrange( List<E> src, Object[] dest, int destStart ) {
-			Array.shuffle( dest );
+		protected <E> void rearrange( Object[] list, int start ) {
+			Array.shuffle( list ); //FIXME consider start / end
 		}
 
 	}
@@ -465,11 +465,11 @@ public class UtileListTransition
 			int size = list.size();
 			Object[] elems = new Object[StackList.nextHighestPowerOf2( size )];
 			list.fill( elems.length - size, elems, 0, size );
-			arrange( list, elems, elems.length - size );
+			rearrange( elems, elems.length - size );
 			return StackList.tidy( list.size(), elems, list.take( 0 ) );
 		}
 
-		protected abstract <E> void arrange( List<E> src, Object[] dest, int destStart );
+		protected abstract <E> void rearrange( Object[] list, int start );
 	}
 
 	static final class SortingTransition
@@ -492,8 +492,8 @@ public class UtileListTransition
 		}
 
 		@Override
-		public <E> void arrange( List<E> src, Object[] dest, int destStart ) {
-			Order.sort( dest, ord ); //FIXME consider start
+		public <E> void rearrange( Object[] list, int start ) {
+			Order.sort( list, ord ); //FIXME consider start
 		}
 	}
 
