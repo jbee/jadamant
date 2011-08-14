@@ -68,23 +68,6 @@ public class Fulfills {
 		}
 	}
 
-	private static final class EqualityCondition<T>
-			implements Predicate<T> {
-
-		private final Eq<? super T> equality;
-		private final T reference;
-
-		EqualityCondition( Eq<? super T> equality, T reference ) {
-			super();
-			this.equality = equality;
-			this.reference = reference;
-		}
-
-		public boolean fulfilledBy( T obj ) {
-			return equality.holds( reference, obj );
-		}
-	}
-
 	private static final class EqCondition<T>
 			implements Predicate<T> {
 
@@ -155,6 +138,8 @@ public class Fulfills {
 	}
 
 	public static <T> Predicate<T> equality( Eq<? super T> equality, T reference ) {
-		return new EqualityCondition<T>( equality, reference );
+		return eqTo( equality, reference );
 	}
+
+	//TODO cleanup duplicate methods - find better names
 }

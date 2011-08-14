@@ -4,6 +4,8 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import de.jbee.dying.IEncoder;
+
 public final class Encoder {
 
 	private static final IEncoder<?> UNSUPPORTED = new UnsupportedEncoder();

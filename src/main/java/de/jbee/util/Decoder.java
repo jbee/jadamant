@@ -4,6 +4,14 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import de.jbee.dying.IDecoder;
+import de.jbee.dying.IList;
+import de.jbee.dying.IMutableList;
+import de.jbee.dying.IMutableSet;
+import de.jbee.dying.ISet;
+import de.jbee.dying.List;
+import de.jbee.dying.Set;
+
 /**
  * Acts as a Service Locator for {@link IDecoder}s. The target type of decoding is used as key for
  * the locator.
@@ -279,7 +287,7 @@ public final class Decoder {
 
 		@Override
 		protected ISet<E> empty() {
-			return de.jbee.util.Set.empty();
+			return de.jbee.dying.Set.empty();
 		}
 
 		@Override

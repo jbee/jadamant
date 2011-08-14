@@ -1,5 +1,7 @@
 package de.jbee.util;
 
+import de.jbee.dying.IDecoder;
+
 public final class IoDecoder {
 
 	private IoDecoder() {
