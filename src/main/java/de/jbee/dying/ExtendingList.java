@@ -232,7 +232,7 @@ public abstract class ExtendingList<T, E extends IList<T>>
 
 	@Override
 	public IMutableList<T> mutable() {
-		return List.mutable( list );
+		return ListUtil.mutable( list );
 	}
 
 	@Override

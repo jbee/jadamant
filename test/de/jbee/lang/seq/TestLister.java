@@ -97,7 +97,7 @@ public class TestLister {
 
 	@Test
 	public void testElementsCluster() {
-		List<Integer> l = List.with.elements( de.jbee.dying.List.readonly1( 1, 2, 3 ) );
+		List<Integer> l = List.with.elements( de.jbee.dying.ListUtil.readonly1( 1, 2, 3 ) );
 		assertThat( l.size(), is( 3 ) );
 		assertThat( l.at( 0 ), is( 1 ) );
 		assertThat( l.at( 1 ), is( 2 ) );

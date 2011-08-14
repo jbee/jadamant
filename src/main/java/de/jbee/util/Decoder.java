@@ -9,7 +9,7 @@ import de.jbee.dying.IList;
 import de.jbee.dying.IMutableList;
 import de.jbee.dying.IMutableSet;
 import de.jbee.dying.ISet;
-import de.jbee.dying.List;
+import de.jbee.dying.ListUtil;
 import de.jbee.dying.Set;
 
 /**
@@ -261,12 +261,12 @@ public final class Decoder {
 
 		@Override
 		protected IList<E> empty() {
-			return List.empty();
+			return ListUtil.empty();
 		}
 
 		@Override
 		protected IMutableList<E> empty( int size ) {
-			return List.mutable( size );
+			return ListUtil.mutable( size );
 		}
 	}
 

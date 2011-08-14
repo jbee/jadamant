@@ -8,10 +8,9 @@ import java.util.ListIterator;
 
 import de.jbee.dying.Collection.MutableCollection;
 
+public final class ListUtil {
 
-public final class List {
-
-	private List() {
+	private ListUtil() {
 		// util
 	}
 
@@ -27,7 +26,7 @@ public final class List {
 		@Override
 		public IList<T> immutable() {
 			// to be able to continue work with the mutable list without changing the immutable created 
-			return List.readonly( (ArrayList<T>) getCollection().clone() );
+			return ListUtil.readonly( (ArrayList<T>) getCollection().clone() );
 		}
 
 		@Override
@@ -94,7 +93,7 @@ public final class List {
 
 	public static <T> IList<T> readonly( java.util.List<T> list ) {
 		return list == null || list.isEmpty()
-			? List.<T> empty()
+			? ListUtil.<T> empty()
 			: new ImmutableList<T>( list );
 	}
 
@@ -104,8 +103,8 @@ public final class List {
 
 	public static <T> IList<T> readonly( T[] list ) {
 		return list == null || list.length == 0
-			? List.<T> empty()
-			: List.readonly( Arrays.asList( list ) );
+			? ListUtil.<T> empty()
+			: ListUtil.readonly( Arrays.asList( list ) );
 	}
 
 	public static StringList readonly( java.util.List<String> list ) {
@@ -114,8 +113,8 @@ public final class List {
 
 	public static StringList readonly( String[] list ) {
 		return list == null || list.length == 0
-			? extend( List.<String> empty() )
-			: List.readonly( Arrays.asList( list ) );
+			? extend( ListUtil.<String> empty() )
+			: ListUtil.readonly( Arrays.asList( list ) );
 	}
 
 	public static <T extends Number & Comparable<T>> NumberList<T> readonly( java.util.List<T> list ) {
@@ -167,7 +166,7 @@ public final class List {
 	}
 
 	public static StringList split( String list, String splitRegex ) {
-		return List.readonly( Arrays.asList( list.split( splitRegex ) ) );
+		return ListUtil.readonly( Arrays.asList( list.split( splitRegex ) ) );
 	}
 
 	/**
@@ -178,7 +177,7 @@ public final class List {
 	public static <T> IList<T> replicate( int length, T e ) {
 		final Object[] list = new Object[length];
 		Arrays.fill( list, e );
-		return List.readonly( Arrays.<T> asList( (T[]) list ) );
+		return ListUtil.readonly( Arrays.<T> asList( (T[]) list ) );
 	}
 
 	public static <T> java.util.List<T> unmodifyable( IList<T> list ) {

@@ -56,7 +56,7 @@ final class ImmutableList<T>
 
 	@Override
 	protected Iterator<T> reverseIterator() {
-		return de.jbee.dying.List.reverseIterator( list );
+		return de.jbee.dying.ListUtil.reverseIterator( list );
 	}
 
 	@Override

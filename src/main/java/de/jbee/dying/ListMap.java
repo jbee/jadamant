@@ -27,7 +27,7 @@ public final class ListMap {
 		public IListMap<K, V> append( K key, V value ) {
 			IMutableList<V> list = lists.get( key );
 			if ( list == null ) {
-				list = List.mutable( 5 );
+				list = ListUtil.mutable( 5 );
 				lists.put( key, list );
 			}
 			list.append( value );
@@ -43,7 +43,7 @@ public final class ListMap {
 		public IList<V> values( K key ) {
 			IMutableList<V> list = lists.get( key );
 			return list == null
-				? List.<V> empty()
+				? ListUtil.<V> empty()
 				: list.immutable();
 		}
 
@@ -87,7 +87,7 @@ public final class ListMap {
 
 		@Override
 		public IList<V> merge() {
-			IMutableList<V> res = List.mutable( size() );
+			IMutableList<V> res = ListUtil.mutable( size() );
 			for ( IMutableList<V> l : lists.values() ) {
 				res.append( l );
 			}

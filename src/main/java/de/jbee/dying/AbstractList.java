@@ -32,11 +32,11 @@ public abstract class AbstractList<T, M extends Iterable<T>>
 	/**
 	 * A empty immutable List.
 	 * 
-	 * @see List#empty()
+	 * @see ListUtil#empty()
 	 */
 	@Override
 	protected final IList<T> empty() {
-		return List.empty();
+		return ListUtil.empty();
 	}
 
 	@Override
@@ -219,7 +219,7 @@ public abstract class AbstractList<T, M extends Iterable<T>>
 			}
 			i++;
 		}
-		return List.readonly( indices );
+		return ListUtil.readonly( indices );
 	}
 
 	@Override
@@ -343,7 +343,7 @@ public abstract class AbstractList<T, M extends Iterable<T>>
 		for ( final T e : this ) {
 			list.add( mapFunction.exec( e ) );
 		}
-		return List.readonly( list );
+		return ListUtil.readonly( list );
 	}
 
 	@Override
@@ -472,7 +472,7 @@ public abstract class AbstractList<T, M extends Iterable<T>>
 
 	@Override
 	public IMutableList<T> mutable() {
-		return List.mutable( self() );
+		return ListUtil.mutable( self() );
 	}
 
 	@Override
