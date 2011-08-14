@@ -8,16 +8,16 @@ import de.jbee.lang.List;
 
 public class ListMatcher {
 
-	public static <E> Matcher<List<E>> hasEqualElementsAsIn( List<E> expected ) {
+	public static <E> Matcher<List<E>> hasEqualElementsAsIn( E... expected ) {
 		return new EqualElementsMatcher<E>( expected );
 	}
 
 	static final class EqualElementsMatcher<E>
 			extends BaseMatcher<List<E>> {
 
-		private final List<E> expected;
+		private final E[] expected;
 
-		EqualElementsMatcher( List<E> expected ) {
+		EqualElementsMatcher( E... expected ) {
 			super();
 			this.expected = expected;
 		}
@@ -28,11 +28,14 @@ public class ListMatcher {
 				return false;
 			}
 			List<?> actual = ( (List<?>) item );
-			if ( actual.size() < expected.size() ) {
+			if ( expected == null && actual.size() > 0 ) {
 				return false;
 			}
-			for ( int i = 0; i < expected.size(); i++ ) {
-				if ( !expected.at( i ).equals( actual.at( i ) ) ) {
+			if ( actual.size() < expected.length ) {
+				return false;
+			}
+			for ( int i = 0; i < expected.length; i++ ) {
+				if ( !expected[i].equals( actual.at( i ) ) ) {
 					return false;
 				}
 			}
