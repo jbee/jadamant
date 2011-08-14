@@ -94,19 +94,6 @@ public class TestLister {
 	}
 
 	@Test
-	public void testNextHighestPowerOf2() {
-		assertThat( StackList.nextHighestPowerOf2( 1 ), is( 1 ) );
-		assertThat( StackList.nextHighestPowerOf2( 2 ), is( 2 ) );
-		assertThat( StackList.nextHighestPowerOf2( 3 ), is( 4 ) );
-		assertThat( StackList.nextHighestPowerOf2( 4 ), is( 4 ) );
-		assertThat( StackList.nextHighestPowerOf2( 5 ), is( 8 ) );
-		assertThat( StackList.nextHighestPowerOf2( 6 ), is( 8 ) );
-		assertThat( StackList.nextHighestPowerOf2( 7 ), is( 8 ) );
-		assertThat( StackList.nextHighestPowerOf2( 8 ), is( 8 ) );
-		assertThat( StackList.nextHighestPowerOf2( 9 ), is( 16 ) );
-	}
-
-	@Test
 	public void testElementsCluster() {
 		List<Integer> l = List.with.elements( de.jbee.util.List.readonly1( 1, 2, 3 ) );
 		assertThat( l.size(), is( 3 ) );

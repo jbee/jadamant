@@ -5,7 +5,7 @@ import de.jbee.util.annotation.Nulls;
 
 @Nulls ( returns = Null.NOT_ALLOWED, parameters = Null.NOT_ALLOWED )
 public interface IRange<T>
-		extends ICluster<T> {
+		extends ICluster<T>, Iterable<T> {
 
 	T start();
 

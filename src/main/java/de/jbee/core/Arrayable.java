@@ -8,4 +8,5 @@ public interface Arrayable {
 	 * <code>length</code> data form its <code>start</code> index
 	 */
 	void fill( int offset, Object[] array, int start, int length );
+
 }

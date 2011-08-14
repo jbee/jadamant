@@ -3,13 +3,13 @@
  */
 package de.jbee.core.list;
 
-import java.util.Iterator;
-
-import de.jbee.core.IndexAccess;
+import de.jbee.core.Array;
+import de.jbee.core.Core;
+import de.jbee.core.Sequence;
+import de.jbee.core.Traversal;
 import de.jbee.core.dev.Nonnull;
 import de.jbee.core.type.Enum;
 import de.jbee.core.type.Enumerate;
-import de.jbee.util.ICluster;
 
 /**
  * The data-structure of the core list consists of a chain of partial lists. The capacity of each
@@ -33,20 +33,6 @@ abstract class StackList<E>
 	static final Lister LISTER = new StackLister();
 	static final EnumeratorFactory ENUMERATOR_FACTORY = new StackListEnumeratorFactory();
 
-	//TODO move to some kind of util
-	public static int nextHighestPowerOf2( int number ) {
-		number--;
-		number |= number >> 1;
-		number |= number >> 2;
-		number |= number >> 4;
-		number |= number >> 8;
-		number |= number >> 16;
-		number++;
-		return number;
-	}
-
-	// TODO hide secondary methods since only primary and secondary itself should build them
-
 	static <E> List<E> tidy( int size, Object[] stack, List<E> tail ) {
 		return new TidyStackList<E>( size, stack, tail );
 	}
@@ -57,13 +43,6 @@ abstract class StackList<E>
 
 	static <E> List<E> untidy( int size, Object[] stack, List<E> tail ) {
 		return untidy( size, 0, stack, tail );
-	}
-
-	//TODO move to array util class 
-	static <E> Object[] stack( E initial, int length ) {
-		Object[] stack = new Object[length];
-		stack[length - 1] = initial;
-		return stack;
 	}
 
 	//TODO move to a array util and method
@@ -85,6 +64,20 @@ abstract class StackList<E>
 		this.size = size;
 		this.stack = stack;
 		this.tail = tail;
+	}
+
+	@Override
+	public void traverse( int start, Traversal<? super E> traversal ) {
+		final int l = length();
+		int i = start;
+		int inc = 0;
+		while ( inc >= 0 && i < l ) {
+			inc = traversal.incrementOn( element( i, l ) );
+			i += inc;
+		}
+		if ( inc > 0 ) {
+			tail.traverse( i - l, traversal );
+		}
 	}
 
 	@Override
@@ -175,11 +168,6 @@ abstract class StackList<E>
 	}
 
 	@Override
-	public final Iterator<E> iterator() {
-		return IndexAccess.iterator( this, 0, size );
-	}
-
-	@Override
 	public List<E> replaceAt( int index, E e ) {
 		final int l = length();
 		if ( index >= l ) {
@@ -263,13 +251,14 @@ abstract class StackList<E>
 			final int length = length();
 			int index = occupationIndex( length );
 			if ( index < 0 ) { // stack capacity exceeded
-				return grow1( StackList.stack( e, stack.length * 2 ), this );
+				return grow1( Array.withLastElement( e, stack.length * 2 ), this );
 			}
 			if ( prepandedOccupying( e, index ) ) {
 				return grow1( stack, tail );
 			}
 			if ( length > stack.length / 2 ) {
-				return grow1( StackList.stack( e, stack.length * 2 ), untidy( size, stack, tail ) );
+				return grow1( Array.withLastElement( e, stack.length * 2 ), untidy( size, stack,
+						tail ) );
 			}
 			Object[] copy = stackCopyFrom( index + 1, length );
 			copy[index] = e;
@@ -343,7 +332,7 @@ abstract class StackList<E>
 
 		@Override
 		public List<E> prepand( E e ) {
-			return tidy( size + 1, stack( e, stack.length * 2 ), this );
+			return tidy( size + 1, Array.withLastElement( e, stack.length * 2 ), this );
 		}
 
 		@Override
@@ -445,18 +434,18 @@ abstract class StackList<E>
 		}
 
 		@Override
-		public <E> List<E> elements( ICluster<E> elems ) {
+		public <E> List<E> elements( Sequence<E> elems ) {
 			if ( elems.isEmpty() ) {
 				return noElements();
 			}
 			final int size = elems.size();
 			if ( size == 1 ) {
-				return element( elems.iterator().next() );
+				return element( elems.at( 0 ) );
 			}
-			Object[] stack = new Object[StackList.nextHighestPowerOf2( size )];
+			Object[] stack = new Object[Core.nextHighestPowerOf2( size )];
 			int index = stack.length - size;
-			for ( E e : elems ) {
-				stack[index++] = e;
+			for ( int i = 0; i < size; i++ ) {
+				stack[index++] = elems.at( i );
 			}
 			return tidy( size, stack, EmptyList.<E> instance() );
 		}

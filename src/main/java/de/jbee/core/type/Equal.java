@@ -42,7 +42,7 @@ public final class Equal {
 			implements Eq<Object>, Nullsave {
 
 		@Override
-		public boolean eq( Object one, Object other ) {
+		public boolean holds( Object one, Object other ) {
 			return one == other;
 		}
 
@@ -52,7 +52,7 @@ public final class Equal {
 			implements Eq<Object> {
 
 		@Override
-		public boolean eq( Object one, Object other ) {
+		public boolean holds( Object one, Object other ) {
 			return System.identityHashCode( one ) == System.identityHashCode( other )
 					&& one.getClass() == other.getClass();
 		}
@@ -62,7 +62,7 @@ public final class Equal {
 			implements Eq<Object> {
 
 		@Override
-		public boolean eq( Object one, Object other ) {
+		public boolean holds( Object one, Object other ) {
 			return one.equals( other );
 		}
 
@@ -79,8 +79,8 @@ public final class Equal {
 		}
 
 		@Override
-		public boolean eq( T one, T other ) {
-			return !eq.eq( one, other );
+		public boolean holds( T one, T other ) {
+			return !eq.holds( one, other );
 		}
 
 		@Override
@@ -101,14 +101,14 @@ public final class Equal {
 		}
 
 		@Override
-		public boolean eq( T one, T other ) {
+		public boolean holds( T one, T other ) {
 			if ( one == null ) {
 				return other == null;
 			}
 			if ( other == null ) {
 				return false;
 			}
-			return eq.eq( one, other );
+			return eq.holds( one, other );
 		}
 	}
 }

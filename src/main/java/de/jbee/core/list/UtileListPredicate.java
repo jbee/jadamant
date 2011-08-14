@@ -28,7 +28,7 @@ public class UtileListPredicate {
 		public boolean eval( List<E> l ) {
 			final int size = l.size();
 			for ( int i = 0; i < size; i++ ) {
-				if ( equality.eq( sample, l.at( i ) ) ) {
+				if ( equality.holds( sample, l.at( i ) ) ) {
 					return true;
 				}
 			}
@@ -58,7 +58,7 @@ public class UtileListPredicate {
 			//TODO maybe replace this by !any(!eq(sample))
 			final int size = l.size();
 			for ( int i = 0; i < size; i++ ) {
-				if ( !equality.eq( sample, l.at( i ) ) ) {
+				if ( !equality.holds( sample, l.at( i ) ) ) {
 					return false;
 				}
 			}

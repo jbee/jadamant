@@ -1,6 +1,9 @@
 package de.jbee.core.type;
 
-public enum Ordering {
+import de.jbee.core.RelationalOp;
+
+public enum Ordering
+		implements RelationalOp<Object> {
 
 	LT,
 	EQ,
@@ -34,6 +37,9 @@ public enum Ordering {
 				: 1;
 	}
 
+	//OPEN transform below methods to functions ?
+	//TODO more clear naming
+
 	static Ordering trueFalse( boolean one, boolean other ) {
 		return one == other
 			? EQ
@@ -47,18 +53,24 @@ public enum Ordering {
 	}
 
 	public static Ordering ascOf( Sortable one, Sortable other ) {
-		return valueOf( one.ordinal() - other.ordinal() );
+		return fromComparison( one.ordinal() - other.ordinal() );
 	}
 
 	public static Ordering descOf( Sortable one, Sortable other ) {
-		return valueOf( other.ordinal() - one.ordinal() );
+		return fromComparison( other.ordinal() - one.ordinal() );
 	}
 
-	public static Ordering valueOf( int value ) {
-		return value < 0
+	public static Ordering fromComparison( int comparisonResult ) {
+		return comparisonResult < 0
 			? LT
-			: value == 0
+			: comparisonResult == 0
 				? EQ
 				: GT;
 	}
+
+	@Override
+	public boolean holds( Object left, Object right ) {
+		return Order.inherent.ord( left, right ) == this;
+	}
+
 }

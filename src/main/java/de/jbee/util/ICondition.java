@@ -8,7 +8,7 @@ package de.jbee.util;
  * 
  * @param <T>
  * 
- *            TODO rename to Predicate
+ *            TODO rename to Predicate/Bool/True ?
  */
 public interface ICondition<T> {
 

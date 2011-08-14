@@ -3,9 +3,7 @@
  */
 package de.jbee.core.list;
 
-import java.util.Iterator;
-
-import de.jbee.core.IndexAccess;
+import de.jbee.core.Traversal;
 import de.jbee.core.dev.Nonnull;
 import de.jbee.core.type.Enum;
 import de.jbee.core.type.Enumerate;
@@ -36,6 +34,20 @@ final class EnumList<E>
 		this.tail = tail;
 		this.firstOrdinal = firstOrdianl;
 		this.lastOrdinal = lastOrdinal;
+	}
+
+	@Override
+	public void traverse( int start, Traversal<? super E> traversal ) {
+		final int l = length();
+		int i = start;
+		int inc = 0;
+		while ( inc >= 0 && i < l ) { //TODO here is some code duplication with stack list - its just the element access that differs
+			inc = traversal.incrementOn( type.toEnum( firstPlus( i ) ) );
+			i += inc;
+		}
+		if ( inc > 0 ) {
+			tail.traverse( i - l, traversal );
+		}
 	}
 
 	@Override
@@ -166,11 +178,6 @@ final class EnumList<E>
 	@Override
 	public boolean isEmpty() {
 		return false;
-	}
-
-	@Override
-	public Iterator<E> iterator() {
-		return IndexAccess.iterator( this, 0, size() );
 	}
 
 	@Override

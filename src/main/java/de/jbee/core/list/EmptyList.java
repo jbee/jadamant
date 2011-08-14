@@ -3,8 +3,7 @@
  */
 package de.jbee.core.list;
 
-import java.util.Iterator;
-
+import de.jbee.core.Traversal;
 import de.jbee.core.dev.Nonnull;
 import de.jbee.core.type.Enumerate;
 
@@ -21,6 +20,11 @@ final class EmptyList<E>
 	@Override
 	public void fill( int offset, Object[] array, int start, int length ) {
 		// no elements to fill - done without any action
+	}
+
+	@Override
+	public void traverse( int start, Traversal<? super E> traversal ) {
+		// we are finished anyway - no more elements available
 	}
 
 	@Override
@@ -60,11 +64,6 @@ final class EmptyList<E>
 	@Override
 	public boolean isEmpty() {
 		return true;
-	}
-
-	@Override
-	public Iterator<E> iterator() {
-		throw new UnsupportedOperationException( "No elements to iterate" );
 	}
 
 	@Override

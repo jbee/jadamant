@@ -7,6 +7,8 @@ import de.jbee.core.type.Equal;
 import de.jbee.core.type.Ord;
 import de.jbee.core.type.Order;
 import de.jbee.core.type.Ordering;
+import de.jbee.util.Fulfills;
+import de.jbee.util.ICondition;
 
 public class UtileListIndex {
 
@@ -66,7 +68,17 @@ public class UtileListIndex {
 				: new OnPositionListIndex( pos );
 	}
 
-	//TODO same as eq with condition interface -> find(ICondition)
+	ListIndex firstFalse( ICondition<Object> predicate ) {
+		return nthTrue( 1, Fulfills.not( predicate ) );
+	}
+
+	ListIndex firstTrue( ICondition<Object> predicate ) {
+		return nthTrue( 1, predicate );
+	}
+
+	ListIndex nthTrue( int n, ICondition<Object> predicate ) {
+		return new NthEqualListIndex( n, predicate, 1 );
+	}
 
 	ListIndex elem( Object e ) {
 		return elem( e, Equal.equals );
@@ -91,7 +103,7 @@ public class UtileListIndex {
 	ListIndex nthElem( int n, Object e, Eq<Object> eq ) {
 		return n == 0
 			? NONE
-			: new NthEqualListIndex( n, e, eq, 1 );
+			: new NthEqualListIndex( n, Fulfills.eqTo( eq, e ), 1 );
 	}
 
 	ListIndex duplicate() {
@@ -306,7 +318,7 @@ public class UtileListIndex {
 			}
 			E e = list.at( index );
 			for ( int j = index + 1; j < list.size(); j++ ) {
-				if ( eq.eq( e, list.at( j ) ) ) {
+				if ( eq.holds( e, list.at( j ) ) ) {
 					return j;
 				}
 			}
@@ -366,15 +378,13 @@ public class UtileListIndex {
 
 		private final int n;
 		private final int step;
-		private final Object sample;
-		private final Eq<Object> equality;
+		private final ICondition<Object> predicate;
 
-		NthEqualListIndex( int n, Object sample, Eq<Object> equality, int step ) {
+		NthEqualListIndex( int n, ICondition<Object> predicate, int step ) {
 			super();
 			this.n = n;
+			this.predicate = predicate;
 			this.step = step;
-			this.sample = sample;
-			this.equality = equality;
 			if ( step == 0 ) {
 				throw new IllegalArgumentException( "increment must be less or greater than 0" );
 			}
@@ -392,7 +402,7 @@ public class UtileListIndex {
 				: size - 1;
 			while ( idx >= 0 && idx < size ) {
 				final E e = list.at( idx );
-				if ( equality.eq( sample, e ) ) {
+				if ( predicate.fulfilledBy( e ) ) {
 					equal++;
 					if ( equal == n ) {
 						return idx;

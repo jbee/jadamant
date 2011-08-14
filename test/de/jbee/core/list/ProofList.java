@@ -1,7 +1,8 @@
 package de.jbee.core.list;
 
-import static de.jbee.core.Core.I;
-import static de.jbee.core.Core._;
+import static de.jbee.core.Core.noInt;
+import static de.jbee.core.Core.list;
+import static de.jbee.core.Core.list;
 import static de.jbee.core.Core.ſ;
 import static de.jbee.core.list.ListTransition.reverse;
 import static de.jbee.core.list.ListTransition.tail;
@@ -12,31 +13,31 @@ public class ProofList {
 
 	@Test
 	public void proofStaticListSyntax() {
-		List<Integer> empty = _();
-		List<Integer> one = _( 1 );
-		List<Integer> many = _( 1, 2, 4 );
-		List<List<Integer>> multi = _( _( 1, 4 ), _( 2, 3 ) );
+		List<Integer> empty = list();
+		List<Integer> one = list( 1 );
+		List<Integer> many = list( 1, 2, 4 );
+		List<List<Integer>> multi = list( list( 1, 4 ), list( 2, 3 ) );
 		System.out.println( multi );
 	}
 
 	public void proofDeleteOverride() {
-		List<Integer> l = I().deleteAt( 0 );
+		List<Integer> l = noInt().deleteAt( 0 );
 	}
 
 	public void proofDropLOverride() {
-		List<Integer> l = I().drop( 2 );
+		List<Integer> l = noInt().drop( 2 );
 	}
 
 	public void proofInsertOverride() {
-		List<Integer> l = I().insertAt( 1, 2 );
+		List<Integer> l = noInt().insertAt( 1, 2 );
 	}
 
 	public void proofPrepandOverride() {
-		List<Integer> l = I().prepand( 1 );
+		List<Integer> l = noInt().prepand( 1 );
 	}
 
 	public void proofTakeLOverride() {
-		List<Integer> l = I().take( 2 );
+		List<Integer> l = noInt().take( 2 );
 	}
 
 	public void proofFactoryAccess() {

@@ -20,5 +20,5 @@ package de.jbee.core.type;
  */
 public interface Ord<T> {
 
-	Ordering ord( T one, T other );
+	Ordering ord( T left, T right );
 }

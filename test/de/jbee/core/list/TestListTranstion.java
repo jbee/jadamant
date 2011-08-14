@@ -1,6 +1,6 @@
 package de.jbee.core.list;
 
-import static de.jbee.core.Core._;
+import static de.jbee.core.Core.list;
 import static de.jbee.core.list.ListMatcher.hasEqualElementsAsIn;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
@@ -75,7 +75,13 @@ public class TestListTranstion {
 	public void testSublists() {
 		List<Integer> l = List.with.elements( 3, 6, 1, 0, 9, 5, 2, 8 );
 		assertThat( List.which.sublists( 0, l.size() ).from( l ), hasEqualElementsAsIn( l ) );
-		assertThat( List.which.sublists( 1, 3 ).from( l ), hasEqualElementsAsIn( _( 6, 1, 0 ) ) );
+		assertThat( List.which.sublists( 1, 3 ).from( l ), hasEqualElementsAsIn( list( 6, 1, 0 ) ) );
+	}
+
+	@Test
+	public void testTakeWhile() {
+		List<Integer> l = List.with.elements( 1, 4, 7, 9, 2, 4 );
+		//TODO continue
 	}
 
 }

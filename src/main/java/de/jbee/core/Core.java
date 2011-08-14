@@ -14,14 +14,13 @@ import de.jbee.core.list.UtileEnumerator;
 import de.jbee.core.list.UtileEnumeratorFactory;
 import de.jbee.core.list.UtileLister;
 import de.jbee.core.type.Enum;
-import de.jbee.util.ICluster;
 
 /**
  * Provides the basis utilities.
  * 
  * <h3>Lists</h3>
  * <p>
- * The {@link Lister} creates {@link List} along with a bunch of static factory methods {@link #_()}, {@link #_(Object)}, ...
+ * The {@link Lister} creates {@link List} along with a bunch of static factory methods {@link #list()}, {@link #list(Object)}, ...
  * </p>
  * 
  * @author Jan Bernitt (jan.bernitt@gmx.de)
@@ -112,80 +111,92 @@ public final class Core {
 		enumeratorProxy.proxied = factory;
 	}
 
-	public static List<Integer> I() {
+	public static List<Integer> noInt() {
 		return list.noElements();
 	}
 
-	public static List<Character> C() {
+	public static List<Character> noChar() {
 		return list.noElements();
 	}
 
-	public static List<Float> F() {
+	public static List<Float> noFloat() {
 		return list.noElements();
 	}
 
-	public static List<Double> D() {
+	public static List<Double> noDouble() {
 		return list.noElements();
 	}
 
-	public static List<Long> L() {
+	public static List<Long> noLong() {
 		return list.noElements();
 	}
 
-	public static List<String> S() {
+	public static List<String> noString() {
 		return list.noElements();
 	}
 
-	public static List<Boolean> B() {
+	public static List<Boolean> noBool() {
 		return list.noElements();
 	}
 
-	public static <E> List<E> _() {
+	public static <E> List<E> list() {
 		return list.noElements();
 	}
 
-	public static <E> List<E> _( E e ) {
+	public static <E> List<E> list( E e ) {
 		return list.element( e );
 	}
 
-	public static <E> List<E> _( E e1, E e2 ) {
+	public static <E> List<E> list( E e1, E e2 ) {
 		return list.element( e2 ).prepand( e1 );
 	}
 
-	public static <E> List<E> _( E e1, E e2, E e3 ) {
+	public static <E> List<E> list( E e1, E e2, E e3 ) {
 		return list.element( e3 ).prepand( e2 ).prepand( e1 );
 	}
 
-	public static <E> List<E> _( E e1, E e2, E e3, E e4 ) {
+	public static <E> List<E> list( E e1, E e2, E e3, E e4 ) {
 		return list.element( e4 ).prepand( e3 ).prepand( e2 ).prepand( e1 );
 	}
 
-	public static <E> List<E> _( E e1, E e2, E e3, E e4, E e5 ) {
+	public static <E> List<E> list( E e1, E e2, E e3, E e4, E e5 ) {
 		return list.element( e5 ).prepand( e4 ).prepand( e3 ).prepand( e2 ).prepand( e1 );
 	}
 
-	public static <E> List<E> _( E e1, E e2, E e3, E e4, E e5, E e6 ) {
+	public static <E> List<E> list( E e1, E e2, E e3, E e4, E e5, E e6 ) {
 		return list.element( e6 ).prepand( e5 ).prepand( e4 ).prepand( e3 ).prepand( e2 ).prepand(
 				e1 );
 	}
 
-	public static <E> List<E> _( E e1, E e2, E e3, E e4, E e5, E e6, E e7 ) {
+	public static <E> List<E> list( E e1, E e2, E e3, E e4, E e5, E e6, E e7 ) {
 		return list.element( e7 ).prepand( e6 ).prepand( e5 ).prepand( e4 ).prepand( e3 ).prepand(
 				e2 ).prepand( e1 );
 	}
 
-	public static <E> List<E> _( E e1, E e2, E e3, E e4, E e5, E e6, E e7, E e8 ) {
+	public static <E> List<E> list( E e1, E e2, E e3, E e4, E e5, E e6, E e7, E e8 ) {
 		return list.element( e8 ).prepand( e7 ).prepand( e6 ).prepand( e5 ).prepand( e4 ).prepand(
 				e3 ).prepand( e2 ).prepand( e1 );
 	}
 
-	public static <E> List<E> _( E e1, E e2, E e3, E e4, E e5, E e6, E e7, E e8, E e9 ) {
+	public static <E> List<E> list( E e1, E e2, E e3, E e4, E e5, E e6, E e7, E e8, E e9 ) {
 		return list.element( e9 ).prepand( e8 ).prepand( e7 ).prepand( e6 ).prepand( e5 ).prepand(
 				e4 ).prepand( e3 ).prepand( e2 ).prepand( e1 );
 	}
 
 	public static ListTransition ſ( ListTransition fst, ListTransition snd ) {
 		return List.which.consec( fst, snd );
+	}
+
+	//TODO move to some kind of util
+	public static int nextHighestPowerOf2( int number ) {
+		number--;
+		number |= number >> 1;
+		number |= number >> 2;
+		number |= number >> 4;
+		number |= number >> 8;
+		number |= number >> 16;
+		number++;
+		return number;
 	}
 
 	static final class ProxyEnumeratorFactory
@@ -241,7 +252,7 @@ public final class Core {
 		}
 
 		@Override
-		public <E> List<E> elements( ICluster<E> elems ) {
+		public <E> List<E> elements( Sequence<E> elems ) {
 			return factory.elements( elems );
 		}
 

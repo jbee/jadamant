@@ -1,5 +1,7 @@
 package de.jbee.core.type;
 
+import static de.jbee.core.type.Ordering.fromComparison;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -128,8 +130,8 @@ public final class Order {
 		}
 
 		@Override
-		public Ordering ord( T one, T other ) {
-			return Ordering.trueFalse( condition.fulfilledBy( one ), condition.fulfilledBy( other ) );
+		public Ordering ord( T left, T right ) {
+			return Ordering.trueFalse( condition.fulfilledBy( left ), condition.fulfilledBy( right ) );
 		}
 	}
 
@@ -146,8 +148,8 @@ public final class Order {
 		}
 
 		@Override
-		public Ordering ord( T one, T other ) {
-			return Ordering.trueFalse( eq.eq( one, value ), eq.eq( other, value ) );
+		public Ordering ord( T left, T right ) {
+			return Ordering.trueFalse( eq.holds( left, value ), eq.holds( right, value ) );
 		}
 
 	}
@@ -156,8 +158,8 @@ public final class Order {
 			implements Ord<Character> {
 
 		@Override
-		public Ordering ord( Character one, Character other ) {
-			return Ordering.valueOf( one.compareTo( other ) );
+		public Ordering ord( Character left, Character right ) {
+			return fromComparison( left.compareTo( right ) );
 		}
 
 	}
@@ -166,10 +168,10 @@ public final class Order {
 			implements Ord<CharSequence> {
 
 		@Override
-		public Ordering ord( CharSequence one, CharSequence other ) {
-			final int length = Math.min( one.length(), other.length() );
+		public Ordering ord( CharSequence left, CharSequence right ) {
+			final int length = Math.min( left.length(), right.length() );
 			for ( int i = 0; i < length; i++ ) {
-				Ordering ord = abecedarian.ord( one.charAt( i ), other.charAt( i ) );
+				Ordering ord = abecedarian.ord( left.charAt( i ), right.charAt( i ) );
 				if ( !ord.isEq() ) {
 					return ord;
 				}
@@ -183,8 +185,8 @@ public final class Order {
 			implements Ord<Calendar> {
 
 		@Override
-		public Ordering ord( Calendar one, Calendar other ) {
-			return Ordering.valueOf( one.compareTo( other ) );
+		public Ordering ord( Calendar left, Calendar right ) {
+			return fromComparison( left.compareTo( right ) );
 		}
 
 	}
@@ -193,8 +195,8 @@ public final class Order {
 			implements Ord<Date> {
 
 		@Override
-		public Ordering ord( Date one, Date other ) {
-			return Ordering.valueOf( one.compareTo( other ) );
+		public Ordering ord( Date left, Date right ) {
+			return fromComparison( left.compareTo( right ) );
 		}
 
 	}
@@ -210,8 +212,8 @@ public final class Order {
 		}
 
 		@Override
-		public Ordering ord( T one, T other ) {
-			return Ordering.valueOf( comparator.compare( one, other ) );
+		public Ordering ord( T left, T right ) {
+			return fromComparison( comparator.compare( left, right ) );
 		}
 
 	}
@@ -220,8 +222,8 @@ public final class Order {
 			implements Ord<T> {
 
 		@Override
-		public Ordering ord( T one, T other ) {
-			return Ordering.valueOf( one.compareTo( other ) );
+		public Ordering ord( T left, T right ) {
+			return fromComparison( left.compareTo( right ) );
 		}
 	}
 
@@ -229,12 +231,12 @@ public final class Order {
 			implements Ord<java.lang.Enum<?>> {
 
 		@Override
-		public Ordering ord( java.lang.Enum<?> one, java.lang.Enum<?> other ) {
-			if ( one.getDeclaringClass() == other.getDeclaringClass() ) {
-				return Ordering.valueOf( one.ordinal() - other.ordinal() );
+		public Ordering ord( java.lang.Enum<?> left, java.lang.Enum<?> right ) {
+			if ( left.getDeclaringClass() == right.getDeclaringClass() ) {
+				return fromComparison( left.ordinal() - right.ordinal() );
 			}
-			return alphabetical.ord( one.getClass().getCanonicalName(),
-					other.getClass().getCanonicalName() );
+			return alphabetical.ord( left.getClass().getCanonicalName(),
+					right.getClass().getCanonicalName() );
 		}
 
 	}
@@ -243,8 +245,8 @@ public final class Order {
 			implements Ord<Object> {
 
 		@Override
-		public Ordering ord( Object one, Object other ) {
-			return Ordering.valueOf( one.hashCode() - other.hashCode() );
+		public Ordering ord( Object left, Object right ) {
+			return fromComparison( left.hashCode() - right.hashCode() );
 		}
 
 	}
@@ -253,9 +255,9 @@ public final class Order {
 			implements Ord<Object> {
 
 		@Override
-		public Ordering ord( Object one, Object other ) {
-			return Ordering.valueOf( System.identityHashCode( one )
-					- System.identityHashCode( other ) );
+		public Ordering ord( Object left, Object right ) {
+			return fromComparison( System.identityHashCode( left )
+					- System.identityHashCode( right ) );
 		}
 
 	}
@@ -265,30 +267,30 @@ public final class Order {
 
 		@SuppressWarnings ( "unchecked" )
 		@Override
-		public Ordering ord( Object one, Object other ) {
-			if ( one instanceof Sortable && other instanceof Sortable ) {
-				return sortable.ord( (Sortable) one, (Sortable) other );
+		public Ordering ord( Object left, Object right ) {
+			if ( left instanceof Sortable && right instanceof Sortable ) {
+				return sortable.ord( (Sortable) left, (Sortable) right );
 			}
-			if ( one.getClass().isEnum() && other.getClass().isEnum() ) {
-				return enumerative.ord( (java.lang.Enum<?>) one, (java.lang.Enum<?>) other );
+			if ( left.getClass().isEnum() && right.getClass().isEnum() ) {
+				return enumerative.ord( (java.lang.Enum<?>) left, (java.lang.Enum<?>) right );
 			}
-			if ( one instanceof Number && other instanceof Number ) {
-				return numerical.ord( (Number) one, (Number) other );
+			if ( left instanceof Number && right instanceof Number ) {
+				return numerical.ord( (Number) left, (Number) right );
 			}
-			if ( one instanceof CharSequence && other instanceof CharSequence ) {
-				return alphabetical.ord( (CharSequence) one, (CharSequence) other );
+			if ( left instanceof CharSequence && right instanceof CharSequence ) {
+				return alphabetical.ord( (CharSequence) left, (CharSequence) right );
 			}
-			if ( one instanceof Character && other instanceof Character ) {
-				return abecedarian.ord( (Character) one, (Character) other );
+			if ( left instanceof Character && right instanceof Character ) {
+				return abecedarian.ord( (Character) left, (Character) right );
 			}
-			if ( one instanceof Date && other instanceof Date ) {
-				return chronological.ord( (Date) one, (Date) other );
+			if ( left instanceof Date && right instanceof Date ) {
+				return chronological.ord( (Date) left, (Date) right );
 			}
-			if ( one instanceof Comparable<?> && other instanceof Comparable<?>
-					&& one.getClass() == other.getClass() ) {
-				return compare( (Comparable) one, (Comparable) other );
+			if ( left instanceof Comparable<?> && right instanceof Comparable<?>
+					&& left.getClass() == right.getClass() ) {
+				return compare( (Comparable) left, (Comparable) right );
 			}
-			return identity.ord( one, other );
+			return identity.ord( left, right );
 		}
 
 		private <T extends Comparable<T>> Ordering compare( T one, T other ) {
@@ -312,8 +314,8 @@ public final class Order {
 		}
 
 		@Override
-		public Ordering ord( T one, T other ) {
-			return ord( other, one );
+		public Ordering ord( T left, T right ) {
+			return ord( right, left );
 		}
 	}
 
@@ -328,14 +330,14 @@ public final class Order {
 		}
 
 		@Override
-		public final Ordering ord( T one, T other ) {
-			if ( one == null ) {
+		public final Ordering ord( T left, T right ) {
+			if ( left == null ) {
 				return Ordering.LT;
 			}
-			if ( other == null ) {
+			if ( right == null ) {
 				return Ordering.GT;
 			}
-			return ord.ord( one, other );
+			return ord.ord( left, right );
 		}
 
 	}
@@ -344,23 +346,23 @@ public final class Order {
 			implements Ord<Number> {
 
 		@Override
-		public Ordering ord( Number one, Number other ) {
-			if ( one instanceof Float && other instanceof Float ) {
-				return Ordering.valueOf( Float.compare( one.floatValue(), other.floatValue() ) );
+		public Ordering ord( Number left, Number right ) {
+			if ( left instanceof Float && right instanceof Float ) {
+				return fromComparison( Float.compare( left.floatValue(), right.floatValue() ) );
 			}
-			if ( one instanceof Long && other instanceof Long ) {
-				return Ordering.valueOf( Long.signum( one.longValue() - other.longValue() ) );
+			if ( left instanceof Long && right instanceof Long ) {
+				return fromComparison( Long.signum( left.longValue() - right.longValue() ) );
 			}
-			if ( one instanceof Integer && other instanceof Integer ) {
-				return Ordering.valueOf( one.intValue() - other.intValue() );
+			if ( left instanceof Integer && right instanceof Integer ) {
+				return fromComparison( left.intValue() - right.intValue() );
 			}
-			if ( one instanceof BigDecimal && other instanceof BigDecimal ) {
-				return Ordering.valueOf( ( (BigDecimal) one ).compareTo( (BigDecimal) other ) );
+			if ( left instanceof BigDecimal && right instanceof BigDecimal ) {
+				return fromComparison( ( (BigDecimal) left ).compareTo( (BigDecimal) right ) );
 			}
-			if ( one instanceof BigInteger && other instanceof BigInteger ) {
-				return Ordering.valueOf( ( (BigInteger) one ).compareTo( (BigInteger) other ) );
+			if ( left instanceof BigInteger && right instanceof BigInteger ) {
+				return fromComparison( ( (BigInteger) left ).compareTo( (BigInteger) right ) );
 			}
-			return Ordering.valueOf( Double.compare( one.doubleValue(), other.doubleValue() ) );
+			return fromComparison( Double.compare( left.doubleValue(), right.doubleValue() ) );
 		}
 
 	}
@@ -386,8 +388,8 @@ public final class Order {
 			implements Ord<Sortable> {
 
 		@Override
-		public Ordering ord( Sortable one, Sortable other ) {
-			return Ordering.valueOf( one.ordinal() - other.ordinal() );
+		public Ordering ord( Sortable left, Sortable right ) {
+			return fromComparison( left.ordinal() - right.ordinal() );
 		}
 
 	}
@@ -405,10 +407,10 @@ public final class Order {
 		}
 
 		@Override
-		public Ordering ord( T one, T other ) {
-			final Ordering res = primary.ord( one, other );
+		public Ordering ord( T left, T right ) {
+			final Ordering res = primary.ord( left, right );
 			return res.isEq()
-				? secondary.ord( one, other )
+				? secondary.ord( left, right )
 				: res;
 		}
 
@@ -428,16 +430,16 @@ public final class Order {
 
 		@SuppressWarnings ( "unchecked" )
 		@Override
-		public Ordering ord( Object one, Object other ) {
-			final boolean instOne = type.isInstance( one );
-			final boolean instOther = type.isInstance( other );
-			if ( instOne && instOther ) {
-				return ord.ord( (T) one, (T) other );
+		public Ordering ord( Object left, Object right ) {
+			final boolean instLeft = type.isInstance( left );
+			final boolean instRight = type.isInstance( right );
+			if ( instLeft && instRight ) {
+				return ord.ord( (T) left, (T) right );
 			}
-			if ( instOne ) {
+			if ( instLeft ) {
 				return Ordering.GT;
 			}
-			if ( instOther ) {
+			if ( instRight ) {
 				return Ordering.LT;
 			}
 			return Ordering.EQ;

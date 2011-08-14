@@ -1,7 +1,6 @@
 package de.jbee.core;
 
 import de.jbee.core.list.List;
-import de.jbee.util.ICluster;
 
 /**
  * 
@@ -10,8 +9,11 @@ import de.jbee.util.ICluster;
  * @see List
  */
 public interface Sequence<E>
-		extends IndexAccessible<E>, ICluster<E> {
+		extends IndexAccessible<E> {
 
 	// Guarantee both interfaces
 
+	int size();
+
+	boolean isEmpty();
 }

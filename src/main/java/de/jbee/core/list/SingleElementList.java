@@ -3,9 +3,8 @@
  */
 package de.jbee.core.list;
 
-import java.util.Iterator;
-
-import de.jbee.core.IndexAccess;
+import de.jbee.core.Array;
+import de.jbee.core.Traversal;
 import de.jbee.core.dev.Nonnull;
 
 final class SingleElementList<E>
@@ -27,6 +26,18 @@ final class SingleElementList<E>
 		super();
 		this.element = element;
 		this.tail = tail;
+	}
+
+	@Override
+	public void traverse( int start, Traversal<? super E> traversal ) {
+		if ( start > 0 ) {
+			tail.traverse( start - 1, traversal );
+		} else {
+			while ( start == 0 ) {
+				start += traversal.incrementOn( element );
+			}
+			tail.traverse( start, traversal );
+		}
 	}
 
 	@Override
@@ -85,14 +96,9 @@ final class SingleElementList<E>
 	}
 
 	@Override
-	public Iterator<E> iterator() {
-		return IndexAccess.iterator( this, 0, size() );
-	}
-
-	@Override
 	public List<E> prepand( E e ) {
 		Nonnull.element( e );
-		return StackList.tidy( size() + 1, StackList.stack( e, 2 ), this );
+		return StackList.tidy( size() + 1, Array.withLastElement( e, 2 ), this );
 	}
 
 	@Override

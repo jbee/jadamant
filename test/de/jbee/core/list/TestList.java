@@ -9,6 +9,8 @@ import java.util.Random;
 
 import org.junit.Test;
 
+import de.jbee.core.Traversal;
+
 public class TestList {
 
 	private static final Random RANDOM = new Random();
@@ -129,6 +131,33 @@ public class TestList {
 				assertThat( i - j, is( l.at( j ) ) );
 			}
 		}
+	}
+
+	@Test
+	public void testTraverse() {
+		verifyTraverseIterative( List.with.elements( 1, 4, 7, 2, 9 ) );
+		verifyTraverseIterative( List.with.elements( 1, 2, 3, 4, 5 ) );
+		verifyTraverseIterative( List.with.elements( 42, 20 ) );
+		verifyTraverseIterative( List.with.elements( 42 ) );
+		verifyTraverseIterative( List.with.<Integer> noElements() );
+	}
+
+	private void verifyTraverseIterative( final List<Integer> l ) {
+		final int[] readI = new int[1];
+		l.traverse( 0, new Traversal<Integer>() {
+
+			int i = 0;
+
+			@Override
+			public int incrementOn( Integer e ) {
+				assertThat( e, is( l.at( i++ ) ) );
+				readI[0] = i;
+				return 1;
+			}
+
+		} );
+		// make sure increment on has been called 
+		assertThat( readI[0], is( l.size() ) );
 	}
 
 	private List<Integer> descendingTo1From( final int start ) {

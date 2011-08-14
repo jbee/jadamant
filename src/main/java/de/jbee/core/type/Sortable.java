@@ -24,10 +24,10 @@ package de.jbee.core.type;
  * </pre>
  * 
  * These kind of generic is hard to guarantee, hard to cast to. In fact you cannot tell easily if
- * you actually can call the compare method coming from {@link Object}. When found that a value is
- * comparable by checking through <code>instanceof</code> its just clear it is comparable in
- * general. It does not tell you to what kind of value and it might get very dirty to be able to
- * tell if you can pass another value into the compare method without getting a
+ * you actually can call the compare method when holding two {@link Object}s in hands. When found
+ * that a value is comparable by checking through <code>instanceof</code> its just clear it is
+ * comparable in general. It does not tell you to what kind of value and it might get very dirty to
+ * be able to tell if you can pass another value into the compare method without getting a
  * {@link ClassCastException} or not. A similar problem raised by null arguments. Is it valid to
  * call it with null ? Or will that lead to a NPE ? And if you check for null in every of your
  * implementation this is fairly code duplication. Code having the same intention. In both cases you

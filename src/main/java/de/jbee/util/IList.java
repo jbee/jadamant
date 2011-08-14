@@ -3,6 +3,8 @@ package de.jbee.util;
 import java.io.Serializable;
 import java.util.Comparator;
 
+import de.jbee.core.Sequence;
+
 /**
  * Interface of an immutable type-save functional inspired list.
  * 
@@ -15,7 +17,7 @@ import java.util.Comparator;
  *            Element-Type
  */
 public interface IList<T>
-		extends ISequence<T>, IBag<T, IList<T>>, IFoldable<T>, Serializable {
+		extends ISequence<T>, Sequence<T>, IBag<T, IList<T>>, IFoldable<T>, Serializable {
 
 	boolean isPrefixOf( IList<T> other );
 

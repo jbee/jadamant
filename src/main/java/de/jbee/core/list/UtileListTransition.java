@@ -1,9 +1,8 @@
 package de.jbee.core.list;
 
-import java.util.Iterator;
-
 import de.jbee.core.Array;
-import de.jbee.core.IndexAccess;
+import de.jbee.core.Core;
+import de.jbee.core.Traversal;
 import de.jbee.core.type.Eq;
 import de.jbee.core.type.Equal;
 import de.jbee.core.type.Ord;
@@ -49,12 +48,12 @@ public class UtileListTransition
 		return utilised;
 	}
 
-	//TODO some kind of dropWhile working with a condition types with the list type -> other interface
+	//TODO some kind of dropWhile working with a condition types with the list's type -> other interface
 	public UtileListTransition dropsWhile( ICondition<Object> condition ) {
 		return followedBy( new DropWhileTransition( condition ) );
 	}
 
-	//TODO some kind of takeWhile working with a condition types with the list type -> other interface
+	//TODO some kind of takeWhile working with a condition types with the list's type -> other interface
 	public UtileListTransition takesWhile( ICondition<Object> condition ) {
 		return followedBy( new TakeWhileTransition( condition ) );
 	}
@@ -174,6 +173,17 @@ public class UtileListTransition
 		public <E> List<E> from( List<E> list ) {
 			return list;
 		}
+	}
+
+	static final class TimesTranstion
+			implements ListTransition {
+
+		@Override
+		public <E> List<E> from( List<E> list ) {
+
+			return null;
+		}
+
 	}
 
 	static final class SwapTransition
@@ -412,13 +422,7 @@ public class UtileListTransition
 
 		@Override
 		public <E> List<E> from( List<E> list ) {
-			int size = list.size();
-			for ( int i = 0; i < size; i++ ) {
-				if ( condition.fulfilledBy( list.at( i ) ) ) {
-					return list.take( i );
-				}
-			}
-			return list;
+			return list.take( List.indexFor.firstFalse( condition ).in( list ) - 1 );
 		}
 
 	}
@@ -463,7 +467,7 @@ public class UtileListTransition
 
 		protected final <E> List<E> arrangedStackList( List<E> list ) {
 			int size = list.size();
-			Object[] elems = new Object[StackList.nextHighestPowerOf2( size )];
+			Object[] elems = new Object[Core.nextHighestPowerOf2( size )];
 			list.fill( elems.length - size, elems, 0, size );
 			rearrange( elems, elems.length - size );
 			return StackList.tidy( list.size(), elems, list.take( 0 ) );
@@ -523,8 +527,7 @@ public class UtileListTransition
 		}
 
 		@Override
-		public E at( int index )
-				throws IndexOutOfBoundsException {
+		public E at( int index ) {
 			return list.at( reverseIndexOf( index ) );
 		}
 
@@ -551,11 +554,6 @@ public class UtileListTransition
 		@Override
 		public boolean isEmpty() {
 			return list.isEmpty();
-		}
-
-		@Override
-		public Iterator<E> iterator() {
-			return IndexAccess.reverseIterator( list, 0, size() );
 		}
 
 		@Override
@@ -596,6 +594,17 @@ public class UtileListTransition
 		@Override
 		public String toString() {
 			return list.toString();
+		}
+
+		@Override
+		public void traverse( int start, Traversal<? super E> traversal ) {
+			final int l = list.size();
+			int i = start;
+			int inc = 0;
+			while ( inc >= 0 && i < l ) {
+				inc = traversal.incrementOn( at( i ) );
+				i += inc;
+			}
 		}
 	}
 

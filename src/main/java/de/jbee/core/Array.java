@@ -70,4 +70,11 @@ public final class Array {
 		a[i] = a[j];
 		a[j] = tmp;
 	}
+
+	public static <E> Object[] withLastElement( E e, int length ) {
+		Object[] stack = new Object[length];
+		stack[length - 1] = e;
+		return stack;
+	}
+
 }

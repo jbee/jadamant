@@ -1,5 +1,7 @@
 package de.jbee.util;
 
+import de.jbee.core.type.Eq;
+
 public class Fulfills {
 
 	private Fulfills() {
@@ -85,6 +87,25 @@ public class Fulfills {
 		}
 	}
 
+	private static final class EqCondition<T>
+			implements ICondition<T> {
+
+		private final Eq<? super T> eq;
+		private final T sample;
+
+		EqCondition( Eq<? super T> eq, T sample ) {
+			super();
+			this.eq = eq;
+			this.sample = sample;
+		}
+
+		@Override
+		public boolean fulfilledBy( T obj ) {
+			return eq.holds( sample, obj );
+		}
+
+	}
+
 	@SuppressWarnings ( "unchecked" )
 	public static <T> ICondition<T> never() {
 		return (ICondition<T>) FALSE;
@@ -125,6 +146,10 @@ public class Fulfills {
 
 	public static <T> ICondition<T> equalTo( T reference ) {
 		return equality( Equal.equals(), reference );
+	}
+
+	public static <T> ICondition<T> eqTo( Eq<? super T> eq, T sample ) {
+		return new EqCondition<T>( eq, sample );
 	}
 
 	public static <T> ICondition<T> differentTo( T reference ) {
