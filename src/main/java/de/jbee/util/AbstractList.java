@@ -3,6 +3,9 @@ package de.jbee.util;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import de.jbee.lang.Fulfills;
+import de.jbee.lang.Predicate;
+
 public abstract class AbstractList<T, M extends Iterable<T>>
 		extends AbstractBag<T, IList<T>, M>
 		implements IList<T> {
@@ -147,7 +150,7 @@ public abstract class AbstractList<T, M extends Iterable<T>>
 	}
 
 	@Override
-	public IList<T> dropWhile( ICondition<? super T> stopCondition ) {
+	public IList<T> dropWhile( Predicate<? super T> stopCondition ) {
 		final M list = empty( size() );
 		for ( final T e : this ) {
 			if ( !stopCondition.fulfilledBy( e ) ) {
@@ -194,7 +197,7 @@ public abstract class AbstractList<T, M extends Iterable<T>>
 	}
 
 	@Override
-	public int findIndex( ICondition<? super T> condition ) {
+	public int findIndex( Predicate<? super T> condition ) {
 		int i = 0;
 		for ( final T e : this ) {
 			if ( condition.fulfilledBy( e ) ) {
@@ -206,7 +209,7 @@ public abstract class AbstractList<T, M extends Iterable<T>>
 	}
 
 	@Override
-	public NumberList<Integer> findIndices( ICondition<? super T> condition ) {
+	public NumberList<Integer> findIndices( Predicate<? super T> condition ) {
 		final java.util.List<Integer> indices = new ArrayList<Integer>( size() );
 		int i = 0;
 		for ( final T e : this ) {
@@ -413,7 +416,7 @@ public abstract class AbstractList<T, M extends Iterable<T>>
 	}
 
 	@Override
-	public IList<T> takeWhile( ICondition<? super T> stopCondition ) {
+	public IList<T> takeWhile( Predicate<? super T> stopCondition ) {
 		if ( isEmpty() ) {
 			return this;
 		}

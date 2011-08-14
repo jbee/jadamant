@@ -5,6 +5,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import de.jbee.lang.Fulfills;
+import de.jbee.lang.Predicate;
+
 public final class ListMap {
 
 	private ListMap() {
@@ -73,7 +76,7 @@ public final class ListMap {
 		}
 
 		@Override
-		public IListMap<K, V> appendEach( ICondition<? super K> keyCondition, V value ) {
+		public IListMap<K, V> appendEach( Predicate<? super K> keyCondition, V value ) {
 			for ( Entry<K, IMutableList<V>> e : lists.entrySet() ) {
 				if ( keyCondition.fulfilledBy( e.getKey() ) ) {
 					e.getValue().append( value );

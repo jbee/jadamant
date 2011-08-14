@@ -2,6 +2,8 @@ package de.jbee.util;
 
 import java.util.Comparator;
 
+import de.jbee.lang.Predicate;
+
 public abstract class ExtendingList<T, E extends IList<T>>
 		extends ExtendingBag<T, IList<T>, E>
 		implements IList<T> {
@@ -62,7 +64,7 @@ public abstract class ExtendingList<T, E extends IList<T>>
 	}
 
 	@Override
-	public E dropWhile( ICondition<? super T> stopCondition ) {
+	public E dropWhile( Predicate<? super T> stopCondition ) {
 		return extend( dropWhile( stopCondition ) );
 	}
 
@@ -82,12 +84,12 @@ public abstract class ExtendingList<T, E extends IList<T>>
 	}
 
 	@Override
-	public int findIndex( ICondition<? super T> condition ) {
+	public int findIndex( Predicate<? super T> condition ) {
 		return getCollection().findIndex( condition );
 	}
 
 	@Override
-	public NumberList<Integer> findIndices( ICondition<? super T> condition ) {
+	public NumberList<Integer> findIndices( Predicate<? super T> condition ) {
 		return getCollection().findIndices( condition );
 	}
 
@@ -218,7 +220,7 @@ public abstract class ExtendingList<T, E extends IList<T>>
 	}
 
 	@Override
-	public E takeWhile( ICondition<? super T> stopCondition ) {
+	public E takeWhile( Predicate<? super T> stopCondition ) {
 		return extend( getCollection().takeWhile( stopCondition ) );
 	}
 

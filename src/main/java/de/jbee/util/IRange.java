@@ -1,9 +1,9 @@
 package de.jbee.util;
 
-import de.jbee.util.annotation.Null;
-import de.jbee.util.annotation.Nulls;
+import de.jbee.lang.dev.Nullness;
+import de.jbee.lang.dev.Nulls;
 
-@Nulls ( returns = Null.NOT_ALLOWED, parameters = Null.NOT_ALLOWED )
+@Nulls ( returns = Nullness.NOT_ALLOWED, parameters = Nullness.NOT_ALLOWED )
 public interface IRange<T>
 		extends ICluster<T>, Iterable<T> {
 

@@ -2,6 +2,8 @@ package de.jbee.util;
 
 import java.util.Comparator;
 
+import de.jbee.lang.Predicate;
+
 public abstract class ExtendingBag<T, C extends IBag<T, C>, E extends C>
 		extends ExtendingCollection<T, C, E>
 		implements IBag<T, C> {
@@ -47,7 +49,7 @@ public abstract class ExtendingBag<T, C extends IBag<T, C>, E extends C>
 	}
 
 	@Override
-	public E filter( ICondition<? super T> filterFunction ) {
+	public E filter( Predicate<? super T> filterFunction ) {
 		return extend( getCollection().filter( filterFunction ) );
 	}
 
@@ -82,7 +84,7 @@ public abstract class ExtendingBag<T, C extends IBag<T, C>, E extends C>
 	}
 
 	@Override
-	public Conditional<E> partition( ICondition<? super T> condition ) {
+	public Conditional<E> partition( Predicate<? super T> condition ) {
 		return extend( getCollection().partition( condition ) );
 	}
 

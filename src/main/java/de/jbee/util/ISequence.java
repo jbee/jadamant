@@ -1,7 +1,7 @@
 package de.jbee.util;
 
-import de.jbee.core.IndexAccessible;
-import de.jbee.core.Prepandable;
+import de.jbee.lang.IndexAccessible;
+import de.jbee.lang.Prepandable;
 
 /**
  * All collections build out of ordered elements are {@link ISequence}s.

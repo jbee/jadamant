@@ -2,6 +2,8 @@ package de.jbee.util;
 
 import java.util.Comparator;
 
+import de.jbee.lang.Predicate;
+
 public interface IBag<T, C extends IBag<T, C>>
 		extends ICollection<T> {
 
@@ -30,7 +32,7 @@ public interface IBag<T, C extends IBag<T, C>>
 	 */
 	C deleteBy( IEquality<? super T> equality, T e );
 
-	C filter( ICondition<? super T> filterFunction );
+	C filter( Predicate<? super T> filterFunction );
 
 	C intersect( ICluster<T> other );
 
@@ -52,11 +54,11 @@ public interface IBag<T, C extends IBag<T, C>>
 	C nubBy( IEquality<? super T> equality );
 
 	/**
-	 * takes a {@link ICondition} and returns a pair of bags: those elements of this bag that do and
+	 * takes a {@link Predicate} and returns a pair of bags: those elements of this bag that do and
 	 * do not satisfy the condition, respectively. If this bag has an order that order is kept in
 	 * the result bags.
 	 */
-	Conditional<? extends C> partition( ICondition<? super T> condition );
+	Conditional<? extends C> partition( Predicate<? super T> condition );
 
 	/**
 	 * splits this bag at the the element e. The split-element e itself will be contained (if occur

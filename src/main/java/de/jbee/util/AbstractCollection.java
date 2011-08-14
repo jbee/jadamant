@@ -2,6 +2,9 @@ package de.jbee.util;
 
 import java.util.Comparator;
 
+import de.jbee.lang.Fulfills;
+import de.jbee.lang.Predicate;
+
 public abstract class AbstractCollection<T>
 		implements ICollection<T> {
 
@@ -10,7 +13,7 @@ public abstract class AbstractCollection<T>
 	}
 
 	@Override
-	public boolean any( ICondition<? super T> condition ) {
+	public boolean any( Predicate<? super T> condition ) {
 		for ( final T e : this ) {
 			if ( condition.fulfilledBy( e ) ) {
 				return true;
@@ -30,7 +33,7 @@ public abstract class AbstractCollection<T>
 	}
 
 	@Override
-	public boolean all( ICondition<? super T> condition ) {
+	public boolean all( Predicate<? super T> condition ) {
 		return !any( Fulfills.not( condition ) );
 	}
 
@@ -50,12 +53,12 @@ public abstract class AbstractCollection<T>
 	}
 
 	@Override
-	public T find( ICondition<? super T> condition ) {
+	public T find( Predicate<? super T> condition ) {
 		return find( condition, null );
 	}
 
 	@Override
-	public T find( ICondition<? super T> condition, T noMatchValue ) {
+	public T find( Predicate<? super T> condition, T noMatchValue ) {
 		for ( final T e : this ) {
 			if ( condition.fulfilledBy( e ) ) {
 				return e;

@@ -3,6 +3,8 @@ package de.jbee.util;
 import java.util.Comparator;
 import java.util.Iterator;
 
+import de.jbee.lang.Predicate;
+
 public abstract class ExtendingCollection<T, C extends ICollection<T>, E extends C>
 		implements ICollection<T> {
 
@@ -15,7 +17,7 @@ public abstract class ExtendingCollection<T, C extends ICollection<T>, E extends
 	protected abstract C getCollection();
 
 	@Override
-	public boolean all( ICondition<? super T> condition ) {
+	public boolean all( Predicate<? super T> condition ) {
 		return getCollection().all( condition );
 	}
 
@@ -30,7 +32,7 @@ public abstract class ExtendingCollection<T, C extends ICollection<T>, E extends
 	}
 
 	@Override
-	public boolean any( ICondition<? super T> condition ) {
+	public boolean any( Predicate<? super T> condition ) {
 		return getCollection().any( condition );
 	}
 
@@ -45,12 +47,12 @@ public abstract class ExtendingCollection<T, C extends ICollection<T>, E extends
 	}
 
 	@Override
-	public T find( ICondition<? super T> condition ) {
+	public T find( Predicate<? super T> condition ) {
 		return getCollection().find( condition );
 	}
 
 	@Override
-	public T find( ICondition<? super T> condition, T noMatchValue ) {
+	public T find( Predicate<? super T> condition, T noMatchValue ) {
 		return getCollection().find( condition, noMatchValue );
 	}
 

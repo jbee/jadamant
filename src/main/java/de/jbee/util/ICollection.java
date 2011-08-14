@@ -2,17 +2,19 @@ package de.jbee.util;
 
 import java.util.Comparator;
 
+import de.jbee.lang.Predicate;
+
 public interface ICollection<T>
 		extends ICluster<T> {
 
 	boolean any( T e );
 
-	boolean any( ICondition<? super T> condition );
+	boolean any( Predicate<? super T> condition );
 
 	/**
 	 * returns True if all items in this collection fulfill the condition
 	 */
-	boolean all( ICondition<? super T> condition );
+	boolean all( Predicate<? super T> condition );
 
 	/**
 	 * returns True if all elements of this collection are equal to e
@@ -26,9 +28,9 @@ public interface ICollection<T>
 
 	boolean anyBy( IEquality<? super T> equality, T e );
 
-	T find( ICondition<? super T> condition );
+	T find( Predicate<? super T> condition );
 
-	T find( ICondition<? super T> condition, T noMatchValue );
+	T find( Predicate<? super T> condition, T noMatchValue );
 
 	T maximumBy( Comparator<? super T> c );
 

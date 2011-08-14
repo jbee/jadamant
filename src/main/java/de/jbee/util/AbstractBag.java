@@ -3,6 +3,8 @@ package de.jbee.util;
 import java.util.Comparator;
 import java.util.Iterator;
 
+import de.jbee.lang.Predicate;
+
 public abstract class AbstractBag<T, C extends IBag<T, C>, M extends Iterable<T>>
 		extends AbstractCollection<T>
 		implements IBag<T, C> {
@@ -103,7 +105,7 @@ public abstract class AbstractBag<T, C extends IBag<T, C>, M extends Iterable<T>
 	}
 
 	@Override
-	public C filter( ICondition<? super T> filterFunction ) {
+	public C filter( Predicate<? super T> filterFunction ) {
 		final M bag = empty( size() );
 		for ( final T e : this ) {
 			if ( filterFunction.fulfilledBy( e ) ) {
@@ -227,7 +229,7 @@ public abstract class AbstractBag<T, C extends IBag<T, C>, M extends Iterable<T>
 	}
 
 	@Override
-	public Conditional<C> partition( ICondition<? super T> condition ) {
+	public Conditional<C> partition( Predicate<? super T> condition ) {
 		final int size = size();
 		final M positives = empty( size );
 		final M negatives = empty( size );

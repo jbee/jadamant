@@ -3,7 +3,8 @@ package de.jbee.util;
 import java.io.Serializable;
 import java.util.Comparator;
 
-import de.jbee.core.Sequence;
+import de.jbee.lang.Predicate;
+import de.jbee.lang.Sequence;
 
 /**
  * Interface of an immutable type-save functional inspired list.
@@ -27,9 +28,9 @@ public interface IList<T>
 
 	int elemIndexBy( IEquality<? super T> equality, T e );
 
-	int findIndex( ICondition<? super T> condition );
+	int findIndex( Predicate<? super T> condition );
 
-	NumberList<Integer> findIndices( ICondition<? super T> condition );
+	NumberList<Integer> findIndices( Predicate<? super T> condition );
 
 	/**
 	 * returns an in-order list of indices
@@ -53,7 +54,7 @@ public interface IList<T>
 	 * creates a list from another one, it inspects the original list and takes from it its elements
 	 * from the moment when the condition fails for the first time till the end of the list
 	 */
-	IList<T> dropWhile( ICondition<? super T> stopCondition );
+	IList<T> dropWhile( Predicate<? super T> stopCondition );
 
 	IList<T> take( IRange<? extends Number> indexRange );
 
@@ -65,7 +66,7 @@ public interface IList<T>
 	 * creates a list from another one, it inspects the original list and takes from it its elements
 	 * to the moment when the condition fails, then it stops processing
 	 */
-	IList<T> takeWhile( ICondition<? super T> stopCondition );
+	IList<T> takeWhile( Predicate<? super T> stopCondition );
 
 	@Override
 	IList<T> tail();
