@@ -3,6 +3,7 @@ package de.jbee.util;
 import java.util.Comparator;
 import java.util.Iterator;
 
+import de.jbee.lang.Eq;
 import de.jbee.lang.Predicate;
 
 public abstract class ExtendingCollection<T, C extends ICollection<T>, E extends C>
@@ -42,7 +43,7 @@ public abstract class ExtendingCollection<T, C extends ICollection<T>, E extends
 	}
 
 	@Override
-	public boolean anyBy( IEquality<? super T> equality, T e ) {
+	public boolean anyBy( Eq<? super T> equality, T e ) {
 		return getCollection().anyBy( equality, e );
 	}
 

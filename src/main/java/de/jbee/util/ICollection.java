@@ -2,6 +2,7 @@ package de.jbee.util;
 
 import java.util.Comparator;
 
+import de.jbee.lang.Eq;
 import de.jbee.lang.Predicate;
 
 public interface ICollection<T>
@@ -26,7 +27,7 @@ public interface ICollection<T>
 	 */
 	boolean allOf( ICluster<T> other );
 
-	boolean anyBy( IEquality<? super T> equality, T e );
+	boolean anyBy( Eq<? super T> equality, T e );
 
 	T find( Predicate<? super T> condition );
 

@@ -4,7 +4,6 @@ import org.junit.BeforeClass;
 
 import de.jbee.lang.Enumerate;
 import de.jbee.lang.Lang;
-import de.jbee.lang.seq.EnumList;
 
 public class TestEnumLister
 		extends TestLister {

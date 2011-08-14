@@ -8,8 +8,6 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
-import de.jbee.lang.Array;
-
 public class TestArray {
 
 	private static final int FILL_PERFORMANCE_LOOPS = 100;

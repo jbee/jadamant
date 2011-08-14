@@ -3,6 +3,7 @@ package de.jbee.util;
 import java.io.Serializable;
 import java.util.Comparator;
 
+import de.jbee.lang.Eq;
 import de.jbee.lang.Predicate;
 import de.jbee.lang.Sequence;
 
@@ -26,7 +27,7 @@ public interface IList<T>
 
 	int elemIndex( T e );
 
-	int elemIndexBy( IEquality<? super T> equality, T e );
+	int elemIndexBy( Eq<? super T> equality, T e );
 
 	int findIndex( Predicate<? super T> condition );
 
@@ -35,7 +36,7 @@ public interface IList<T>
 	/**
 	 * returns an in-order list of indices
 	 */
-	NumberList<Integer> elemIndicesBy( IEquality<? super T> equality, T e );
+	NumberList<Integer> elemIndicesBy( Eq<? super T> equality, T e );
 
 	IList<T> concat( IList<T> other );
 

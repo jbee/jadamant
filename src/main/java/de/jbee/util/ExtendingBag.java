@@ -2,6 +2,7 @@ package de.jbee.util;
 
 import java.util.Comparator;
 
+import de.jbee.lang.Eq;
 import de.jbee.lang.Predicate;
 
 public abstract class ExtendingBag<T, C extends IBag<T, C>, E extends C>
@@ -14,7 +15,7 @@ public abstract class ExtendingBag<T, C extends IBag<T, C>, E extends C>
 	}
 
 	@Override
-	public boolean isEqualBy( IEquality<? super T> equality, C other ) {
+	public boolean isEqualBy( Eq<? super T> equality, C other ) {
 		return getCollection().isEqualBy( equality, other );
 	}
 
@@ -24,7 +25,7 @@ public abstract class ExtendingBag<T, C extends IBag<T, C>, E extends C>
 	}
 
 	@Override
-	public int countBy( IEquality<? super T> equality, T e ) {
+	public int countBy( Eq<? super T> equality, T e ) {
 		return getCollection().countBy( equality, e );
 	}
 
@@ -34,7 +35,7 @@ public abstract class ExtendingBag<T, C extends IBag<T, C>, E extends C>
 	}
 
 	@Override
-	public E deleteBy( IEquality<? super T> equality, T e ) {
+	public E deleteBy( Eq<? super T> equality, T e ) {
 		return extend( getCollection().deleteBy( equality, e ) );
 	}
 
@@ -44,7 +45,7 @@ public abstract class ExtendingBag<T, C extends IBag<T, C>, E extends C>
 	}
 
 	@Override
-	public E differenceBy( IEquality<? super T> equality, ICluster<T> other ) {
+	public E differenceBy( Eq<? super T> equality, ICluster<T> other ) {
 		return extend( getCollection().differenceBy( equality, other ) );
 	}
 
@@ -59,7 +60,7 @@ public abstract class ExtendingBag<T, C extends IBag<T, C>, E extends C>
 	}
 
 	@Override
-	public E intersectBy( IEquality<? super T> equality, ICluster<T> other ) {
+	public E intersectBy( Eq<? super T> equality, ICluster<T> other ) {
 		return extend( getCollection().intersectBy( equality, other ) );
 	}
 
@@ -69,7 +70,7 @@ public abstract class ExtendingBag<T, C extends IBag<T, C>, E extends C>
 	}
 
 	@Override
-	public E unionBy( IEquality<? super T> equality, ICluster<T> other ) {
+	public E unionBy( Eq<? super T> equality, ICluster<T> other ) {
 		return extend( getCollection().unionBy( equality, other ) );
 	}
 
@@ -79,7 +80,7 @@ public abstract class ExtendingBag<T, C extends IBag<T, C>, E extends C>
 	}
 
 	@Override
-	public E nubBy( IEquality<? super T> equality ) {
+	public E nubBy( Eq<? super T> equality ) {
 		return extend( getCollection().nubBy( equality ) );
 	}
 

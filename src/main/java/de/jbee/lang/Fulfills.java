@@ -1,8 +1,5 @@
 package de.jbee.lang;
 
-import de.jbee.util.Equal;
-import de.jbee.util.IEquality;
-
 public class Fulfills {
 
 	private Fulfills() {
@@ -74,17 +71,17 @@ public class Fulfills {
 	private static final class EqualityCondition<T>
 			implements Predicate<T> {
 
-		private final IEquality<? super T> equality;
+		private final Eq<? super T> equality;
 		private final T reference;
 
-		EqualityCondition( IEquality<? super T> equality, T reference ) {
+		EqualityCondition( Eq<? super T> equality, T reference ) {
 			super();
 			this.equality = equality;
 			this.reference = reference;
 		}
 
 		public boolean fulfilledBy( T obj ) {
-			return equality.is( reference, obj );
+			return equality.holds( reference, obj );
 		}
 	}
 
@@ -146,7 +143,7 @@ public class Fulfills {
 	}
 
 	public static <T> Predicate<T> equalTo( T reference ) {
-		return equality( Equal.equals(), reference );
+		return equality( Equal.equals, reference );
 	}
 
 	public static <T> Predicate<T> eqTo( Eq<? super T> eq, T sample ) {
@@ -157,7 +154,7 @@ public class Fulfills {
 		return not( equalTo( reference ) );
 	}
 
-	public static <T> Predicate<T> equality( IEquality<? super T> equality, T reference ) {
+	public static <T> Predicate<T> equality( Eq<? super T> equality, T reference ) {
 		return new EqualityCondition<T>( equality, reference );
 	}
 }

@@ -3,6 +3,7 @@ package de.jbee.util;
 import java.util.Comparator;
 import java.util.Iterator;
 
+import de.jbee.lang.Eq;
 import de.jbee.lang.Predicate;
 
 public abstract class AbstractBag<T, C extends IBag<T, C>, M extends Iterable<T>>
@@ -65,10 +66,10 @@ public abstract class AbstractBag<T, C extends IBag<T, C>, M extends Iterable<T>
 	}
 
 	@Override
-	public int countBy( IEquality<? super T> equality, T e ) {
+	public int countBy( Eq<? super T> equality, T e ) {
 		int c = 0;
 		for ( final T e2 : this ) {
-			if ( equality.is( e, e2 ) ) {
+			if ( equality.holds( e, e2 ) ) {
 				c++;
 			}
 		}
@@ -86,7 +87,7 @@ public abstract class AbstractBag<T, C extends IBag<T, C>, M extends Iterable<T>
 	}
 
 	@Override
-	public C differenceBy( IEquality<? super T> equality, ICluster<T> other ) {
+	public C differenceBy( Eq<? super T> equality, ICluster<T> other ) {
 		if ( other.isEmpty() ) {
 			return self();
 		}
@@ -121,7 +122,7 @@ public abstract class AbstractBag<T, C extends IBag<T, C>, M extends Iterable<T>
 	}
 
 	@Override
-	public C intersectBy( IEquality<? super T> equality, ICluster<T> other ) {
+	public C intersectBy( Eq<? super T> equality, ICluster<T> other ) {
 		if ( other.isEmpty() ) {
 			return empty();
 		}
@@ -140,7 +141,7 @@ public abstract class AbstractBag<T, C extends IBag<T, C>, M extends Iterable<T>
 	}
 
 	@Override
-	public boolean isEqualBy( IEquality<? super T> equality, C other ) {
+	public boolean isEqualBy( Eq<? super T> equality, C other ) {
 		if ( this == other ) {
 			return true;
 		}
@@ -150,7 +151,7 @@ public abstract class AbstractBag<T, C extends IBag<T, C>, M extends Iterable<T>
 		final Iterator<T> i = iterator();
 		final Iterator<T> j = other.iterator();
 		while ( i.hasNext() && j.hasNext() ) {
-			if ( !equality.is( i.next(), j.next() ) ) {
+			if ( !equality.holds( i.next(), j.next() ) ) {
 				return false;
 			}
 		}
@@ -163,13 +164,13 @@ public abstract class AbstractBag<T, C extends IBag<T, C>, M extends Iterable<T>
 	}
 
 	@Override
-	public C nubBy( IEquality<? super T> equality ) {
+	public C nubBy( Eq<? super T> equality ) {
 		final M bag = empty( size() );
 		for ( final T e : this ) {
 			final Iterator<T> i = bag.iterator();
 			boolean contained = false;
 			while ( i.hasNext() && !contained ) {
-				contained = equality.is( e, i.next() );
+				contained = equality.holds( e, i.next() );
 			}
 			if ( !contained ) {
 				add( bag, e );
@@ -199,7 +200,7 @@ public abstract class AbstractBag<T, C extends IBag<T, C>, M extends Iterable<T>
 	}
 
 	@Override
-	public C unionBy( IEquality<? super T> equality, ICluster<T> other ) {
+	public C unionBy( Eq<? super T> equality, ICluster<T> other ) {
 		if ( other.isEmpty() ) {
 			return self();
 		}
@@ -208,7 +209,7 @@ public abstract class AbstractBag<T, C extends IBag<T, C>, M extends Iterable<T>
 			final Iterator<T> i = bag.iterator();
 			boolean contained = false;
 			while ( i.hasNext() && !contained ) {
-				contained = equality.is( e, i.next() );
+				contained = equality.holds( e, i.next() );
 			}
 			if ( !contained ) {
 				add( bag, e );
@@ -218,10 +219,10 @@ public abstract class AbstractBag<T, C extends IBag<T, C>, M extends Iterable<T>
 	}
 
 	@Override
-	public C deleteBy( IEquality<? super T> equality, T e ) {
+	public C deleteBy( Eq<? super T> equality, T e ) {
 		final M set = empty( size() );
 		for ( final T e2 : this ) {
-			if ( !equality.is( e, e2 ) ) {
+			if ( !equality.holds( e, e2 ) ) {
 				add( set, e2 );
 			}
 		}

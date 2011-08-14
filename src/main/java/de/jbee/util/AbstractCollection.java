@@ -2,13 +2,14 @@ package de.jbee.util;
 
 import java.util.Comparator;
 
+import de.jbee.lang.Eq;
 import de.jbee.lang.Fulfills;
 import de.jbee.lang.Predicate;
 
 public abstract class AbstractCollection<T>
 		implements ICollection<T> {
 
-	protected IEquality<T> equalsEquality() {
+	protected Eq<T> equalsEquality() {
 		return Equal.equals();
 	}
 
@@ -23,9 +24,9 @@ public abstract class AbstractCollection<T>
 	}
 
 	@Override
-	public boolean anyBy( IEquality<? super T> equality, T e ) {
+	public boolean anyBy( Eq<? super T> equality, T e ) {
 		for ( final T o : this ) {
-			if ( equality.is( o, e ) ) {
+			if ( equality.holds( o, e ) ) {
 				return true;
 			}
 		}

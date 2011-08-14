@@ -2,6 +2,7 @@ package de.jbee.util;
 
 import java.util.Comparator;
 
+import de.jbee.lang.Eq;
 import de.jbee.lang.Predicate;
 
 public abstract class ExtendingList<T, E extends IList<T>>
@@ -74,12 +75,12 @@ public abstract class ExtendingList<T, E extends IList<T>>
 	}
 
 	@Override
-	public int elemIndexBy( IEquality<? super T> equality, T e ) {
+	public int elemIndexBy( Eq<? super T> equality, T e ) {
 		return getCollection().elemIndexBy( equality, e );
 	}
 
 	@Override
-	public NumberList<Integer> elemIndicesBy( IEquality<? super T> equality, T e ) {
+	public NumberList<Integer> elemIndicesBy( Eq<? super T> equality, T e ) {
 		return getCollection().elemIndicesBy( equality, e );
 	}
 

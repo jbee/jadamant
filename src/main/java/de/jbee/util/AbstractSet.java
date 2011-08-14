@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
+import de.jbee.lang.Eq;
+
 public abstract class AbstractSet<T, M extends Iterable<T>>
 		extends AbstractBag<T, ISet<T>, M>
 		implements ISet<T> {
@@ -19,7 +21,7 @@ public abstract class AbstractSet<T, M extends Iterable<T>>
 	}
 
 	@Override
-	public final int countBy( IEquality<? super T> equality, T e ) {
+	public final int countBy( Eq<? super T> equality, T e ) {
 		return anyBy( equality, e )
 			? 1
 			: 0;

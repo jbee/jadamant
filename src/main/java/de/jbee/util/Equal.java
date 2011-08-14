@@ -1,24 +1,26 @@
 package de.jbee.util;
 
+import de.jbee.lang.Eq;
+
 public final class Equal {
 
 	private Equal() {
 		// util
 	}
 
-	public static final IEquality<?> IDENTITY = new IEquality<Object>() {
+	public static final Eq<?> IDENTITY = new Eq<Object>() {
 
 		@Override
-		public boolean is( Object e1, Object e2 ) {
+		public boolean holds( Object e1, Object e2 ) {
 			return e1 == e2;
 		}
 
 	};
 
-	public static final IEquality<?> EQUALS = new IEquality<Object>() {
+	public static final Eq<?> EQUALS = new Eq<Object>() {
 
 		@Override
-		public boolean is( Object e1, Object e2 ) {
+		public boolean holds( Object e1, Object e2 ) {
 			if ( e1 == e2 ) {
 				return true;
 			}
@@ -30,12 +32,12 @@ public final class Equal {
 	};
 
 	@SuppressWarnings ( "unchecked" )
-	public static <T> IEquality<T> identity() {
-		return (IEquality<T>) IDENTITY;
+	public static <T> Eq<T> identity() {
+		return (Eq<T>) IDENTITY;
 	}
 
 	@SuppressWarnings ( "unchecked" )
-	public static <T> IEquality<T> equals() {
-		return (IEquality<T>) EQUALS;
+	public static <T> Eq<T> equals() {
+		return (Eq<T>) EQUALS;
 	}
 }

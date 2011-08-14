@@ -3,6 +3,7 @@ package de.jbee.util;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import de.jbee.lang.Eq;
 import de.jbee.lang.Fulfills;
 import de.jbee.lang.Predicate;
 
@@ -112,7 +113,7 @@ public abstract class AbstractList<T, M extends Iterable<T>>
 	}
 
 	@Override
-	public IList<T> deleteBy( IEquality<? super T> equality, T e ) {
+	public IList<T> deleteBy( Eq<? super T> equality, T e ) {
 		return deleteInBounds( elemIndexBy( equality, e ) );
 	}
 
@@ -166,10 +167,10 @@ public abstract class AbstractList<T, M extends Iterable<T>>
 	}
 
 	@Override
-	public int elemIndexBy( IEquality<? super T> equality, T e ) {
+	public int elemIndexBy( Eq<? super T> equality, T e ) {
 		int i = 0;
 		for ( final T o : this ) {
-			if ( equality.is( o, e ) ) {
+			if ( equality.holds( o, e ) ) {
 				return i;
 			}
 			i++;
@@ -178,7 +179,7 @@ public abstract class AbstractList<T, M extends Iterable<T>>
 	}
 
 	@Override
-	public NumberList<Integer> elemIndicesBy( IEquality<? super T> equality, T e ) {
+	public NumberList<Integer> elemIndicesBy( Eq<? super T> equality, T e ) {
 		return findIndices( Fulfills.equality( equality, e ) );
 	}
 

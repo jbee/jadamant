@@ -9,7 +9,6 @@ import static org.junit.Assert.assertThat;
 import org.junit.Test;
 
 import de.jbee.lang.List;
-import de.jbee.lang.seq.UtileEnumerator;
 
 public class TestLister {
 
