@@ -4,7 +4,7 @@ A library enhancing the JRE with the core functionality it should have had for a
 
 The core ideas are: 
 
-* Collections are value objects and therefore immutable (read-only; changes create new collections, the originating one kept unchanged)
+* __Collections are value objects and therefore immutable__ (read-only; changes create new collections, the originating one kept unchanged)
 * `null` is avoided as far as possible - it is not considered as a valid value (e.g. in collections)
 * Interfaces should be narrow/minimal (1 method for most of em) - a rich set of utile functions comes from combining and composing minimal interfaces
 * Reflection is pain - it is replaced with concepts to avoid them wherever one is found 
