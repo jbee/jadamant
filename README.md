@@ -9,7 +9,7 @@ The core ideas are:
 * Interfaces should be narrow/minimal (1 method for most of em) - a rich set of utile functions comes from combining and composing minimal interfaces
 * Reflection is pain - it is replaced with concepts to avoid them wherever one is found 
 * There is no natural order - order depends on the point of view (`Comparable` is not a satisfactory solution)
-* `Iterator` / `Iterable` is badly designed and needs a replacement - The are supported as 'legacy' anyway.
+* `Iterator` / `Iterable` is badly designed and needs a replacement (there is a 'legacy' support to integrate in common frameworks anyway)
 
 ### About
 'jadamant' is a made-up word conbined out of 'Java' and 'Adamant'. Inspired by the Master of Orion II Adamantium plating Adamant should symbolise the immutable and solid character and the hole philosophy of this project.
