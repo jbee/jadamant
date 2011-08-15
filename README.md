@@ -6,7 +6,7 @@ The core ideas are:
 
 * Collections are value objects and therefore immutable (read-only; changes create new collections, the originating one kept unchanged)
 * `null` is avoided as far as possible - it is not considered as a valid value (e.g. in collections)
-* Interfaces should be minimal (1 method for most of em) - a rich set of utile functions comes from combining and composing minimal interfaces
+* Interfaces should be narrow/minimal (1 method for most of em) - a rich set of utile functions comes from combining and composing minimal interfaces
 * Reflection is pain - it is replaced with concepts to avoid them wherever one is found 
 * There is no natural order - order depends on the point of view
 * `Iterator` / `Iterable` is a badly designed and needs a replacement - The are supported as 'legacy' anyway.
