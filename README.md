@@ -14,7 +14,7 @@ The core ideas are:
 ### About
 'jadamant' is a made-up word conbined out of 'Java' and 'Adamant'. Inspired by the Master of Orion II Adamantium plating Adamant should symbolise the immutable and solid character and the hole philosophy of this project.
 
-## Working with Lists
+### Working with Lists
 ``` java
 // list construction
 List.with.noElements(); // a empty list
