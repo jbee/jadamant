@@ -1,13 +1,14 @@
 #Java-adamant
 
-## State of the library ?
-It's still under construction. The API does change whenever this turns out to be a good idea. To early to use for other.
-
 ## What does jAdamant stand for ?
-Its a made-up word conbined out of Java and Adamant. Inspired by the Master of Orion II Adamantium plating Adamant should symbolise the immutable character and the philosophy of this project.
+Its a made-up word conbined out of Java and Adamant. Inspired by the Master of Orion II Adamantium plating Adamant should symbolise the immutable solid character and the philosophy of this project.
 
-```
-public static final String = "some code ?";
+## Working with Lists
+``` java
+// list construction
+List.with.noElements(); // a empty list
+List.with.element(1); // a list with a single element - the integer 1
+List.with.elements(1,2,3,4); // a list holding the numbers 1 to 4
 ```
 
-`someVar`
+
