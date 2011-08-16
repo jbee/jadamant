@@ -31,12 +31,12 @@ interface List<T>
 
 	int findIndex( Predicate<? super T> condition );
 
-	NumberList<Integer> findIndices( Predicate<? super T> condition );
+	List<Integer> findIndices( Predicate<? super T> condition );
 
 	/**
 	 * returns an in-order list of indices
 	 */
-	NumberList<Integer> elemIndicesBy( Eq<? super T> equality, T e );
+	List<Integer> elemIndicesBy( Eq<? super T> equality, T e );
 
 	List<T> concat( List<T> other );
 
@@ -104,8 +104,6 @@ interface List<T>
 
 	Conditional<? extends List<T>> splitAt( int index )
 			throws IndexOutOfBoundsException;
-
-	IMutableList<T> mutable();
 
 	T[] toArray( Class<T> elementType );
 

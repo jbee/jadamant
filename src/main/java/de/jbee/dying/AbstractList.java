@@ -471,11 +471,6 @@ public abstract class AbstractList<T, M extends Iterable<T>>
 	}
 
 	@Override
-	public IMutableList<T> mutable() {
-		return ListUtil.mutable( self() );
-	}
-
-	@Override
 	public T[] toArray( Class<T> elementType ) {
 		return Collection.asArray( this, elementType );
 	}

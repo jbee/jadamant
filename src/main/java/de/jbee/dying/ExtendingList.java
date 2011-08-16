@@ -80,7 +80,7 @@ public abstract class ExtendingList<T, E extends List<T>>
 	}
 
 	@Override
-	public NumberList<Integer> elemIndicesBy( Eq<? super T> equality, T e ) {
+	public List<Integer> elemIndicesBy( Eq<? super T> equality, T e ) {
 		return getCollection().elemIndicesBy( equality, e );
 	}
 
@@ -90,7 +90,7 @@ public abstract class ExtendingList<T, E extends List<T>>
 	}
 
 	@Override
-	public NumberList<Integer> findIndices( Predicate<? super T> condition ) {
+	public List<Integer> findIndices( Predicate<? super T> condition ) {
 		return getCollection().findIndices( condition );
 	}
 
@@ -228,11 +228,6 @@ public abstract class ExtendingList<T, E extends List<T>>
 	@Override
 	public E zip( List<? extends T> other ) {
 		return extend( getCollection().zip( other ) );
-	}
-
-	@Override
-	public IMutableList<T> mutable() {
-		return ListUtil.mutable( list );
 	}
 
 	@Override

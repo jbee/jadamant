@@ -6,50 +6,10 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.ListIterator;
 
-import de.jbee.dying.Collection.MutableCollection;
-
 public final class ListUtil {
 
 	private ListUtil() {
 		// util
-	}
-
-	static final class MutableList<T>
-			extends MutableCollection<T, ArrayList<T>>
-			implements IMutableList<T> {
-
-		public MutableList( ArrayList<T> list ) {
-			super( list );
-		}
-
-		@SuppressWarnings ( "unchecked" )
-		@Override
-		public List<T> immutable() {
-			// to be able to continue work with the mutable list without changing the immutable created 
-			return ListUtil.readonly( (ArrayList<T>) getCollection().clone() );
-		}
-
-		@Override
-		public IMutableList<T> append( T e ) {
-			getCollection().add( e );
-			return this;
-		}
-
-		@Override
-		public IMutableList<T> insert( int index, T e ) {
-			getCollection().add( index, e );
-			return this;
-		}
-
-		@Override
-		public IMutableList<T> append( ICluster<T> cluster ) {
-			ArrayList<T> list = getCollection();
-			for ( T e : cluster ) {
-				list.add( e );
-			}
-			return this;
-		}
-
 	}
 
 	static final class ReverseIterator<T>
@@ -132,24 +92,6 @@ public final class ListUtil {
 	@SuppressWarnings ( "unchecked" )
 	public static <T> List<T> empty() {
 		return (List<T>) EMPTY;
-	}
-
-	/**
-	 * @see IMutableList
-	 */
-	public static <T> IMutableList<T> mutable( List<T> list ) {
-		if ( list.isEmpty() ) {
-			return new MutableList<T>( new ArrayList<T>() );
-		}
-		final ArrayList<T> mutable = new ArrayList<T>( list.size() );
-		for ( final T e : list ) {
-			mutable.add( e );
-		}
-		return new MutableList<T>( mutable );
-	}
-
-	public static <T> IMutableList<T> mutable( int size ) {
-		return new MutableList<T>( new ArrayList<T>( size ) );
 	}
 
 	/**

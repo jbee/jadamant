@@ -4,7 +4,6 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import de.jbee.dying.IDecoder;
 import de.jbee.dying.IMutableSet;
 import de.jbee.dying.ISet;
 import de.jbee.dying.Set;

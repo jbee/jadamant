@@ -1,4 +1,4 @@
-package de.jbee.dying;
+package de.jbee.util;
 
 public interface IEncoder<T> {
 

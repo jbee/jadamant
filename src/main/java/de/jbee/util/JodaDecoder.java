@@ -13,7 +13,6 @@ import org.joda.time.ReadableInterval;
 import org.joda.time.ReadablePeriod;
 import org.joda.time.Seconds;
 
-import de.jbee.dying.IDecoder;
 
 public final class JodaDecoder {
 
