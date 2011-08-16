@@ -8,8 +8,8 @@ import de.jbee.lang.Fulfills;
 import de.jbee.lang.Predicate;
 
 public abstract class AbstractList<T, M extends Iterable<T>>
-		extends AbstractBag<T, IList<T>, M>
-		implements IList<T> {
+		extends AbstractBag<T, List<T>, M>
+		implements List<T> {
 
 	private static final long serialVersionUID = 1L;
 
@@ -23,7 +23,7 @@ public abstract class AbstractList<T, M extends Iterable<T>>
 	 * If there is a element at the given index that element is deleted. Otherwise this list was
 	 * returned.
 	 */
-	protected final IList<T> deleteInBounds( int index ) {
+	protected final List<T> deleteInBounds( int index ) {
 		return isValidIndex( index )
 			? delete( index )
 			: this;
@@ -35,12 +35,12 @@ public abstract class AbstractList<T, M extends Iterable<T>>
 	 * @see ListUtil#empty()
 	 */
 	@Override
-	protected final IList<T> empty() {
+	protected final List<T> empty() {
 		return ListUtil.empty();
 	}
 
 	@Override
-	protected IList<T> self() {
+	protected List<T> self() {
 		return this;
 	}
 
@@ -82,7 +82,7 @@ public abstract class AbstractList<T, M extends Iterable<T>>
 	}
 
 	@Override
-	public IList<T> concat( IList<T> other ) {
+	public List<T> concat( List<T> other ) {
 		if ( other.isEmpty() ) {
 			return this;
 		}
@@ -97,28 +97,28 @@ public abstract class AbstractList<T, M extends Iterable<T>>
 	}
 
 	@Override
-	public IList<T> prepand( T e ) {
+	public List<T> prepand( T e ) {
 		throw new UnsupportedOperationException( "Not now" );
 	}
 
 	@Override
-	public IList<T> delete( int index ) {
+	public List<T> delete( int index ) {
 		validate( index );
 		return drop( Range.between( index, index + 1 ) );
 	}
 
 	@Override
-	public IList<T> delete( T e ) {
+	public List<T> delete( T e ) {
 		return deleteInBounds( elemIndex( e ) );
 	}
 
 	@Override
-	public IList<T> deleteBy( Eq<? super T> equality, T e ) {
+	public List<T> deleteBy( Eq<? super T> equality, T e ) {
 		return deleteInBounds( elemIndexBy( equality, e ) );
 	}
 
 	@Override
-	public IList<T> drop( IRange<? extends Number> indexRange ) {
+	public List<T> drop( IRange<? extends Number> indexRange ) {
 		final int size = size();
 		final int start = indexRange.start().intValue();
 		if ( start >= size ) {
@@ -135,7 +135,7 @@ public abstract class AbstractList<T, M extends Iterable<T>>
 	}
 
 	@Override
-	public IList<T> dropL( int firstN ) {
+	public List<T> dropL( int firstN ) {
 		if ( size() <= firstN ) {
 			return empty();
 		}
@@ -143,7 +143,7 @@ public abstract class AbstractList<T, M extends Iterable<T>>
 	}
 
 	@Override
-	public IList<T> dropR( int lastN ) {
+	public List<T> dropR( int lastN ) {
 		if ( size() <= lastN ) {
 			return empty();
 		}
@@ -151,7 +151,7 @@ public abstract class AbstractList<T, M extends Iterable<T>>
 	}
 
 	@Override
-	public IList<T> dropWhile( Predicate<? super T> stopCondition ) {
+	public List<T> dropWhile( Predicate<? super T> stopCondition ) {
 		final M list = empty( size() );
 		for ( final T e : this ) {
 			if ( !stopCondition.fulfilledBy( e ) ) {
@@ -185,8 +185,8 @@ public abstract class AbstractList<T, M extends Iterable<T>>
 
 	@Override
 	public boolean equals( Object obj ) {
-		if ( obj instanceof IList<?> ) {
-			final Iterator<?> i = ( (IList<?>) obj ).iterator();
+		if ( obj instanceof List<?> ) {
+			final Iterator<?> i = ( (List<?>) obj ).iterator();
 			for ( final T e : this ) {
 				final Object o = i.next();
 				if ( ( e == null && o == null ) || ( e != null && e.equals( o ) ) ) {
@@ -300,7 +300,7 @@ public abstract class AbstractList<T, M extends Iterable<T>>
 	}
 
 	@Override
-	public IList<T> intersperse( T e ) {
+	public List<T> intersperse( T e ) {
 		if ( isEmpty() ) {
 			return this;
 		}
@@ -316,12 +316,12 @@ public abstract class AbstractList<T, M extends Iterable<T>>
 	}
 
 	@Override
-	public boolean isPrefixOf( IList<T> other ) {
+	public boolean isPrefixOf( List<T> other ) {
 		return other.takeL( size() ).isEqual( this );
 	}
 
 	@Override
-	public boolean isSuffixOf( IList<T> other ) {
+	public boolean isSuffixOf( List<T> other ) {
 		return other.takeR( size() ).isEqual( this );
 	}
 
@@ -338,7 +338,7 @@ public abstract class AbstractList<T, M extends Iterable<T>>
 	}
 
 	@Override
-	public <R> IList<R> map( IFunc1<R, T> mapFunction ) {
+	public <R> List<R> map( IFunc1<R, T> mapFunction ) {
 		final java.util.List<R> list = new ArrayList<R>( size() );
 		for ( final T e : this ) {
 			list.add( mapFunction.exec( e ) );
@@ -347,7 +347,7 @@ public abstract class AbstractList<T, M extends Iterable<T>>
 	}
 
 	@Override
-	public IList<T> replicate( int index, int length ) {
+	public List<T> replicate( int index, int length ) {
 		validate( index );
 		final M list = empty( length );
 		final T e = at( index );
@@ -358,7 +358,7 @@ public abstract class AbstractList<T, M extends Iterable<T>>
 	}
 
 	@Override
-	public IList<T> reverse() {
+	public List<T> reverse() {
 		final M list = empty( size() );
 		final Iterator<T> i = reverseIterator();
 		while ( i.hasNext() ) {
@@ -368,7 +368,7 @@ public abstract class AbstractList<T, M extends Iterable<T>>
 	}
 
 	@Override
-	public Conditional<IList<T>> splitAt( int index ) {
+	public Conditional<List<T>> splitAt( int index ) {
 		validate( index );
 		final int size = size();
 		final M positives = empty( index );
@@ -382,16 +382,16 @@ public abstract class AbstractList<T, M extends Iterable<T>>
 			}
 			i++;
 		}
-		return Conditional.<IList<T>> of( readonly( positives ), readonly( negatives ) );
+		return Conditional.<List<T>> of( readonly( positives ), readonly( negatives ) );
 	}
 
 	@Override
-	public IList<T> tail() {
+	public List<T> tail() {
 		return dropL( 1 );
 	}
 
 	@Override
-	public IList<T> take( IRange<? extends Number> indexRange ) {
+	public List<T> take( IRange<? extends Number> indexRange ) {
 		final int start = indexRange.start().intValue();
 		if ( indexRange.isEmpty() || start >= size() ) {
 			return empty();
@@ -400,7 +400,7 @@ public abstract class AbstractList<T, M extends Iterable<T>>
 	}
 
 	@Override
-	public IList<T> takeL( int firstN ) {
+	public List<T> takeL( int firstN ) {
 		if ( firstN <= 0 ) {
 			return empty();
 		}
@@ -408,7 +408,7 @@ public abstract class AbstractList<T, M extends Iterable<T>>
 	}
 
 	@Override
-	public IList<T> takeR( int lastN ) {
+	public List<T> takeR( int lastN ) {
 		if ( lastN <= 0 ) {
 			return empty();
 		}
@@ -417,7 +417,7 @@ public abstract class AbstractList<T, M extends Iterable<T>>
 	}
 
 	@Override
-	public IList<T> takeWhile( Predicate<? super T> stopCondition ) {
+	public List<T> takeWhile( Predicate<? super T> stopCondition ) {
 		if ( isEmpty() ) {
 			return this;
 		}
@@ -431,13 +431,13 @@ public abstract class AbstractList<T, M extends Iterable<T>>
 	}
 
 	@Override
-	public IList<T> zip( IList<? extends T> other ) {
+	public List<T> zip( List<? extends T> other ) {
 		if ( other.isEmpty() ) {
 			return this;
 		}
 		if ( isEmpty() ) {
 			@SuppressWarnings ( "unchecked" )
-			final IList<T> list = (IList<T>) other;
+			final List<T> list = (List<T>) other;
 			return list;
 		}
 		final Iterator<T> i = iterator();

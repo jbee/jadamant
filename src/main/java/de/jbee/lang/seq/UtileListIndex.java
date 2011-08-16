@@ -19,6 +19,10 @@ public class UtileListIndex {
 	static final ListIndex LAST = new OnPositionListIndex( -1 );
 	static final ListIndex HEAD = FIRST;
 
+	public ListIndex lastUpTo( int count ) {
+		return null; //FIXME liefert den letzten index bis zu einem maximum count - dann immer count -> für take/drop   
+	}
+
 	public ListIndex head() {
 		return HEAD;
 	}

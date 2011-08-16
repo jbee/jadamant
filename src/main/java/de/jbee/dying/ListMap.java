@@ -3,9 +3,9 @@ package de.jbee.dying;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import de.jbee.lang.Fulfills;
+import de.jbee.lang.List;
 import de.jbee.lang.Predicate;
 
 public final class ListMap {
@@ -21,16 +21,17 @@ public final class ListMap {
 	static final class ClassicListMap<K, V>
 			implements IListMap<K, V> {
 
-		final Map<K, IMutableList<V>> lists = new HashMap<K, IMutableList<V>>();
+		final Map<K, List<V>> lists = new HashMap<K, List<V>>();
 
 		@Override
 		public IListMap<K, V> append( K key, V value ) {
-			IMutableList<V> list = lists.get( key );
+			List<V> list = lists.get( key );
 			if ( list == null ) {
-				list = ListUtil.mutable( 5 );
-				lists.put( key, list );
+				list = List.with.element( value );
+			} else {
+				list = list.append( value );
 			}
-			list.append( value );
+			lists.put( key, list );
 			return this;
 		}
 
@@ -40,18 +41,18 @@ public final class ListMap {
 		}
 
 		@Override
-		public IList<V> values( K key ) {
-			IMutableList<V> list = lists.get( key );
+		public de.jbee.lang.List<V> values( K key ) {
+			List<V> list = lists.get( key );
 			return list == null
-				? ListUtil.<V> empty()
-				: list.immutable();
+				? List.with.<V> noElements()
+				: list;
 		}
 
 		@Override
-		public Iterator<IList<V>> iterator() {
-			return new Iterator<IList<V>>() {
+		public Iterator<List<V>> iterator() {
+			return new Iterator<List<V>>() {
 
-				Iterator<IMutableList<V>> iterator = lists.values().iterator();
+				Iterator<List<V>> iterator = lists.values().iterator();
 
 				@Override
 				public boolean hasNext() {
@@ -59,8 +60,8 @@ public final class ListMap {
 				}
 
 				@Override
-				public IList<V> next() {
-					return iterator.next().immutable();
+				public List<V> next() {
+					return iterator.next();
 				}
 
 				@Override
@@ -77,27 +78,27 @@ public final class ListMap {
 
 		@Override
 		public IListMap<K, V> appendEach( Predicate<? super K> keyCondition, V value ) {
-			for ( Entry<K, IMutableList<V>> e : lists.entrySet() ) {
-				if ( keyCondition.fulfilledBy( e.getKey() ) ) {
-					e.getValue().append( value );
+			for ( K key : lists.keySet() ) {
+				if ( keyCondition.fulfilledBy( key ) ) {
+					lists.put( key, lists.get( key ).append( value ) );
 				}
 			}
 			return this;
 		}
 
 		@Override
-		public IList<V> merge() {
-			IMutableList<V> res = ListUtil.mutable( size() );
-			for ( IMutableList<V> l : lists.values() ) {
-				res.append( l );
+		public List<V> merge() {
+			List<V> res = List.with.noElements();
+			for ( List<V> l : lists.values() ) {
+				res = res.concat( l );
 			}
-			return res.immutable();
+			return List.which.nubs().from( res );
 		}
 
 		@Override
 		public int size() {
 			int c = 0;
-			for ( IMutableList<V> l : lists.values() ) {
+			for ( List<V> l : lists.values() ) {
 				c += l.size();
 			}
 			return c;

@@ -1,7 +1,9 @@
 package de.jbee.lang;
 
+import java.io.Serializable;
 import java.util.RandomAccess;
 
+import de.jbee.lang.seq.Iterate;
 import de.jbee.lang.seq.UtileEnumerator;
 import de.jbee.lang.seq.UtileEnumeratorFactory;
 import de.jbee.lang.seq.UtileListIndex;
@@ -35,7 +37,7 @@ import de.jbee.lang.seq.UtileLister;
  */
 public interface List<E>
 		extends Prepandable<E>, Appendable<E>, Sequence<E>, ModifiableSequence<E>, Arrayable,
-		Traversable<E>, RandomAccess {
+		Traversable<E>, RandomAccess, Serializable {
 
 	/**
 	 * The operator to use in a {@link Object#toString()} when visualizing concatenation of lists.
@@ -62,7 +64,7 @@ public interface List<E>
 
 	//TODO a util for string handling strings as list of characters
 
-	//TODO a util to support a call like: List.iterate.forward(l)
+	Iterate iterate = Iterate.instance;
 
 	Traverse traverse = Traverse.instance;
 

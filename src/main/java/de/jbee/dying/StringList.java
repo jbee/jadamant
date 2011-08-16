@@ -7,16 +7,16 @@ public class StringList
 
 	private static final long serialVersionUID = 1L;
 
-	StringList( IList<String> list ) {
+	StringList( List<String> list ) {
 		this( list, Collection.<String> comparator() );
 	}
 
-	private StringList( IList<String> list, Comparator<String> comparator ) {
+	private StringList( List<String> list, Comparator<String> comparator ) {
 		super( list, comparator );
 	}
 
 	@Override
-	protected StringList extend( IList<String> list ) {
+	protected StringList extend( List<String> list ) {
 		return new StringList( list );
 	}
 

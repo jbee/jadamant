@@ -5,12 +5,10 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import de.jbee.dying.IDecoder;
-import de.jbee.dying.IList;
-import de.jbee.dying.IMutableList;
 import de.jbee.dying.IMutableSet;
 import de.jbee.dying.ISet;
-import de.jbee.dying.ListUtil;
 import de.jbee.dying.Set;
+import de.jbee.lang.List;
 
 /**
  * Acts as a Service Locator for {@link IDecoder}s. The target type of decoding is used as key for
@@ -95,7 +93,7 @@ public final class Decoder {
 	public static <T, E> IDecoder<T> getCollectionInstance( Class<? extends T> collectionType,
 			Class<E> elementType ) {
 		final IDecoder<E> elementDecoder = getInstance( elementType, true );
-		if ( IList.class.isAssignableFrom( collectionType ) ) {
+		if ( java.util.List.class.isAssignableFrom( collectionType ) ) {
 			return (IDecoder<T>) new ListDecoder<E>( elementDecoder, "," );
 		}
 		if ( ISet.class.isAssignableFrom( collectionType ) ) {
@@ -202,7 +200,7 @@ public final class Decoder {
 		}
 	}
 
-	static abstract class CollectionDecoder<E, C, R>
+	static abstract class CollectionDecoder<E, R>
 			implements IDecoder<R> {
 
 		private final IDecoder<E> elementDecoder;
@@ -226,52 +224,39 @@ public final class Decoder {
 			if ( elements.length == 0 ) {
 				return empty();
 			}
-			final C collection = empty( elements.length );
-			for ( final String e : elements ) {
-				append( elementDecoder.decode( e ), collection );
-			}
-			return readonly( collection );
+			return decode( elements, elementDecoder );
 		}
 
+		protected abstract R decode( String[] elements, IDecoder<E> elementDecoder );
+
 		protected abstract R empty();
-
-		protected abstract C empty( int size );
-
-		protected abstract void append( E element, C collection );
-
-		protected abstract R readonly( C collection );
 	}
 
 	static final class ListDecoder<E>
-			extends CollectionDecoder<E, IMutableList<E>, IList<E>> {
+			extends CollectionDecoder<E, List<E>> {
 
 		ListDecoder( IDecoder<E> elementDecoder, String delimiterRegEx ) {
 			super( elementDecoder, delimiterRegEx );
 		}
 
 		@Override
-		protected void append( E element, IMutableList<E> collection ) {
-			collection.append( element );
+		protected List<E> empty() {
+			return List.with.noElements();
 		}
 
 		@Override
-		protected IList<E> readonly( IMutableList<E> collection ) {
-			return collection.immutable();
+		protected List<E> decode( String[] elements, IDecoder<E> elementDecoder ) {
+			List<E> res = empty();
+			for ( final String e : elements ) {
+				res = res.append( elementDecoder.decode( e ) );
+			}
+			return res;
 		}
 
-		@Override
-		protected IList<E> empty() {
-			return ListUtil.empty();
-		}
-
-		@Override
-		protected IMutableList<E> empty( int size ) {
-			return ListUtil.mutable( size );
-		}
 	}
 
 	static final class SetDecoder<E>
-			extends CollectionDecoder<E, IMutableSet<E>, ISet<E>> {
+			extends CollectionDecoder<E, ISet<E>> {
 
 		private final Class<E> elementType;
 
@@ -281,23 +266,17 @@ public final class Decoder {
 		}
 
 		@Override
-		protected void append( E element, IMutableSet<E> collection ) {
-			collection.add( element );
-		}
-
-		@Override
 		protected ISet<E> empty() {
 			return de.jbee.dying.Set.empty();
 		}
 
 		@Override
-		protected IMutableSet<E> empty( int size ) {
-			return Set.mutable( size, elementType );
-		}
-
-		@Override
-		protected ISet<E> readonly( IMutableSet<E> collection ) {
-			return collection.immutable();
+		protected ISet<E> decode( String[] elements, IDecoder<E> elementDecoder ) {
+			IMutableSet<E> res = Set.mutable( elements.length, elementType );
+			for ( final String e : elements ) {
+				res = res.add( elementDecoder.decode( e ) );
+			}
+			return res.immutable();
 		}
 
 	}

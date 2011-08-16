@@ -1,7 +1,7 @@
 package de.jbee.dying;
 
 public interface ICompareableList<T>
-		extends IList<T> {
+		extends List<T> {
 
 	T maximum();
 

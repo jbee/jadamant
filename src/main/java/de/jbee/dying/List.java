@@ -18,12 +18,12 @@ import de.jbee.lang.Sequence;
  * @param <T>
  *            Element-Type
  */
-public interface IList<T>
-		extends ISequence<T>, Sequence<T>, IBag<T, IList<T>>, IFoldable<T>, Serializable {
+interface List<T>
+		extends ISequence<T>, Sequence<T>, IBag<T, List<T>>, IFoldable<T>, Serializable {
 
-	boolean isPrefixOf( IList<T> other );
+	boolean isPrefixOf( List<T> other );
 
-	boolean isSuffixOf( IList<T> other );
+	boolean isSuffixOf( List<T> other );
 
 	int elemIndex( T e );
 
@@ -38,42 +38,42 @@ public interface IList<T>
 	 */
 	NumberList<Integer> elemIndicesBy( Eq<? super T> equality, T e );
 
-	IList<T> concat( IList<T> other );
+	List<T> concat( List<T> other );
 
-	IList<T> delete( int index )
+	List<T> delete( int index )
 			throws IndexOutOfBoundsException;
 
-	IList<T> zip( IList<? extends T> other );
+	List<T> zip( List<? extends T> other );
 
-	IList<T> drop( IRange<? extends Number> indexRange );
+	List<T> drop( IRange<? extends Number> indexRange );
 
-	IList<T> dropL( int firstN );
+	List<T> dropL( int firstN );
 
-	IList<T> dropR( int lastN );
+	List<T> dropR( int lastN );
 
 	/**
 	 * creates a list from another one, it inspects the original list and takes from it its elements
 	 * from the moment when the condition fails for the first time till the end of the list
 	 */
-	IList<T> dropWhile( Predicate<? super T> stopCondition );
+	List<T> dropWhile( Predicate<? super T> stopCondition );
 
-	IList<T> take( IRange<? extends Number> indexRange );
+	List<T> take( IRange<? extends Number> indexRange );
 
-	IList<T> takeL( int firstN );
+	List<T> takeL( int firstN );
 
-	IList<T> takeR( int lastN );
+	List<T> takeR( int lastN );
 
 	/**
 	 * creates a list from another one, it inspects the original list and takes from it its elements
 	 * to the moment when the condition fails, then it stops processing
 	 */
-	IList<T> takeWhile( Predicate<? super T> stopCondition );
+	List<T> takeWhile( Predicate<? super T> stopCondition );
 
 	@Override
-	IList<T> tail();
+	List<T> tail();
 
 	@Override
-	IList<T> prepand( T e );
+	List<T> prepand( T e );
 
 	/**
 	 * inserts separator between the elements of its list argument
@@ -83,26 +83,26 @@ public interface IList<T>
 	 * Output: "H-e-l-l-o"
 	 * </pre>
 	 */
-	IList<T> intersperse( T e );
+	List<T> intersperse( T e );
 
 	/**
 	 * creates a list of length given by the second argument and the items having value of the
 	 * element at the first argument index of this list
 	 */
-	IList<T> replicate( int index, int length )
+	List<T> replicate( int index, int length )
 			throws IndexOutOfBoundsException;
 
-	IList<T> reverse();
+	List<T> reverse();
 
-	IList<T> sort( Comparator<? super T> c );
+	List<T> sort( Comparator<? super T> c );
 
 	/**
 	 * returns a list constructed by appling a function (the first argument) to all items in a list
 	 * passed as the second argument
 	 */
-	<R> IList<R> map( IFunc1<R, T> mapFunction );
+	<R> List<R> map( IFunc1<R, T> mapFunction );
 
-	Conditional<? extends IList<T>> splitAt( int index )
+	Conditional<? extends List<T>> splitAt( int index )
 			throws IndexOutOfBoundsException;
 
 	IMutableList<T> mutable();

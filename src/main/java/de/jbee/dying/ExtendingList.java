@@ -5,20 +5,20 @@ import java.util.Comparator;
 import de.jbee.lang.Eq;
 import de.jbee.lang.Predicate;
 
-public abstract class ExtendingList<T, E extends IList<T>>
-		extends ExtendingBag<T, IList<T>, E>
-		implements IList<T> {
+public abstract class ExtendingList<T, E extends List<T>>
+		extends ExtendingBag<T, List<T>, E>
+		implements List<T> {
 
 	private static final long serialVersionUID = 1L;
 
-	private final IList<T> list;
+	private final List<T> list;
 
-	protected ExtendingList( IList<T> list ) {
+	protected ExtendingList( List<T> list ) {
 		this.list = list;
 	}
 
 	@Override
-	protected final IList<T> getCollection() {
+	protected final List<T> getCollection() {
 		return list;
 	}
 
@@ -34,12 +34,12 @@ public abstract class ExtendingList<T, E extends IList<T>>
 	}
 
 	@Override
-	public E concat( IList<T> other ) {
+	public E concat( List<T> other ) {
 		return extend( list );
 	}
 
 	@Override
-	public IList<T> prepand( T e ) {
+	public List<T> prepand( T e ) {
 		return extend( list.prepand( e ) );
 	}
 
@@ -153,12 +153,12 @@ public abstract class ExtendingList<T, E extends IList<T>>
 	}
 
 	@Override
-	public boolean isPrefixOf( IList<T> other ) {
+	public boolean isPrefixOf( List<T> other ) {
 		return getCollection().isPrefixOf( other );
 	}
 
 	@Override
-	public boolean isSuffixOf( IList<T> other ) {
+	public boolean isSuffixOf( List<T> other ) {
 		return getCollection().isSuffixOf( other );
 	}
 
@@ -174,7 +174,7 @@ public abstract class ExtendingList<T, E extends IList<T>>
 	}
 
 	@Override
-	public <R> IList<R> map( IFunc1<R, T> mapFunction ) {
+	public <R> List<R> map( IFunc1<R, T> mapFunction ) {
 		return getCollection().map( mapFunction );
 	}
 
@@ -226,7 +226,7 @@ public abstract class ExtendingList<T, E extends IList<T>>
 	}
 
 	@Override
-	public E zip( IList<? extends T> other ) {
+	public E zip( List<? extends T> other ) {
 		return extend( getCollection().zip( other ) );
 	}
 

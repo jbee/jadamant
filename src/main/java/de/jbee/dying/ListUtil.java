@@ -24,7 +24,7 @@ public final class ListUtil {
 
 		@SuppressWarnings ( "unchecked" )
 		@Override
-		public IList<T> immutable() {
+		public List<T> immutable() {
 			// to be able to continue work with the mutable list without changing the immutable created 
 			return ListUtil.readonly( (ArrayList<T>) getCollection().clone() );
 		}
@@ -77,13 +77,13 @@ public final class ListUtil {
 		}
 	}
 
-	private static final IList<?> EMPTY = new ImmutableList<Object>( Collections.emptyList() );
+	private static final List<?> EMPTY = new ImmutableList<Object>( Collections.emptyList() );
 
 	public static <T> Iterator<T> reverseIterator( java.util.List<T> list ) {
 		return new ReverseIterator<T>( list );
 	}
 
-	public static <T> IList<T> readonly( java.util.Iterator<T> listIterator ) {
+	public static <T> List<T> readonly( java.util.Iterator<T> listIterator ) {
 		final java.util.List<T> list = new ArrayList<T>();
 		while ( listIterator.hasNext() ) {
 			list.add( listIterator.next() );
@@ -91,17 +91,17 @@ public final class ListUtil {
 		return new ImmutableList<T>( list );
 	}
 
-	public static <T> IList<T> readonly( java.util.List<T> list ) {
+	public static <T> List<T> readonly( java.util.List<T> list ) {
 		return list == null || list.isEmpty()
 			? ListUtil.<T> empty()
 			: new ImmutableList<T>( list );
 	}
 
-	public static <T> IList<T> readonly1( T... list ) {
+	public static <T> List<T> readonly1( T... list ) {
 		return readonly( list );
 	}
 
-	public static <T> IList<T> readonly( T[] list ) {
+	public static <T> List<T> readonly( T[] list ) {
 		return list == null || list.length == 0
 			? ListUtil.<T> empty()
 			: ListUtil.readonly( Arrays.asList( list ) );
@@ -121,23 +121,23 @@ public final class ListUtil {
 		return new NumberList<T>( new ImmutableList<T>( list ) );
 	}
 
-	public static StringList extend( IList<String> list ) {
+	public static StringList extend( List<String> list ) {
 		return new StringList( list );
 	}
 
-	public static <T extends Number & Comparable<T>> NumberList<T> extend( IList<T> list ) {
+	public static <T extends Number & Comparable<T>> NumberList<T> extend( List<T> list ) {
 		return new NumberList<T>( list );
 	}
 
 	@SuppressWarnings ( "unchecked" )
-	public static <T> IList<T> empty() {
-		return (IList<T>) EMPTY;
+	public static <T> List<T> empty() {
+		return (List<T>) EMPTY;
 	}
 
 	/**
 	 * @see IMutableList
 	 */
-	public static <T> IMutableList<T> mutable( IList<T> list ) {
+	public static <T> IMutableList<T> mutable( List<T> list ) {
 		if ( list.isEmpty() ) {
 			return new MutableList<T>( new ArrayList<T>() );
 		}
@@ -174,13 +174,13 @@ public final class ListUtil {
 	 * argument
 	 */
 	@SuppressWarnings ( "unchecked" )
-	public static <T> IList<T> replicate( int length, T e ) {
+	public static <T> List<T> replicate( int length, T e ) {
 		final Object[] list = new Object[length];
 		Arrays.fill( list, e );
 		return ListUtil.readonly( Arrays.<T> asList( (T[]) list ) );
 	}
 
-	public static <T> java.util.List<T> unmodifyable( IList<T> list ) {
+	public static <T> java.util.List<T> unmodifyable( List<T> list ) {
 		final java.util.List<T> res = new ArrayList<T>( list.size() );
 		for ( final T e : list ) {
 			res.add( e );

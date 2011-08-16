@@ -1,5 +1,6 @@
 package de.jbee.lang;
 
+import de.jbee.dying.Collection;
 import de.jbee.lang.dev.Null;
 import de.jbee.lang.dev.Nullproof;
 import de.jbee.lang.dev.Nullsave;
@@ -10,6 +11,12 @@ public final class Traverse {
 
 	private Traverse() {
 		// singleton
+	}
+
+	public <E> E[] toArray( List<E> t, Class<E> elementType ) {
+		E[] res = Collection.newArray( elementType, t.size() );
+		t.traverse( 0, new ArrayFillingTraversal<E>( res, 0 ) );
+		return res;
 	}
 
 	public static <E> E fold( List<E> l, Op<E> op, E init ) {

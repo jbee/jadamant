@@ -47,6 +47,18 @@ public class UtileLister
 		return elements( elems );
 	}
 
+	public <E> List<E> readonly( java.util.Collection<E> c ) {
+		return StackList.tidy( c.size(), c.toArray(), this.<E> noElements() );
+	}
+
+	public <E> List<E> readonly( java.util.Iterator<E> c ) {
+		List<E> res = noElements();
+		while ( c.hasNext() ) {
+			res = res.append( c.next() );
+		}
+		return res;
+	}
+
 	/**
 	 * lines breaks a string up into a list of strings at newline characters. The resulting strings
 	 * do not contain newlines.

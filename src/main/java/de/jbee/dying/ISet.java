@@ -17,11 +17,11 @@ public interface ISet<T>
 
 	boolean isSubsetOf( ISet<T> other );
 
-	IList<T> toList();
+	List<T> toList();
 
 	ISet<T> unions( ICluster<ISet<T>> others );
 
-	IList<T> toAscList( Comparator<? super T> c );
+	List<T> toAscList( Comparator<? super T> c );
 
 	IMutableSet<T> mutable();
 }

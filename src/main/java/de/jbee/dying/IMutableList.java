@@ -9,5 +9,5 @@ public interface IMutableList<T>
 
 	IMutableList<T> insert( int index, T e );
 
-	IList<T> immutable();
+	List<T> immutable();
 }

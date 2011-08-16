@@ -1,11 +1,12 @@
 package de.jbee.dying;
 
+import de.jbee.lang.List;
 import de.jbee.lang.Predicate;
 
 public interface IListMap<K, V>
-		extends Iterable<IList<V>> {
+		extends Iterable<List<V>> {
 
-	IList<V> values( K key );
+	List<V> values( K key );
 
 	IListMap<K, V> append( K key, V value );
 
@@ -15,7 +16,7 @@ public interface IListMap<K, V>
 
 	ISet<K> keys();
 
-	IList<V> merge();
+	List<V> merge();
 
 	int size();
 }

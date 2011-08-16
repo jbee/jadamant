@@ -7,16 +7,16 @@ public class NumberList<N extends Number & Comparable<N>>
 
 	private static final long serialVersionUID = 1L;
 
-	NumberList( IList<N> list ) {
+	NumberList( List<N> list ) {
 		this( list, Collection.<N> comparator() );
 	}
 
-	private NumberList( IList<N> list, Comparator<N> comparator ) {
+	private NumberList( List<N> list, Comparator<N> comparator ) {
 		super( list, comparator );
 	}
 
 	@Override
-	protected NumberList<N> extend( IList<N> list ) {
+	protected NumberList<N> extend( List<N> list ) {
 		return new NumberList<N>( list );
 	}
 

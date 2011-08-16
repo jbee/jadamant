@@ -50,14 +50,14 @@ public abstract class AbstractSet<T, M extends Iterable<T>>
 	}
 
 	@Override
-	public IList<T> toAscList( Comparator<? super T> c ) {
+	public List<T> toAscList( Comparator<? super T> c ) {
 		final ArrayList<T> list = toStandardList();
 		Collections.sort( list, c );
 		return ListUtil.readonly( list );
 	}
 
 	@Override
-	public IList<T> toList() {
+	public List<T> toList() {
 		return ListUtil.readonly( toStandardList() );
 	}
 

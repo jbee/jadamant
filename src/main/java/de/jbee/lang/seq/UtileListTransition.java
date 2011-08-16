@@ -126,9 +126,9 @@ public class UtileListTransition
 	}
 
 	public UtileListTransition swaps( int idx1, int idx2 ) {
-		return followedBy( idx1 == idx2
-			? none
-			: new SwapTransition( idx2, idx1 ) );
+		return idx1 == idx2
+			? this
+			: followedBy( new SwapTransition( idx2, idx1 ) );
 	}
 
 	public UtileListTransition sorts() {
@@ -148,6 +148,20 @@ public class UtileListTransition
 	}
 
 	public UtileListTransition deletes( int index ) {
+		return index < 0
+			? this
+			: deletes( List.indexFor.elemAt( index ) );
+	}
+
+	public UtileListTransition deletes( Object elem ) {
+		return deletes( elem, Equal.equals );
+	}
+
+	public UtileListTransition deletes( Object elem, Eq<Object> eq ) {
+		return deletes( List.indexFor.elem( elem, eq ) );
+	}
+
+	public UtileListTransition deletes( ListIndex index ) {
 		return followedBy( new DeleteIndexTransition( index ) );
 	}
 
@@ -264,16 +278,19 @@ public class UtileListTransition
 	static final class DeleteIndexTransition
 			implements ListTransition {
 
-		private final int index;
+		private final ListIndex index;
 
-		DeleteIndexTransition( int index ) {
+		DeleteIndexTransition( ListIndex index ) {
 			super();
 			this.index = index;
 		}
 
 		@Override
 		public <E> List<E> from( List<E> list ) {
-			return list.deleteAt( index );
+			final int i = index.in( list );
+			return i == ListIndex.NOT_CONTAINED
+				? list
+				: list.deleteAt( i );
 		}
 	}
 

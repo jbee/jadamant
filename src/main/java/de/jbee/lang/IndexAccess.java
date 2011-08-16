@@ -17,6 +17,16 @@ public class IndexAccess {
 		return new IndexAccessIterator<E>( sequence, start, end, increment );
 	}
 
+	public static <E> Iterable<E> iterable( final Sequence<E> seq ) {
+		return new Iterable<E>() {
+
+			@Override
+			public Iterator<E> iterator() {
+				return IndexAccess.iterator( seq, 0, seq.size() );
+			}
+		};
+	}
+
 	private static final class IndexAccessIterator<E>
 			implements Iterator<E> {
 

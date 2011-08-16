@@ -2,7 +2,7 @@ package de.jbee.dying;
 
 import java.util.Comparator;
 
-public abstract class ComparatorList<T, E extends IList<T>>
+public abstract class ComparatorList<T, E extends List<T>>
 		extends ExtendingList<T, E>
 		implements ICompareableList<T> {
 
@@ -10,7 +10,7 @@ public abstract class ComparatorList<T, E extends IList<T>>
 
 	private final Comparator<T> comparator;
 
-	protected ComparatorList( IList<T> list, Comparator<T> comparator ) {
+	protected ComparatorList( List<T> list, Comparator<T> comparator ) {
 		super( list );
 		this.comparator = comparator;
 	}

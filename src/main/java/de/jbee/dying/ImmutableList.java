@@ -50,7 +50,7 @@ final class ImmutableList<T>
 	}
 
 	@Override
-	protected IList<T> readonly( List<T> innerList ) {
+	protected de.jbee.dying.List<T> readonly( List<T> innerList ) {
 		return new ImmutableList<T>( innerList );
 	}
 
@@ -85,10 +85,10 @@ final class ImmutableList<T>
 	}
 
 	@Override
-	public IList<T> sort( Comparator<? super T> c ) {
+	public de.jbee.dying.List<T> sort( Comparator<? super T> c ) {
 		final List<T> sortedList = clone( 0 );
 		Collections.sort( sortedList, c );
-		return readonly( sortedList );
+		return ListUtil.readonly( sortedList );
 	}
 
 	final List<T> list() {
