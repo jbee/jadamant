@@ -14,7 +14,7 @@ public interface IListMap<K, V>
 
 	IListMap<K, V> appendEach( Predicate<? super K> keyCondition, V value );
 
-	ISet<K> keys();
+	List<K> keys();
 
 	List<V> merge();
 

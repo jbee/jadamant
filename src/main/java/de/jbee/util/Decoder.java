@@ -4,9 +4,6 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import de.jbee.dying.IMutableSet;
-import de.jbee.dying.ISet;
-import de.jbee.dying.Set;
 import de.jbee.lang.List;
 
 /**
@@ -95,9 +92,7 @@ public final class Decoder {
 		if ( java.util.List.class.isAssignableFrom( collectionType ) ) {
 			return (IDecoder<T>) new ListDecoder<E>( elementDecoder, "," );
 		}
-		if ( ISet.class.isAssignableFrom( collectionType ) ) {
-			return (IDecoder<T>) new SetDecoder<E>( elementDecoder, ",", elementType );
-		}
+		//TODO support sets again
 		throw new UnsupportedOperationException( "No decoder available for type: " + collectionType );
 	}
 
@@ -250,32 +245,6 @@ public final class Decoder {
 				res = res.append( elementDecoder.decode( e ) );
 			}
 			return res;
-		}
-
-	}
-
-	static final class SetDecoder<E>
-			extends CollectionDecoder<E, ISet<E>> {
-
-		private final Class<E> elementType;
-
-		SetDecoder( IDecoder<E> elementDecoder, String delimiterRegEx, Class<E> elementType ) {
-			super( elementDecoder, delimiterRegEx );
-			this.elementType = elementType;
-		}
-
-		@Override
-		protected ISet<E> empty() {
-			return de.jbee.dying.Set.empty();
-		}
-
-		@Override
-		protected ISet<E> decode( String[] elements, IDecoder<E> elementDecoder ) {
-			IMutableSet<E> res = Set.mutable( elements.length, elementType );
-			for ( final String e : elements ) {
-				res = res.add( elementDecoder.decode( e ) );
-			}
-			return res.immutable();
 		}
 
 	}

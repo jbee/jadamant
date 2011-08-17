@@ -36,8 +36,8 @@ public final class ListMap {
 		}
 
 		@Override
-		public ISet<K> keys() {
-			return Set.readonly( lists.keySet() );
+		public List<K> keys() {
+			return List.with.readonly( lists.keySet() );
 		}
 
 		@Override

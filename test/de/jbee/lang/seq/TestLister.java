@@ -9,6 +9,7 @@ import static org.junit.Assert.assertThat;
 import org.junit.Test;
 
 import de.jbee.lang.List;
+import de.jbee.lang.Sequence;
 
 public class TestLister {
 
@@ -97,7 +98,24 @@ public class TestLister {
 
 	@Test
 	public void testElementsCluster() {
-		List<Integer> l = List.with.elements( de.jbee.dying.ListUtil.readonly1( 1, 2, 3 ) );
+		List<Integer> l = List.with.elements( new Sequence<Integer>() {
+
+			@Override
+			public boolean isEmpty() {
+				return false;
+			}
+
+			@Override
+			public int size() {
+				return 3;
+			}
+
+			@Override
+			public Integer at( int index ) {
+				return new int[] { 1, 2, 3 }[index];
+			}
+
+		} );
 		assertThat( l.size(), is( 3 ) );
 		assertThat( l.at( 0 ), is( 1 ) );
 		assertThat( l.at( 1 ), is( 2 ) );

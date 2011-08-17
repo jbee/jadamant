@@ -1,6 +1,5 @@
 package de.jbee.lang;
 
-import de.jbee.dying.Collection;
 import de.jbee.lang.dev.Null;
 import de.jbee.lang.dev.Nullproof;
 import de.jbee.lang.dev.Nullsave;
@@ -14,7 +13,7 @@ public final class Traverse {
 	}
 
 	public <E> E[] toArray( List<E> t, Class<E> elementType ) {
-		E[] res = Collection.newArray( elementType, t.size() );
+		E[] res = Array.newInstance( elementType, t.size() );
 		t.traverse( 0, new ArrayFillingTraversal<E>( res, 0 ) );
 		return res;
 	}

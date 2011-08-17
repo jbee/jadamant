@@ -77,4 +77,12 @@ public final class Array {
 		return stack;
 	}
 
+	public static boolean isEmpty( Object[] a ) {
+		return a == null || a.length == 0;
+	}
+
+	@SuppressWarnings ( "unchecked" )
+	public static <T> T[] newInstance( Class<T> elementType, int length ) {
+		return (T[]) java.lang.reflect.Array.newInstance( elementType, length );
+	}
 }
