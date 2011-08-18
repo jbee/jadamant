@@ -97,7 +97,7 @@ final class EmptyList<E>
 	}
 
 	@Override
-	public int size() {
+	public int length() {
 		return 0;
 	}
 

@@ -99,7 +99,7 @@ final class SingleElementList<E>
 	@Override
 	public List<E> prepand( E e ) {
 		Nonnull.element( e );
-		return StackList.tidy( size() + 1, Array.withLastElement( e, 2 ), this );
+		return StackList.tidy( length() + 1, Array.withLastElement( e, 2 ), this );
 	}
 
 	@Override
@@ -110,8 +110,8 @@ final class SingleElementList<E>
 	}
 
 	@Override
-	public int size() {
-		return tail.size() + 1;
+	public int length() {
+		return tail.length() + 1;
 	}
 
 	@Override

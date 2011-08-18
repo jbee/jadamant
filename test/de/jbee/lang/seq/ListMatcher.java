@@ -28,10 +28,11 @@ public class ListMatcher {
 				return false;
 			}
 			List<?> actual = ( (List<?>) item );
-			if ( expected == null && actual.size() > 0 ) {
+			int length = actual.length();
+			if ( expected == null && length > 0 ) {
 				return false;
 			}
-			if ( actual.size() < expected.length ) {
+			if ( length < expected.length ) {
 				return false;
 			}
 			for ( int i = 0; i < expected.length; i++ ) {

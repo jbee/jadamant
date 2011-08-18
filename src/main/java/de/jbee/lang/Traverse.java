@@ -13,7 +13,7 @@ public final class Traverse {
 	}
 
 	public <E> E[] toArray( List<E> t, Class<E> elementType ) {
-		E[] res = Array.newInstance( elementType, t.size() );
+		E[] res = Array.newInstance( elementType, t.length() );
 		t.traverse( 0, new ArrayFillingTraversal<E>( res, 0 ) );
 		return res;
 	}

@@ -1,6 +1,5 @@
 package de.jbee.lang;
 
-
 /**
  * 
  * @author Jan Bernitt (jan.bernitt@gmx.de)
@@ -10,9 +9,7 @@ package de.jbee.lang;
 public interface Sequence<E>
 		extends IndexAccessible<E> {
 
-	// Guarantee both interfaces
-
-	int size();
+	int length();
 
 	boolean isEmpty();
 }

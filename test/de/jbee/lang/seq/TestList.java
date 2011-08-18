@@ -49,8 +49,8 @@ public class TestList {
 	}
 
 	private void verifyFillAll( List<Integer> l ) {
-		Integer[] a = new Integer[l.size()];
-		l.fill( 0, a, 0, l.size() );
+		Integer[] a = new Integer[l.length()];
+		l.fill( 0, a, 0, l.length() );
 		for ( int i = 0; i < a.length; i++ ) {
 			assertThat( a[i], is( l.at( i ) ) );
 		}
@@ -65,8 +65,8 @@ public class TestList {
 		}
 		for ( int i = 0; i < size; i++ ) {
 			List<Integer> deleted = l.deleteAt( i );
-			assertThat( l.size() - 1, is( deleted.size() ) );
-			for ( int j = 0; j < deleted.size(); j++ ) {
+			assertThat( l.length() - 1, is( deleted.length() ) );
+			for ( int j = 0; j < deleted.length(); j++ ) {
 				if ( j < i ) {
 					assertThat( l.at( j ), is( deleted.at( j ) ) );
 				} else {
@@ -127,7 +127,7 @@ public class TestList {
 		List<Integer> l = List.with.noElements();
 		for ( int i = 1; i < 100; i++ ) {
 			l = l.prepand( i );
-			assertThat( i, is( l.size() ) );
+			assertThat( i, is( l.length() ) );
 			for ( int j = 0; j < i; j++ ) {
 				assertThat( i - j, is( l.at( j ) ) );
 			}
@@ -158,7 +158,7 @@ public class TestList {
 
 		} );
 		// make sure increment on has been called 
-		assertThat( readI[0], is( l.size() ) );
+		assertThat( readI[0], is( l.length() ) );
 	}
 
 	private List<Integer> descendingTo1From( final int start ) {
@@ -182,26 +182,26 @@ public class TestList {
 	}
 
 	private void verifyDropL( List<Integer> l ) {
-		final int size = l.size();
-		assertThat( l.drop( size ).size(), is( 0 ) );
-		assertThat( l.drop( size + 1 ).size(), is( 0 ) );
-		assertThat( l.drop( size - 1 ).size(), is( 1 ) );
+		final int size = l.length();
+		assertThat( l.drop( size ).length(), is( 0 ) );
+		assertThat( l.drop( size + 1 ).length(), is( 0 ) );
+		assertThat( l.drop( size - 1 ).length(), is( 1 ) );
 		for ( int i = 1; i < size; i++ ) {
 			List<Integer> dropped = l.drop( i );
-			assertThat( dropped.size(), is( size - i ) );
+			assertThat( dropped.length(), is( size - i ) );
 			assertThat( i + "=>" + l + "=" + dropped, dropped.at( 0 ), is( l.at( i ) ) );
 			assertThat( dropped.at( size - i - 1 ), is( l.at( size - 1 ) ) );
 		}
 	}
 
 	private void verifyDropR( List<Integer> l ) {
-		final int size = l.size();
-		assertThat( List.which.dropsLast( size ).from( l ).size(), is( 0 ) );
-		assertThat( List.which.dropsLast( size + 1 ).from( l ).size(), is( 0 ) );
-		assertThat( List.which.dropsLast( size - 1 ).from( l ).size(), is( 1 ) );
+		final int size = l.length();
+		assertThat( List.which.dropsLast( size ).from( l ).length(), is( 0 ) );
+		assertThat( List.which.dropsLast( size + 1 ).from( l ).length(), is( 0 ) );
+		assertThat( List.which.dropsLast( size - 1 ).from( l ).length(), is( 1 ) );
 		for ( int i = 1; i < size; i++ ) {
 			List<Integer> dropped = List.which.dropsLast( i ).from( l );
-			assertThat( dropped.size(), is( size - i ) );
+			assertThat( dropped.length(), is( size - i ) );
 			assertThat( dropped.at( 0 ), is( l.at( 0 ) ) );
 			int lastIndex = size - i - 1;
 			assertThat( dropped.at( lastIndex ), is( l.at( lastIndex ) ) );
@@ -209,13 +209,13 @@ public class TestList {
 	}
 
 	private void verifyTakeL( List<Integer> l ) {
-		final int size = l.size();
+		final int size = l.length();
 		assertThat( l.take( size ), sameInstance( l ) );
 		assertThat( l.take( size + 1 ), sameInstance( l ) );
 		assertThat( l.take( size - 1 ), not( sameInstance( l ) ) );
 		for ( int i = 1; i < size; i++ ) {
 			List<Integer> taken = l.take( i );
-			assertThat( taken.size(), is( i ) );
+			assertThat( taken.length(), is( i ) );
 			assertThat( taken.at( 0 ), is( l.at( 0 ) ) );
 			int lastIndex = i - 1;
 			assertThat( lastIndex + "=>" + l.toString(), taken.at( lastIndex ),
@@ -224,13 +224,13 @@ public class TestList {
 	}
 
 	private void verifyTakeR( List<Integer> l ) {
-		final int size = l.size();
+		final int size = l.length();
 		assertThat( List.which.takesLast( size ).from( l ), sameInstance( l ) );
 		assertThat( List.which.takesLast( size + 1 ).from( l ), sameInstance( l ) );
 		assertThat( List.which.takesLast( size - 1 ).from( l ), not( sameInstance( l ) ) );
 		for ( int i = 1; i < size; i++ ) {
 			List<Integer> taken = List.which.takesLast( i ).from( l );
-			assertThat( taken.size(), is( i ) );
+			assertThat( taken.length(), is( i ) );
 			assertThat( taken.at( 0 ), is( l.at( size - i ) ) );
 		}
 	}

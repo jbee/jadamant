@@ -72,7 +72,7 @@ abstract class StackList<E>
 
 	@Override
 	public void traverse( int start, Traversal<? super E> traversal ) {
-		final int l = selfLength();
+		final int l = len();
 		int i = start;
 		int inc = 0;
 		while ( inc >= 0 && i < l ) {
@@ -92,7 +92,7 @@ abstract class StackList<E>
 
 	@Override
 	public final E at( int index ) {
-		final int l = selfLength();
+		final int l = len();
 		return index >= l
 			? tail.at( index - l )
 			: element( index, l );
@@ -100,13 +100,13 @@ abstract class StackList<E>
 
 	@Override
 	public List<E> concat( List<E> other ) {
-		return thisWith( size + other.size(), tail.concat( other ) );
+		return thisWith( size + other.length(), tail.concat( other ) );
 	}
 
 	@Override
 	public List<E> deleteAt( int index ) {
 		//FIXME negative index ?
-		final int length = selfLength();
+		final int length = len();
 		if ( index == 0 ) { // first of this stack
 			return length == 1
 				? tail
@@ -130,7 +130,7 @@ abstract class StackList<E>
 		if ( count >= size ) {
 			return empty();
 		}
-		final int length = selfLength();
+		final int length = len();
 		return count >= length
 			? tail.drop( count - length )
 			: untidy( size - count, stack, tail );
@@ -138,7 +138,7 @@ abstract class StackList<E>
 
 	@Override
 	public void fill( int offset, Object[] array, int start, int length ) {
-		final int l = selfLength();
+		final int l = len();
 		if ( start < l ) {
 			int srcPos = stack.length - l - offset() + start;
 			int copyLength = Math.min( length, l );
@@ -156,7 +156,7 @@ abstract class StackList<E>
 		if ( index == 0 ) {
 			return prepand( e );
 		}
-		final int l = selfLength();
+		final int l = len();
 		if ( index >= l ) {
 			return thisWith( size + 1, tail.insertAt( index - l, e ) );
 		}
@@ -173,7 +173,7 @@ abstract class StackList<E>
 
 	@Override
 	public List<E> replaceAt( int index, E e ) {
-		final int l = selfLength();
+		final int l = len();
 		if ( index >= l ) {
 			return thisWith( size, tail.replaceAt( index - l, e ) );
 		}
@@ -188,7 +188,7 @@ abstract class StackList<E>
 	}
 
 	@Override
-	public final int size() {
+	public final int length() {
 		return size;
 	}
 
@@ -200,7 +200,7 @@ abstract class StackList<E>
 		if ( count >= size ) {
 			return this;
 		}
-		final int length = selfLength();
+		final int length = len();
 		if ( count == length ) { // took this stack without tail
 			return thisWith( length, empty() );
 		}
@@ -214,7 +214,7 @@ abstract class StackList<E>
 	@Override
 	public String toString() {
 		StringBuilder b = new StringBuilder();
-		final int l = selfLength();
+		final int l = len();
 		for ( int i = 0; i < l; i++ ) {
 			b.append( ',' );
 			b.append( String.valueOf( at( i ) ) );
@@ -231,8 +231,8 @@ abstract class StackList<E>
 	/**
 	 * @return The amount of elements dedicated to this lists stack
 	 */
-	final int selfLength() {
-		return size - tail.size();
+	final int len() {
+		return size - tail.length();
 	}
 
 	abstract int offset();
@@ -252,7 +252,7 @@ abstract class StackList<E>
 
 		public List<E> prepand( E e ) {
 			Nonnull.element( e );
-			final int length = selfLength();
+			final int length = len();
 			int index = occupationIndex( length );
 			if ( index < 0 ) { // stack capacity exceeded
 				return grow1( Array.withLastElement( e, stack.length * 2 ), this );
@@ -272,7 +272,7 @@ abstract class StackList<E>
 		@Override
 		public List<E> tidyUp() {
 			List<E> tidyTail = tail.tidyUp();
-			int length = selfLength();
+			int length = len();
 			synchronized ( stack ) {
 				if ( notOccupied( occupationIndex( length ) ) ) {
 					return tidyTail == tail
@@ -342,7 +342,7 @@ abstract class StackList<E>
 		@Override
 		public List<E> tidyUp() {
 			Object[] s = new Object[stack.length];
-			final int l = selfLength();
+			final int l = len();
 			System.arraycopy( stack, stack.length - l - offset, s, stack.length - l, l );
 			return tidy( size, s, tail.tidyUp() );
 		}
@@ -442,7 +442,7 @@ abstract class StackList<E>
 			if ( elems.isEmpty() ) {
 				return noElements();
 			}
-			final int size = elems.size();
+			final int size = elems.length();
 			if ( size == 1 ) {
 				return element( elems.at( 0 ) );
 			}

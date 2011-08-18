@@ -26,7 +26,7 @@ public class TestLister {
 	@Test
 	public void testCharactersIn() {
 		List<Character> l = List.with.charactersIn( "Hello" );
-		assertThat( l.size(), is( 5 ) );
+		assertThat( l.length(), is( 5 ) );
 		assertThat( l.at( 0 ), is( 'H' ) );
 		assertThat( l.at( 1 ), is( 'e' ) );
 		assertThat( l.at( 2 ), is( 'l' ) );
@@ -37,7 +37,7 @@ public class TestLister {
 	@Test
 	public void testLinesIn() {
 		List<String> l = List.with.linesIn( "Hello\nMr. Fancy Pancy!\nClown" );
-		assertThat( l.size(), is( 3 ) );
+		assertThat( l.length(), is( 3 ) );
 		assertThat( l.at( 0 ), is( "Hello" ) );
 		assertThat( l.at( 1 ), is( "Mr. Fancy Pancy!" ) );
 		assertThat( l.at( 2 ), is( "Clown" ) );
@@ -46,7 +46,7 @@ public class TestLister {
 	@Test
 	public void testWordsIn() {
 		List<String> l = List.with.wordsIn( "This is the end!\nMy only friend - the end" );
-		assertThat( l.size(), is( 10 ) );
+		assertThat( l.length(), is( 10 ) );
 		assertThat( l.at( 0 ), is( "This" ) );
 		assertThat( l.at( 1 ), is( "is" ) );
 		assertThat( l.at( 2 ), is( "the" ) );
@@ -106,7 +106,7 @@ public class TestLister {
 			}
 
 			@Override
-			public int size() {
+			public int length() {
 				return 3;
 			}
 
@@ -116,7 +116,7 @@ public class TestLister {
 			}
 
 		} );
-		assertThat( l.size(), is( 3 ) );
+		assertThat( l.length(), is( 3 ) );
 		assertThat( l.at( 0 ), is( 1 ) );
 		assertThat( l.at( 1 ), is( 2 ) );
 		assertThat( l.at( 2 ), is( 3 ) );

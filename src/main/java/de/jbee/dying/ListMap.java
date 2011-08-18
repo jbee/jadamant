@@ -99,7 +99,7 @@ public final class ListMap {
 		public int size() {
 			int c = 0;
 			for ( List<V> l : lists.values() ) {
-				c += l.size();
+				c += l.length();
 			}
 			return c;
 		}

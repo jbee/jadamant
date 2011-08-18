@@ -232,7 +232,7 @@ public class UtileListTransition
 
 		@Override
 		public <E> List<E> from( List<E> list ) {
-			int size = list.size();
+			int size = list.length();
 			if ( size < 2 ) {
 				return list;
 			}
@@ -263,7 +263,7 @@ public class UtileListTransition
 		public <E> Set<E> from( List<E> list ) {
 			List<E> res = list;
 			int i = 0;
-			while ( i < res.size() ) {
+			while ( i < res.length() ) {
 				int index = List.indexFor.duplicateOfBy( i, eq ).in( res );
 				if ( index == ListIndex.NOT_CONTAINED ) {
 					i++;
@@ -332,7 +332,7 @@ public class UtileListTransition
 			if ( start == 0 ) {
 				return list.take( length );
 			}
-			int size = list.size();
+			int size = list.length();
 			if ( start >= size ) {
 				return list.take( 0 ); // will lead to empty list but impl. depends on argument
 			}
@@ -393,7 +393,7 @@ public class UtileListTransition
 
 		@Override
 		public <E> List<E> from( List<E> list ) {
-			return list.drop( list.size() - count );
+			return list.drop( list.length() - count );
 		}
 	}
 
@@ -409,7 +409,7 @@ public class UtileListTransition
 
 		@Override
 		public <E> List<E> from( List<E> list ) {
-			return list.take( list.size() - count );
+			return list.take( list.length() - count );
 		}
 
 	}
@@ -461,7 +461,7 @@ public class UtileListTransition
 
 		@Override
 		public <E> List<E> from( List<E> list ) {
-			int size = list.size();
+			int size = list.length();
 			for ( int i = 0; i < size; i++ ) {
 				if ( condition.fulfilledBy( list.at( i ) ) ) {
 					return list.drop( i );
@@ -488,11 +488,11 @@ public class UtileListTransition
 			implements ListTransition {
 
 		protected final <E> List<E> arrangedStackList( List<E> list ) {
-			int size = list.size();
+			int size = list.length();
 			Object[] elems = new Object[Lang.nextHighestPowerOf2( size )];
 			list.fill( elems.length - size, elems, 0, size );
 			rearrange( elems, elems.length - size );
-			return StackList.tidy( list.size(), elems, list.take( 0 ) );
+			return StackList.tidy( list.length(), elems, list.take( 0 ) );
 		}
 
 		protected abstract <E> void rearrange( Object[] list, int start );
@@ -510,7 +510,7 @@ public class UtileListTransition
 
 		@Override
 		public <E> List<E> from( List<E> list ) {
-			int size = list.size();
+			int size = list.length();
 			if ( size < 2 ) {
 				return list;
 			}
@@ -535,7 +535,7 @@ public class UtileListTransition
 
 		@Override
 		public void fill( int offset, Object[] array, int start, int length ) {
-			int size = list.size();
+			int size = list.length();
 			if ( start < size ) {
 				for ( int i = start; i < start + length; i++ ) {
 					array[offset++] = at( i );
@@ -565,7 +565,7 @@ public class UtileListTransition
 
 		@Override
 		public List<E> drop( int count ) {
-			return reverseViewOf( list.take( list.size() - count ) );
+			return reverseViewOf( list.take( list.length() - count ) );
 		}
 
 		@Override
@@ -584,13 +584,13 @@ public class UtileListTransition
 		}
 
 		@Override
-		public int size() {
-			return list.size();
+		public int length() {
+			return list.length();
 		}
 
 		@Override
 		public List<E> take( int count ) {
-			return reverseViewOf( list.drop( list.size() - count ) );
+			return reverseViewOf( list.drop( list.length() - count ) );
 		}
 
 		@Override
@@ -599,7 +599,7 @@ public class UtileListTransition
 		}
 
 		private int reverseIndexOf( int index ) {
-			return list.size() - 1 - index;
+			return list.length() - 1 - index;
 		}
 
 		private ReversingList<E> reverseViewOf( List<E> l ) {
@@ -620,7 +620,7 @@ public class UtileListTransition
 
 		@Override
 		public void traverse( int start, Traversal<? super E> traversal ) {
-			final int l = list.size();
+			final int l = list.length();
 			int i = start;
 			int inc = 0;
 			while ( inc >= 0 && i < l ) {

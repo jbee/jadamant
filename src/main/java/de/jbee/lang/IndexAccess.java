@@ -22,7 +22,7 @@ public class IndexAccess {
 
 			@Override
 			public Iterator<E> iterator() {
-				return IndexAccess.iterator( seq, 0, seq.size() );
+				return IndexAccess.iterator( seq, 0, seq.length() );
 			}
 		};
 	}

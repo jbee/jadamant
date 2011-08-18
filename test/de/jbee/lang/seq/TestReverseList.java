@@ -15,7 +15,7 @@ public class TestReverseList {
 		List<Integer> l = List.reverse.from( List.with.<Integer> noElements() );
 		for ( int i = 1; i < 100; i++ ) {
 			l = l.append( i );
-			assertThat( i, is( l.size() ) );
+			assertThat( i, is( l.length() ) );
 			for ( int j = 0; j < i; j++ ) {
 				assertThat( j + 1, is( l.at( j ) ) );
 			}
@@ -26,7 +26,7 @@ public class TestReverseList {
 	public void testReverseTransition() {
 		List<Integer> expected = List.with.elements( 4, 3, 2, 1 );
 		List<Integer> actual = List.reverse.from( List.with.elements( 1, 2, 3, 4 ) );
-		for ( int i = 0; i < expected.size(); i++ ) {
+		for ( int i = 0; i < expected.length(); i++ ) {
 			assertThat( actual.at( i ), is( expected.at( i ) ) );
 		}
 	}
@@ -36,7 +36,7 @@ public class TestReverseList {
 		List<Integer> expected = List.with.elements( 3, 2, 1 );
 		ListTransition reverseTail = List.which.consec( List.reverse, List.tail );
 		List<Integer> actual = reverseTail.from( List.with.elements( 1, 2, 3, 4 ) );
-		for ( int i = 0; i < expected.size(); i++ ) {
+		for ( int i = 0; i < expected.length(); i++ ) {
 			assertThat( actual.at( i ), is( expected.at( i ) ) );
 		}
 	}

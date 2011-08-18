@@ -195,7 +195,7 @@ public class UtileListIndex {
 			if ( list.isEmpty() ) {
 				return 0;
 			}
-			int pos = binarySearch( list, 0, list.size(), key, ord );
+			int pos = binarySearch( list, 0, list.length(), key, ord );
 			return pos < 0
 				? -pos - 1
 				: pos;
@@ -239,7 +239,7 @@ public class UtileListIndex {
 			}
 			int bestIndex = 0;
 			E best = list.at( bestIndex );
-			int size = list.size();
+			int size = list.length();
 			for ( int i = 1; i < size; i++ ) {
 				E e = list.at( i );
 				if ( improving( ord.ord( best, e ) ) ) {
@@ -252,7 +252,7 @@ public class UtileListIndex {
 					if ( ord.ord( null, best ) == ord.ord( best, null ) ) {
 						return NOT_CONTAINED;
 					}
-				} else if ( list.size() > 1 ) {
+				} else if ( list.length() > 1 ) {
 					E other = list.at( 1 );
 					Ordering order = ord.ord( best, other );
 					if ( !order.isEq() && order == ord.ord( other, best ) ) {
@@ -319,11 +319,11 @@ public class UtileListIndex {
 
 		@Override
 		public <E> int in( Sequence<E> list ) {
-			if ( index >= list.size() ) {
+			if ( index >= list.length() ) {
 				return NOT_CONTAINED;
 			}
 			E e = list.at( index );
-			for ( int j = index + 1; j < list.size(); j++ ) {
+			for ( int j = index + 1; j < list.length(); j++ ) {
 				if ( eq.holds( e, list.at( j ) ) ) {
 					return j;
 				}
@@ -347,7 +347,7 @@ public class UtileListIndex {
 
 		@Override
 		public <E> int in( Sequence<E> list ) {
-			int size = list.size();
+			int size = list.length();
 			for ( int i = start; i < size - 1; i++ ) {
 				int index = List.indexFor.duplicateOfBy( i, eq ).in( list );
 				if ( index != NOT_CONTAINED ) {
@@ -370,7 +370,7 @@ public class UtileListIndex {
 
 		@Override
 		public <E> int in( Sequence<E> list ) {
-			final int size = list.size();
+			final int size = list.length();
 			return Math.abs( pos ) < size
 				? pos < 0
 					? size + pos
@@ -401,7 +401,7 @@ public class UtileListIndex {
 			if ( list.isEmpty() ) {
 				return NOT_CONTAINED;
 			}
-			int size = list.size();
+			int size = list.length();
 			int equal = 0;
 			int idx = step > 0
 				? 0

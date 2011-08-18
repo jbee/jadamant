@@ -28,7 +28,7 @@ public class UtileListPredicate {
 
 		@Override
 		public boolean eval( List<E> l ) {
-			final int size = l.size();
+			final int size = l.length();
 			for ( int i = 0; i < size; i++ ) {
 				if ( equality.holds( sample, l.at( i ) ) ) {
 					return true;
@@ -58,7 +58,7 @@ public class UtileListPredicate {
 		@Override
 		public boolean eval( List<E> l ) {
 			//TODO maybe replace this by !any(!eq(sample))
-			final int size = l.size();
+			final int size = l.length();
 			for ( int i = 0; i < size; i++ ) {
 				if ( !equality.holds( sample, l.at( i ) ) ) {
 					return false;
