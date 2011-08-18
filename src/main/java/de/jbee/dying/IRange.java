@@ -5,7 +5,7 @@ import de.jbee.lang.dev.Nulls;
 
 @Nulls ( returns = Nullness.NOT_ALLOWED, parameters = Nullness.NOT_ALLOWED )
 public interface IRange<T>
-		extends ICluster<T>, Iterable<T> {
+		extends Iterable<T> { //FIXME impl Sequence 
 
 	T start();
 

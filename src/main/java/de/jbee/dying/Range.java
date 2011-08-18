@@ -40,7 +40,6 @@ public final class Range {
 			return ge( other.start(), start() ) && le( other.end(), end() );
 		}
 
-		@Override
 		public final boolean isEmpty() {
 			return gt( start(), end() );
 		}

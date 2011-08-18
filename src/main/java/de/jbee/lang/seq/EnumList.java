@@ -41,7 +41,7 @@ final class EnumList<E>
 
 	@Override
 	public void traverse( int start, Traversal<? super E> traversal ) {
-		final int l = length();
+		final int l = selfLength();
 		int i = start;
 		int inc = 0;
 		while ( inc >= 0 && i < l ) { //TODO here is some code duplication with stack list - its just the element access that differs
@@ -69,7 +69,7 @@ final class EnumList<E>
 				? list( firstOrdinal, eOrdinal )
 				: SingleElementList.with( at( 0 ) ).append( e );
 		}
-		if ( length() == 1 ) {
+		if ( selfLength() == 1 ) {
 			return SingleElementList.with( at( 0 ), tail ).append( e );
 		}
 		return thisWithTail( tail.append( e ) );
@@ -77,7 +77,7 @@ final class EnumList<E>
 
 	@Override
 	public void fill( int offset, Object[] array, int start, int length ) {
-		final int l = length();
+		final int l = selfLength();
 		if ( start < l ) {
 			if ( ascending() ) {
 				int startOrd = firstOrdinal + start;
@@ -102,7 +102,7 @@ final class EnumList<E>
 
 	@Override
 	public E at( int index ) {
-		final int l = length();
+		final int l = selfLength();
 		return index >= l
 			? tail.at( index - l )
 			: type.toEnum( firstPlus( index ) );
@@ -124,7 +124,7 @@ final class EnumList<E>
 
 	@Override
 	public List<E> deleteAt( int index ) {
-		final int length = length();
+		final int length = selfLength();
 		if ( index >= length ) { // its in the tail
 			return thisWithTail( tail.deleteAt( index - length ) );
 		}
@@ -153,7 +153,7 @@ final class EnumList<E>
 		if ( count >= size ) {
 			return empty();
 		}
-		final int length = length();
+		final int length = selfLength();
 		if ( count == length ) {
 			return tail;
 		}
@@ -169,7 +169,7 @@ final class EnumList<E>
 		if ( index == 0 ) {
 			SingleElementList.with( e, this );
 		}
-		final int length = length();
+		final int length = selfLength();
 		if ( index >= length ) {
 			thisWithTail( tail.insertAt( index - length, e ) );
 		}
@@ -197,7 +197,7 @@ final class EnumList<E>
 				? list( eOrdinal, lastOrdinal )
 				: SingleElementList.with( at( 0 ) ).prepand( e );
 		}
-		if ( length() == 1 ) {
+		if ( selfLength() == 1 ) {
 			return SingleElementList.with( at( 0 ), tail ).prepand( e );
 		}
 		return list( eOrdinal, eOrdinal, this );
@@ -205,7 +205,7 @@ final class EnumList<E>
 
 	@Override
 	public List<E> replaceAt( int index, E e ) {
-		final int l = length();
+		final int l = selfLength();
 		if ( index >= l ) {
 			thisWithTail( tail.replaceAt( index - l, e ) );
 		}
@@ -221,7 +221,7 @@ final class EnumList<E>
 
 	@Override
 	public int size() {
-		return length() + tail.size();
+		return selfLength() + tail.size();
 	}
 
 	@Override
@@ -232,7 +232,7 @@ final class EnumList<E>
 		if ( count >= size() ) {
 			return this;
 		}
-		final int length = length();
+		final int length = selfLength();
 		if ( count == length ) {
 			return thisWithTail( empty() );
 		}
@@ -251,7 +251,7 @@ final class EnumList<E>
 
 	@Override
 	public String toString() {
-		int l = length();
+		int l = selfLength();
 		String res = "[";
 		if ( l > 0 ) {
 			res += String.valueOf( type.toEnum( firstOrdinal ) );
@@ -284,7 +284,7 @@ final class EnumList<E>
 	 * @return The amount of elements in this enumerated list (*not* considering the {@link #tail}s
 	 *         size).
 	 */
-	private int length() {
+	private int selfLength() {
 		return Math.abs( lastOrdinal - firstOrdinal ) + 1;
 	}
 

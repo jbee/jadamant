@@ -10,6 +10,7 @@ import de.jbee.lang.ListTransition;
 import de.jbee.lang.Ord;
 import de.jbee.lang.Order;
 import de.jbee.lang.Predicate;
+import de.jbee.lang.Set;
 import de.jbee.lang.Traversal;
 
 public class UtileListTransition
@@ -139,12 +140,12 @@ public class UtileListTransition
 		return followedBy( new SortingTransition( ord ) );
 	}
 
-	public UtileListTransition nubs() {
+	public ToSetTrasition nubs() {
 		return nubsBy( Equal.equals );
 	}
 
-	public UtileListTransition nubsBy( Eq<Object> eq ) {
-		return followedBy( new NubTransition( eq ) );
+	public ToSetTrasition nubsBy( Eq<Object> eq ) {
+		return new NubTransition( eq );
 	}
 
 	public UtileListTransition deletes( int index ) {
@@ -249,7 +250,7 @@ public class UtileListTransition
 	}
 
 	static final class NubTransition
-			implements ListTransition {
+			implements ToSetTrasition {
 
 		private final Eq<Object> eq;
 
@@ -259,7 +260,7 @@ public class UtileListTransition
 		}
 
 		@Override
-		public <E> List<E> from( List<E> list ) {
+		public <E> Set<E> from( List<E> list ) {
 			List<E> res = list;
 			int i = 0;
 			while ( i < res.size() ) {
@@ -270,7 +271,8 @@ public class UtileListTransition
 					res = res.deleteAt( index );
 				}
 			}
-			return res;
+			//FIXME must be a set 
+			return (Set<E>) res;
 		}
 
 	}

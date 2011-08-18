@@ -69,7 +69,6 @@ final class IntRange
 		return new IntRangeIterator( start, end );
 	}
 
-	@Override
 	public int size() {
 		return Math.abs( start - end );
 	}

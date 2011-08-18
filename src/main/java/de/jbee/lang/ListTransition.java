@@ -19,4 +19,9 @@ public interface ListTransition {
 
 	<E> List<E> from( List<E> list );
 
+	interface ToSetTrasition
+			extends ListTransition {
+
+		<E> Set<E> from( List<E> list );
+	}
 }

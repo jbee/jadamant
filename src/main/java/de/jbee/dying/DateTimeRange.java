@@ -86,7 +86,6 @@ final class DateTimeRange
 		return left.isBefore( right );
 	}
 
-	@Override
 	public int size() {
 		final long diff = Math.abs( end.getMillis() - start.getMillis() );
 		return ( diff > Long.valueOf( Integer.MAX_VALUE ) )

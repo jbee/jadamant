@@ -72,7 +72,7 @@ abstract class StackList<E>
 
 	@Override
 	public void traverse( int start, Traversal<? super E> traversal ) {
-		final int l = length();
+		final int l = selfLength();
 		int i = start;
 		int inc = 0;
 		while ( inc >= 0 && i < l ) {
@@ -92,7 +92,7 @@ abstract class StackList<E>
 
 	@Override
 	public final E at( int index ) {
-		final int l = length();
+		final int l = selfLength();
 		return index >= l
 			? tail.at( index - l )
 			: element( index, l );
@@ -106,7 +106,7 @@ abstract class StackList<E>
 	@Override
 	public List<E> deleteAt( int index ) {
 		//FIXME negative index ?
-		final int length = length();
+		final int length = selfLength();
 		if ( index == 0 ) { // first of this stack
 			return length == 1
 				? tail
@@ -130,7 +130,7 @@ abstract class StackList<E>
 		if ( count >= size ) {
 			return empty();
 		}
-		final int length = length();
+		final int length = selfLength();
 		return count >= length
 			? tail.drop( count - length )
 			: untidy( size - count, stack, tail );
@@ -138,7 +138,7 @@ abstract class StackList<E>
 
 	@Override
 	public void fill( int offset, Object[] array, int start, int length ) {
-		final int l = length();
+		final int l = selfLength();
 		if ( start < l ) {
 			int srcPos = stack.length - l - offset() + start;
 			int copyLength = Math.min( length, l );
@@ -156,7 +156,7 @@ abstract class StackList<E>
 		if ( index == 0 ) {
 			return prepand( e );
 		}
-		final int l = length();
+		final int l = selfLength();
 		if ( index >= l ) {
 			return thisWith( size + 1, tail.insertAt( index - l, e ) );
 		}
@@ -173,7 +173,7 @@ abstract class StackList<E>
 
 	@Override
 	public List<E> replaceAt( int index, E e ) {
-		final int l = length();
+		final int l = selfLength();
 		if ( index >= l ) {
 			return thisWith( size, tail.replaceAt( index - l, e ) );
 		}
@@ -200,7 +200,7 @@ abstract class StackList<E>
 		if ( count >= size ) {
 			return this;
 		}
-		final int length = length();
+		final int length = selfLength();
 		if ( count == length ) { // took this stack without tail
 			return thisWith( length, empty() );
 		}
@@ -214,7 +214,7 @@ abstract class StackList<E>
 	@Override
 	public String toString() {
 		StringBuilder b = new StringBuilder();
-		final int l = length();
+		final int l = selfLength();
 		for ( int i = 0; i < l; i++ ) {
 			b.append( ',' );
 			b.append( String.valueOf( at( i ) ) );
@@ -231,7 +231,7 @@ abstract class StackList<E>
 	/**
 	 * @return The amount of elements dedicated to this lists stack
 	 */
-	final int length() {
+	final int selfLength() {
 		return size - tail.size();
 	}
 
@@ -252,7 +252,7 @@ abstract class StackList<E>
 
 		public List<E> prepand( E e ) {
 			Nonnull.element( e );
-			final int length = length();
+			final int length = selfLength();
 			int index = occupationIndex( length );
 			if ( index < 0 ) { // stack capacity exceeded
 				return grow1( Array.withLastElement( e, stack.length * 2 ), this );
@@ -272,7 +272,7 @@ abstract class StackList<E>
 		@Override
 		public List<E> tidyUp() {
 			List<E> tidyTail = tail.tidyUp();
-			int length = length();
+			int length = selfLength();
 			synchronized ( stack ) {
 				if ( notOccupied( occupationIndex( length ) ) ) {
 					return tidyTail == tail
@@ -342,7 +342,7 @@ abstract class StackList<E>
 		@Override
 		public List<E> tidyUp() {
 			Object[] s = new Object[stack.length];
-			final int l = length();
+			final int l = selfLength();
 			System.arraycopy( stack, stack.length - l - offset, s, stack.length - l, l );
 			return tidy( size, s, tail.tidyUp() );
 		}
