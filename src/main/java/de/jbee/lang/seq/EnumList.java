@@ -63,8 +63,8 @@ final class EnumList<E>
 				return list( firstOrdinal, nextOrdinal );
 			}
 		}
-		final int size = length();
-		if ( size == 1 ) { // check for a desc sequence
+		final int length = length();
+		if ( length == 1 ) { // check for a desc sequence
 			return firstMinus( 1 ) == eOrdinal
 				? list( firstOrdinal, eOrdinal )
 				: SingleElementList.with( at( 0 ) ).append( e );
@@ -149,16 +149,16 @@ final class EnumList<E>
 		if ( count <= 0 ) {
 			return this;
 		}
-		final int size = length();
-		if ( count >= size ) {
+		final int length = length();
+		if ( count >= length ) {
 			return empty();
 		}
-		final int length = len();
-		if ( count == length ) {
+		final int l = len();
+		if ( count == l ) {
 			return tail;
 		}
-		if ( count > length ) {
-			return tail.drop( count - length );
+		if ( count > l ) {
+			return tail.drop( count - l );
 		}
 		return list( firstPlus( count ), lastOrdinal );
 	}
@@ -169,9 +169,9 @@ final class EnumList<E>
 		if ( index == 0 ) {
 			SingleElementList.with( e, this );
 		}
-		final int length = len();
-		if ( index >= length ) {
-			thisWithTail( tail.insertAt( index - length, e ) );
+		final int l = len();
+		if ( index >= l ) {
+			thisWithTail( tail.insertAt( index - l, e ) );
 		}
 		// somewhere in between this enumeration
 		return list( firstOrdinal, firstPlus( index - 1 ), SingleElementList.with( e, list(
@@ -191,8 +191,8 @@ final class EnumList<E>
 		if ( eOrdinal == priorOrdinal ) {
 			return list( priorOrdinal, lastOrdinal );
 		}
-		final int size = length();
-		if ( size == 1 ) { // check a descending sequence
+		final int length = length();
+		if ( length == 1 ) { // check a descending sequence
 			return firstPlus( 1 ) == eOrdinal
 				? list( eOrdinal, lastOrdinal )
 				: SingleElementList.with( at( 0 ) ).prepand( e );
@@ -232,13 +232,13 @@ final class EnumList<E>
 		if ( count >= length() ) {
 			return this;
 		}
-		final int length = len();
-		if ( count == length ) {
+		final int l = len();
+		if ( count == l ) {
 			return thisWithTail( empty() );
 		}
-		return count <= length
+		return count <= l
 			? list( firstOrdinal, firstPlus( count - 1 ), empty() )
-			: thisWithTail( tail.take( count - length ) );
+			: thisWithTail( tail.take( count - l ) );
 	}
 
 	@Override
@@ -282,7 +282,7 @@ final class EnumList<E>
 
 	/**
 	 * @return The amount of elements in this enumerated list (*not* considering the {@link #tail}s
-	 *         size).
+	 *         length).
 	 */
 	private int len() {
 		return Math.abs( lastOrdinal - firstOrdinal ) + 1;
@@ -345,4 +345,5 @@ final class EnumList<E>
 		}
 
 	}
+
 }

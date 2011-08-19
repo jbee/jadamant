@@ -36,6 +36,7 @@ package de.jbee.lang;
  * 
  * @author Jan Bernitt (jan.bernitt@gmx.de)
  */
+//TODO rename this to something else and use Sortable in combination with Sorted
 public interface Sortable {
 
 	int ordinal();

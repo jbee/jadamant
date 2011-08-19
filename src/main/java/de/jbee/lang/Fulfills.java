@@ -22,6 +22,26 @@ public class Fulfills {
 		}
 	};
 
+	private static final class EveryPredicate<T>
+			implements Predicate<T> {
+
+		private final int x;
+		private int i;
+
+		EveryPredicate( int x ) {
+			super();
+			this.x = x;
+		}
+
+		@Override
+		public boolean fulfilledBy( T obj ) {
+			boolean res = ( i % x ) == 0;
+			i++;
+			return res;
+		}
+
+	}
+
 	private static final class NotCondition<T>
 			implements Predicate<T> {
 
@@ -125,21 +145,19 @@ public class Fulfills {
 			: new AndCondition<T>( left, right );
 	}
 
-	public static <T> Predicate<T> equalTo( T reference ) {
-		return equality( Equal.equals, reference );
+	public static <T> Predicate<T> equality( T sample ) {
+		return equality( Equal.equals, sample );
 	}
 
-	public static <T> Predicate<T> eqTo( Eq<? super T> eq, T sample ) {
+	public static <T> Predicate<T> equality( Eq<? super T> eq, T sample ) {
 		return new EqCondition<T>( eq, sample );
 	}
 
-	public static <T> Predicate<T> differentTo( T reference ) {
-		return not( equalTo( reference ) );
+	public static <T> Predicate<T> inequality( T reference ) {
+		return not( equality( Equal.equals, reference ) );
 	}
 
-	public static <T> Predicate<T> equality( Eq<? super T> equality, T reference ) {
-		return eqTo( equality, reference );
+	public static <T> Predicate<T> every( int x ) {
+		return new EveryPredicate<T>( x );
 	}
-
-	//TODO cleanup duplicate methods - find better names
 }

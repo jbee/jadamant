@@ -13,7 +13,7 @@ public final class Equal {
 	/**
 	 * Two objects count as equal if <code>one == other</code> is <code>true</code>.
 	 */
-	public static final Eq<Object> identity = new SameIdentityEquality();
+	public static final Eq<Object> identity = new IdentityEquality();
 	/**
 	 * Two objects count as equal if <code>one.equals(other)</code> is <code>true</code>.
 	 * 
@@ -38,7 +38,11 @@ public final class Equal {
 			: new NotEquality<T>( eq );
 	}
 
-	static final class SameIdentityEquality
+	public static <T> Eq<T> by( Ord<T> ord ) {
+		return new OrdEquality<T>( ord );
+	}
+
+	static final class IdentityEquality
 			implements Eq<Object>, Nullsave {
 
 		@Override
@@ -64,6 +68,23 @@ public final class Equal {
 		@Override
 		public boolean holds( Object one, Object other ) {
 			return one.equals( other );
+		}
+
+	}
+
+	static final class OrdEquality<T>
+			implements Eq<T> {
+
+		private final Ord<T> ord;
+
+		OrdEquality( Ord<T> ord ) {
+			super();
+			this.ord = ord;
+		}
+
+		@Override
+		public boolean holds( T one, T other ) {
+			return ord.ord( one, other ).isEq();
 		}
 
 	}

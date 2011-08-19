@@ -109,7 +109,7 @@ public class UtileListIndex {
 	public ListIndex nthElem( int n, Object e, Eq<Object> eq ) {
 		return n == 0
 			? NONE
-			: new NthEqualListIndex( n, Fulfills.eqTo( eq, e ), 1 );
+			: new NthEqualListIndex( n, Fulfills.equality( eq, e ), 1 );
 	}
 
 	public ListIndex duplicate() {
@@ -239,8 +239,8 @@ public class UtileListIndex {
 			}
 			int bestIndex = 0;
 			E best = list.at( bestIndex );
-			int size = list.length();
-			for ( int i = 1; i < size; i++ ) {
+			int length = list.length();
+			for ( int i = 1; i < length; i++ ) {
 				E e = list.at( i );
 				if ( improving( ord.ord( best, e ) ) ) {
 					best = e;
@@ -347,8 +347,8 @@ public class UtileListIndex {
 
 		@Override
 		public <E> int in( Sequence<E> list ) {
-			int size = list.length();
-			for ( int i = start; i < size - 1; i++ ) {
+			int length = list.length();
+			for ( int i = start; i < length - 1; i++ ) {
 				int index = List.indexFor.duplicateOfBy( i, eq ).in( list );
 				if ( index != NOT_CONTAINED ) {
 					return index;
@@ -370,10 +370,10 @@ public class UtileListIndex {
 
 		@Override
 		public <E> int in( Sequence<E> list ) {
-			final int size = list.length();
-			return Math.abs( pos ) < size
+			final int length = list.length();
+			return Math.abs( pos ) < length
 				? pos < 0
-					? size + pos
+					? length + pos
 					: pos
 				: NOT_CONTAINED;
 		}
@@ -401,12 +401,12 @@ public class UtileListIndex {
 			if ( list.isEmpty() ) {
 				return NOT_CONTAINED;
 			}
-			int size = list.length();
+			int length = list.length();
 			int equal = 0;
 			int idx = step > 0
 				? 0
-				: size - 1;
-			while ( idx >= 0 && idx < size ) {
+				: length - 1;
+			while ( idx >= 0 && idx < length ) {
 				final E e = list.at( idx );
 				if ( predicate.fulfilledBy( e ) ) {
 					equal++;

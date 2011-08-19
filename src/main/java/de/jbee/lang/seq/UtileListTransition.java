@@ -21,6 +21,7 @@ public class UtileListTransition
 	public static final ListTransition tail = new DropFirstNTransition( 1 );
 	public static final ListTransition init = new DropLastNTransition( 1 );
 	public static final ListTransition shuffle = new ShuffleTransition();
+	public static final ListTransition tidyUp = new TidyUpTransition();
 
 	public static final UtileListTransition instance = new UtileListTransition( none );
 
@@ -50,6 +51,10 @@ public class UtileListTransition
 
 	public ListTransition plain() {
 		return utilised;
+	}
+
+	public ListTransition tidiesUp() {
+		return followedBy( tidyUp ).plain();
 	}
 
 	//TODO some kind of dropWhile working with a condition types with the list's type -> other interface
@@ -140,12 +145,12 @@ public class UtileListTransition
 		return followedBy( new SortingTransition( ord ) );
 	}
 
-	public ToSetTrasition nubs() {
+	public UtileListTransition nubs() {
 		return nubsBy( Equal.equals );
 	}
 
-	public ToSetTrasition nubsBy( Eq<Object> eq ) {
-		return new NubTransition( eq );
+	public UtileListTransition nubsBy( Eq<Object> eq ) {
+		return followedBy( new NubTransition( eq ) );
 	}
 
 	public UtileListTransition deletes( int index ) {
@@ -170,6 +175,14 @@ public class UtileListTransition
 		return followedBy( new ConcatTransition( head, tail ) );
 	}
 
+	public SetTrasition restrictsToSet() {
+		return restrictsToSet( Order.inherent );
+	}
+
+	public SetTrasition restrictsToSet( Ord<Object> ord ) {
+		return consec( utilised, new ToSetTranstion( ord ) );
+	}
+
 	public ListTransition consec( ListTransition fst, ListTransition snd ) {
 		fst = plain( fst );
 		snd = plain( snd );
@@ -180,6 +193,14 @@ public class UtileListTransition
 			return fst;
 		}
 		return new ConsecutivelyTransition( fst, snd );
+	}
+
+	public SetTrasition consec( ListTransition fst, SetTrasition snd ) {
+		fst = plain( fst );
+		if ( fst == none ) {
+			return snd;
+		}
+		return new ConsecutivelySetTransition( fst, snd );
 	}
 
 	//TODO filter(Predicate)
@@ -198,7 +219,7 @@ public class UtileListTransition
 
 		@Override
 		public <E> List<E> from( List<E> list ) {
-
+			//TODO
 			return null;
 		}
 
@@ -249,8 +270,36 @@ public class UtileListTransition
 
 	}
 
+	static final class TidyUpTransition
+			implements ListTransition {
+
+		@Override
+		public <E> List<E> from( List<E> list ) {
+			return list.tidyUp();
+		}
+
+	}
+
+	static final class ToSetTranstion
+			implements SetTrasition {
+
+		private final Ord<Object> ord;
+
+		ToSetTranstion( Ord<Object> ord ) {
+			super();
+			this.ord = ord;
+		}
+
+		@Override
+		public <E> Set<E> from( List<E> list ) {
+			return new SortedSet<E>( ord, List.which.sortsBy( ord ).nubsBy( Equal.by( ord ) ).from(
+					list ) );
+		}
+
+	}
+
 	static final class NubTransition
-			implements ToSetTrasition {
+			implements ListTransition {
 
 		private final Eq<Object> eq;
 
@@ -260,7 +309,7 @@ public class UtileListTransition
 		}
 
 		@Override
-		public <E> Set<E> from( List<E> list ) {
+		public <E> List<E> from( List<E> list ) {
 			List<E> res = list;
 			int i = 0;
 			while ( i < res.length() ) {
@@ -271,8 +320,7 @@ public class UtileListTransition
 					res = res.deleteAt( index );
 				}
 			}
-			//FIXME must be a set 
-			return (Set<E>) res;
+			return res;
 		}
 
 	}
@@ -428,6 +476,24 @@ public class UtileListTransition
 
 		@Override
 		public <E> List<E> from( List<E> list ) {
+			return snd.from( fst.from( list ) );
+		}
+	}
+
+	static final class ConsecutivelySetTransition
+			implements SetTrasition {
+
+		final ListTransition fst;
+		final SetTrasition snd;
+
+		ConsecutivelySetTransition( ListTransition fst, SetTrasition snd ) {
+			super();
+			this.fst = fst;
+			this.snd = snd;
+		}
+
+		@Override
+		public <E> Set<E> from( List<E> list ) {
 			return snd.from( fst.from( list ) );
 		}
 	}

@@ -6,6 +6,7 @@ import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 
+import de.jbee.lang.Fulfills;
 import de.jbee.lang.List;
 
 public class TestUtileListTranstion {
@@ -79,7 +80,8 @@ public class TestUtileListTranstion {
 	@Test
 	public void testTakeWhile() {
 		List<Integer> l = List.with.elements( 1, 4, 7, 9, 2, 4 );
-		//TODO continue
+		assertThat( List.which.takesWhile( Fulfills.every( 2 ) ).from( l ), hasEqualElementsAsIn(
+				1, 7, 2 ) );
 	}
 
 }

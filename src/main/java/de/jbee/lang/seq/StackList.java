@@ -50,22 +50,22 @@ abstract class StackList<E>
 	}
 
 	//TODO move to a array util and method
-	final Object[] stackCopyFrom( int start, int length ) {
+	final Object[] stackCopyFrom( int start, int len ) {
 		Object[] copy = new Object[stack.length];
-		System.arraycopy( stack, start, copy, start, length );
+		System.arraycopy( stack, start, copy, start, len );
 		return copy;
 	}
 
 	/**
 	 * list's size in total with tail-list elements
 	 */
-	final int size;
+	final int length;
 	final Object[] stack;
 	final List<E> tail;
 
 	StackList( int size, Object[] stack, List<E> tail ) {
 		super();
-		this.size = size;
+		this.length = size;
 		this.stack = stack;
 		this.tail = tail;
 	}
@@ -87,7 +87,7 @@ abstract class StackList<E>
 	@Override
 	public List<E> append( E e ) {
 		//TODO improve - this works but covers no optimization case
-		return thisWith( size + 1, tail.append( e ) );
+		return thisWith( length + 1, tail.append( e ) );
 	}
 
 	@Override
@@ -100,26 +100,26 @@ abstract class StackList<E>
 
 	@Override
 	public List<E> concat( List<E> other ) {
-		return thisWith( size + other.length(), tail.concat( other ) );
+		return thisWith( length + other.length(), tail.concat( other ) );
 	}
 
 	@Override
 	public List<E> deleteAt( int index ) {
 		//FIXME negative index ?
-		final int length = len();
+		final int l = len();
 		if ( index == 0 ) { // first of this stack
-			return length == 1
+			return l == 1
 				? tail
-				: untidy( size - 1, stack, tail );
+				: untidy( length - 1, stack, tail );
 		}
-		if ( index >= length ) { // not in this stack
-			return thisWith( size - 1, tail.deleteAt( index - length ) );
+		if ( index >= l ) { // not in this stack
+			return thisWith( length - 1, tail.deleteAt( index - l ) );
 		}
-		if ( index == length - 1 ) { // last of this stack
-			return untidy( size - 1, 1, stack, tail );
+		if ( index == l - 1 ) { // last of this stack
+			return untidy( length - 1, 1, stack, tail );
 		}
 		// somewhere in between our stack ;(
-		return untidy( size - 1, length - index, stack, untidy( size - 1 - index, stack, tail ) );
+		return untidy( length - 1, l - index, stack, untidy( length - 1 - index, stack, tail ) );
 	}
 
 	@Override
@@ -127,27 +127,27 @@ abstract class StackList<E>
 		if ( count <= 0 ) {
 			return this;
 		}
-		if ( count >= size ) {
+		if ( count >= length ) {
 			return empty();
 		}
-		final int length = len();
-		return count >= length
-			? tail.drop( count - length )
-			: untidy( size - count, stack, tail );
+		final int l = len();
+		return count >= l
+			? tail.drop( count - l )
+			: untidy( length - count, stack, tail );
 	}
 
 	@Override
-	public void fill( int offset, Object[] array, int start, int length ) {
+	public void fill( int offset, Object[] array, int start, int len ) {
 		final int l = len();
 		if ( start < l ) {
 			int srcPos = stack.length - l - offset() + start;
-			int copyLength = Math.min( length, l );
+			int copyLength = Math.min( len, l );
 			System.arraycopy( stack, srcPos, array, offset, copyLength );
-			if ( start + length > l ) {
-				tail.fill( offset + copyLength, array, 0, length - copyLength );
+			if ( start + len > l ) {
+				tail.fill( offset + copyLength, array, 0, len - copyLength );
 			}
 		} else {
-			tail.fill( offset, array, start - l, length );
+			tail.fill( offset, array, start - l, len );
 		}
 	}
 
@@ -158,10 +158,10 @@ abstract class StackList<E>
 		}
 		final int l = len();
 		if ( index >= l ) {
-			return thisWith( size + 1, tail.insertAt( index - l, e ) );
+			return thisWith( length + 1, tail.insertAt( index - l, e ) );
 		}
 		if ( index == l - 1 ) {
-			return thisWith( size + 1, tail.prepand( e ) );
+			return thisWith( length + 1, tail.prepand( e ) );
 		}
 		return take( index - 1 ).concat( drop( index + 1 ).prepand( e ) );
 	}
@@ -175,7 +175,7 @@ abstract class StackList<E>
 	public List<E> replaceAt( int index, E e ) {
 		final int l = len();
 		if ( index >= l ) {
-			return thisWith( size, tail.replaceAt( index - l, e ) );
+			return thisWith( length, tail.replaceAt( index - l, e ) );
 		}
 		Nonnull.element( e );
 		if ( index == 0 ) {
@@ -189,7 +189,7 @@ abstract class StackList<E>
 
 	@Override
 	public final int length() {
-		return size;
+		return length;
 	}
 
 	@Override
@@ -197,18 +197,18 @@ abstract class StackList<E>
 		if ( count <= 0 ) {
 			return empty();
 		}
-		if ( count >= size ) {
+		if ( count >= length ) {
 			return this;
 		}
-		final int length = len();
-		if ( count == length ) { // took this stack without tail
-			return thisWith( length, empty() );
+		final int l = len();
+		if ( count == l ) { // took this stack without tail
+			return thisWith( l, empty() );
 		}
-		if ( count < length ) { // took parts of this stack
-			return untidy( count, ( length - count ) + offset(), stack, empty() );
+		if ( count < l ) { // took parts of this stack
+			return untidy( count, ( l - count ) + offset(), stack, empty() );
 		}
 		// took this hole stack and parts of the tails elements
-		return thisWith( count, tail.take( count - length ) );
+		return thisWith( count, tail.take( count - l ) );
 	}
 
 	@Override
@@ -232,7 +232,7 @@ abstract class StackList<E>
 	 * @return The amount of elements dedicated to this lists stack
 	 */
 	final int len() {
-		return size - tail.length();
+		return length - tail.length();
 	}
 
 	abstract int offset();
@@ -252,19 +252,19 @@ abstract class StackList<E>
 
 		public List<E> prepand( E e ) {
 			Nonnull.element( e );
-			final int length = len();
-			int index = occupationIndex( length );
+			final int l = len();
+			int index = occupationIndex( l );
 			if ( index < 0 ) { // stack capacity exceeded
 				return grow1( Array.withLastElement( e, stack.length * 2 ), this );
 			}
 			if ( prepandedOccupying( e, index ) ) {
 				return grow1( stack, tail );
 			}
-			if ( length > stack.length / 2 ) {
-				return grow1( Array.withLastElement( e, stack.length * 2 ), untidy( size, stack,
+			if ( l > stack.length / 2 ) {
+				return grow1( Array.withLastElement( e, stack.length * 2 ), untidy( length, stack,
 						tail ) );
 			}
-			Object[] copy = stackCopyFrom( index + 1, length );
+			Object[] copy = stackCopyFrom( index + 1, l );
 			copy[index] = e;
 			return grow1( copy, tail );
 		}
@@ -272,16 +272,16 @@ abstract class StackList<E>
 		@Override
 		public List<E> tidyUp() {
 			List<E> tidyTail = tail.tidyUp();
-			int length = len();
+			int l = len();
 			synchronized ( stack ) {
-				if ( notOccupied( occupationIndex( length ) ) ) {
+				if ( notOccupied( occupationIndex( l ) ) ) {
 					return tidyTail == tail
 						? this
-						: tidy( size, stack, tidyTail );
+						: tidy( length, stack, tidyTail );
 				}
 
 			}
-			return tidy( size, stackCopyFrom( 0, length ), tail );
+			return tidy( length, stackCopyFrom( 0, l ), tail );
 		}
 
 		@SuppressWarnings ( "unchecked" )
@@ -301,15 +301,15 @@ abstract class StackList<E>
 		}
 
 		private List<E> grow1( Object[] stack, List<E> tail ) {
-			return tidy( size + 1, stack, tail );
+			return tidy( length + 1, stack, tail );
 		}
 
 		private boolean notOccupied( int index ) {
 			return stack[index] == null;
 		}
 
-		private int occupationIndex( final int length ) {
-			return stack.length - 1 - length;
+		private int occupationIndex( final int len ) {
+			return stack.length - 1 - len;
 		}
 
 		private boolean prepandedOccupying( E e, int index ) {
@@ -336,7 +336,7 @@ abstract class StackList<E>
 
 		@Override
 		public List<E> prepand( E e ) {
-			return tidy( size + 1, Array.withLastElement( e, stack.length * 2 ), this );
+			return tidy( length + 1, Array.withLastElement( e, stack.length * 2 ), this );
 		}
 
 		@Override
@@ -344,7 +344,7 @@ abstract class StackList<E>
 			Object[] s = new Object[stack.length];
 			final int l = len();
 			System.arraycopy( stack, stack.length - l - offset, s, stack.length - l, l );
-			return tidy( size, s, tail.tidyUp() );
+			return tidy( length, s, tail.tidyUp() );
 		}
 
 		@SuppressWarnings ( "unchecked" )
@@ -379,8 +379,8 @@ abstract class StackList<E>
 			if ( fo == lo ) { // length 1
 				return LISTER.element( first );
 			}
-			int length = Math.abs( fo - lo ) + 1;
-			if ( length == 2 ) {
+			int l = Math.abs( fo - lo ) + 1;
+			if ( l == 2 ) {
 				return LISTER.element( last ).prepand( first );
 			}
 			int capacity = 2;
@@ -388,15 +388,15 @@ abstract class StackList<E>
 			E cur = last;
 			final boolean asc = fo < lo;
 			int size = 0;
-			while ( size < length ) { // length will be > 2
+			while ( size < l ) { // length will be > 2
 				Object[] stack = new Object[capacity];
-				int min = size + capacity < length
+				int min = size + capacity < l
 					? 0
-					: capacity - ( length - size );
+					: capacity - ( l - size );
 				for ( int i = capacity - 1; i >= min; i-- ) {
 					stack[i] = cur;
 					size++;
-					if ( size < length ) {
+					if ( size < l ) {
 						cur = asc
 							? type.pred( cur )
 							: type.succ( cur );
@@ -420,6 +420,7 @@ abstract class StackList<E>
 
 	}
 
+	// TODO this is not exactly the Lister for stack list - its the one using all the different default core List impl. - move and rename proper
 	static class StackLister
 			implements Lister {
 

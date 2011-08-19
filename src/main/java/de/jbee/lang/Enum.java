@@ -11,4 +11,6 @@ public interface Enum<T>
 
 	int toOrdinal( T value );
 
+	Class<T> elementType();
+
 }

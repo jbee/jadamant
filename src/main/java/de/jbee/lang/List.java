@@ -124,12 +124,12 @@ public interface List<E>
 	 * refereed in list may no be garbage collected as long as the list referring it is alive or
 	 * tidied up. The operation will make sure, that only those elements are refereed further on
 	 * which are part of the list alive. In some cases therefore array copies as necessary so this
-	 * is *not* a cheap operation in any case.
+	 * is *not* a cheap operation in every case.
 	 * </p>
 	 * <br/>
 	 * <h5>When is it necessary to do a {@link #tidyUp()} ?</h5>
 	 * <p>
-	 * As long as use just use just {@link #append(Object)}, {@link #prepand(Object)} or
+	 * As long as you just use {@link #append(Object)}, {@link #prepand(Object)} or
 	 * {@link #concat(List)} to construct a list you are fine. You don't need to tidy-up and if you
 	 * do anyway (just to be save) it will be a cheap operation.
 	 * </p>
