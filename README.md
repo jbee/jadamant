@@ -6,7 +6,8 @@ The core ideas are:
 
 * __Collections are value objects and therefore immutable__ (read-only; changes create new collections, the originating one kept unchanged)
 * `java.util.List` and the `util`-Collection-API just stays because of its wide spread not its quality - jadamant dares to start the revolution
-* Eager evaludation is (in most cases) the appropriate way to solve a problem in Java (even tho' we work immutable)
+* __Collections are thread-safe by concept__ (no additional API or impl., wrappers or runtime-exceptions)
+* Eager evaludation is (in most cases) the appropriate way to solve problems in Java (even tho' we work immutable)
 * `null` is avoided as far as possible - it is not considered as a valid value (e.g. in collections)
 * Interfaces should be narrow/minimal (1 method for most of em) - a rich set of utile functions comes from combining and composing minimal interfaces
 * functions should be combinable with a minimal use of generics (specialised interfaces + adapters over single general + multiple generics)
