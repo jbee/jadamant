@@ -17,7 +17,10 @@ The core ideas are:
 * `Iterator` / `Iterable` is badly designed and needs a replacement (there is a 'legacy' support to integrate in common frameworks anyway)
 
 ### About
-'jadamant' is a made-up word conbined out of 'Java' and 'Adamant'. Inspired by the Master of Orion II Adamantium plating Adamant should symbolise the immutable and solid character and the hole philosophy of this project.
+'jadamant' is a made-up word conbined out of 'Java' and 'Adamant'. Inspired by the Master of Orion II Adamantium plating. Adamant symbolises the immutable solid character and thereby the philosophy of this project.
+
+### Status
+The 0.1 beta is planed to be released late 2011. Until then there might be major changes to the API. Feal free to contact me and get to know more about the current state.
 
 ### Working with Lists
 ``` java
@@ -28,3 +31,5 @@ List.with.elements(1,2,3,4); // a list holding the numbers 1 to 4
 ```
 
 to be continued...
+
+You should have a look to the unit-tests in the `de.jbee.lang` and `de.jbee.lang.seq` package to see the current API in use.
