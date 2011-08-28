@@ -7,10 +7,8 @@ import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 
-import de.jbee.lang.Fulfills;
+import de.jbee.lang.Is;
 import de.jbee.lang.List;
-import de.jbee.lang.Operator;
-import de.jbee.lang.Order;
 import de.jbee.lang.Predicate;
 import de.jbee.lang.Set;
 
@@ -154,13 +152,12 @@ public class TestUtileListTranstion {
 	public void testTakeWhile() {
 		Integer[] larr = { 2, 4, 7, 9, 1, 4 };
 		List<Integer> l = List.with.elements( larr );
-		assertThat( List.which.takesWhile( Fulfills.always() ).from( l ),
-				hasEqualElementsAsIn( larr ) );
-		Predicate<Object> le7 = Operator.apply( 7, Operator.leBy( Order.inherent ) );
+		assertThat( List.which.takesWhile( Is.true_() ).from( l ), hasEqualElementsAsIn( larr ) );
+		Predicate<Object> le7 = Is.<Object> le( 7 );
 		assertThat( List.which.takesWhile( le7 ).from( l ), hasEqualElementsAsIn( 2, 4, 7 ) );
-		Predicate<Object> lt9 = Operator.apply( 9, Operator.ltBy( Order.inherent ) );
+		Predicate<Object> lt9 = Is.<Object> lt( 9 );
 		assertThat( List.which.takesWhile( lt9 ).from( l ), hasEqualElementsAsIn( 2, 4, 7 ) );
-		Predicate<Object> gt1 = Operator.apply( 1, Operator.gtBy( Order.inherent ) );
+		Predicate<Object> gt1 = Is.<Object> gt( 1 );
 		assertThat( List.which.takesWhile( gt1 ).from( l ), hasEqualElementsAsIn( 2, 4, 7, 9 ) );
 	}
 

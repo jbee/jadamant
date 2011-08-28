@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import de.jbee.lang.Fulfills;
+import de.jbee.lang.Is;
 import de.jbee.lang.List;
 import de.jbee.lang.Predicate;
 
@@ -73,13 +73,13 @@ public final class ListMap {
 
 		@Override
 		public IListMap<K, V> appendEach( V value ) {
-			return appendEach( Fulfills.always(), value );
+			return appendEach( Is.true_(), value );
 		}
 
 		@Override
 		public IListMap<K, V> appendEach( Predicate<? super K> keyCondition, V value ) {
 			for ( K key : lists.keySet() ) {
-				if ( keyCondition.fulfilledBy( key ) ) {
+				if ( keyCondition.is( key ) ) {
 					lists.put( key, lists.get( key ).append( value ) );
 				}
 			}

@@ -556,7 +556,7 @@ public class UtileListTransition
 		public <E> List<E> from( List<E> list ) {
 			int size = list.length();
 			for ( int i = 0; i < size; i++ ) {
-				if ( condition.fulfilledBy( list.at( i ) ) ) {
+				if ( condition.is( list.at( i ) ) ) {
 					return list.drop( i );
 				}
 			}

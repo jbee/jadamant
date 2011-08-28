@@ -108,7 +108,7 @@ public final class Order {
 	}
 
 	public static <T> Ord<T> unfulfillingFulfilling( Predicate<T> condition ) {
-		return fulfillingUnfulfilling( Fulfills.not( condition ) );
+		return fulfillingUnfulfilling( Is.not( condition ) );
 	}
 
 	public static <T> Ord<T> fulfillingUnfulfilling( Predicate<T> condition ) {
@@ -148,7 +148,7 @@ public final class Order {
 
 		@Override
 		public Ordering ord( T left, T right ) {
-			return Ordering.trueFalse( condition.fulfilledBy( left ), condition.fulfilledBy( right ) );
+			return Ordering.trueFalse( condition.is( left ), condition.is( right ) );
 		}
 	}
 

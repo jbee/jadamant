@@ -2,7 +2,7 @@ package de.jbee.lang.seq;
 
 import de.jbee.lang.Eq;
 import de.jbee.lang.Equal;
-import de.jbee.lang.Fulfills;
+import de.jbee.lang.Is;
 import de.jbee.lang.List;
 import de.jbee.lang.ListIndex;
 import de.jbee.lang.Ord;
@@ -79,7 +79,7 @@ public class UtileListIndex {
 	}
 
 	public ListIndex firstFalse( Predicate<Object> predicate ) {
-		return nthTrue( 1, Fulfills.not( predicate ) );
+		return nthTrue( 1, Is.not( predicate ) );
 	}
 
 	public ListIndex firstTrue( Predicate<Object> predicate ) {
@@ -113,7 +113,7 @@ public class UtileListIndex {
 	public ListIndex nthElemBy( int n, Object e, Eq<Object> eq ) {
 		return n == 0
 			? NONE
-			: new NthFulfilledListIndex( n, Fulfills.equality( eq, e ), 1 );
+			: new NthFulfilledListIndex( n, Is.eqBy( e, eq ), 1 );
 	}
 
 	public ListIndex duplicate() {
@@ -431,7 +431,7 @@ public class UtileListIndex {
 				: length - 1;
 			while ( idx >= 0 && idx < length ) {
 				final E e = list.at( idx );
-				if ( predicate.fulfilledBy( e ) ) {
+				if ( predicate.is( e ) ) {
 					fulfilled++;
 					if ( fulfilled == n ) {
 						return idx;

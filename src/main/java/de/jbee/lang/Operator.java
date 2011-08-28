@@ -56,10 +56,6 @@ public final class Operator {
 		return not( gtBy( ord ) );
 	}
 
-	public static <T> Predicate<T> apply( T left, RelationalOp<T> op ) {
-		return new PartiallyAppliedRelationalOp<T>( left, op );
-	}
-
 	static final class ElvisOp<T>
 			implements Op<T>, Nullsave {
 
@@ -117,30 +113,6 @@ public final class Operator {
 		public boolean isNullsave() {
 			return Null.isSave( ord );
 		}
-	}
-
-	static final class PartiallyAppliedRelationalOp<T>
-			implements Predicate<T>, Nullproof {
-
-		private final T left;
-		private final RelationalOp<T> op;
-
-		PartiallyAppliedRelationalOp( T left, RelationalOp<T> op ) {
-			super();
-			this.left = left;
-			this.op = op;
-		}
-
-		@Override
-		public boolean fulfilledBy( T right ) {
-			return op.holds( left, right );
-		}
-
-		@Override
-		public boolean isNullsave() {
-			return Null.isSave( op );
-		}
-
 	}
 
 	static final class OrderRelationalOp<T>
