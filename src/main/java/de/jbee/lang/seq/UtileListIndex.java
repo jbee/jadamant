@@ -20,7 +20,11 @@ public class UtileListIndex {
 	static final ListIndex HEAD = FIRST;
 
 	public ListIndex lastUpTo( int count ) {
-		return null; //FIXME liefert den letzten index bis zu einem maximum count - dann immer count -> für take/drop   
+		return count <= 0
+			? NONE
+			: count == 1
+				? FIRST
+				: new MaximumLimitListIndex( LAST, count - 1 );
 	}
 
 	public ListIndex head() {
@@ -83,7 +87,7 @@ public class UtileListIndex {
 	}
 
 	public ListIndex nthTrue( int n, Predicate<Object> predicate ) {
-		return new NthEqualListIndex( n, predicate, 1 );
+		return new NthFulfilledListIndex( n, predicate, 1 );
 	}
 
 	public ListIndex elem( Object e ) {
@@ -109,7 +113,7 @@ public class UtileListIndex {
 	public ListIndex nthElem( int n, Object e, Eq<Object> eq ) {
 		return n == 0
 			? NONE
-			: new NthEqualListIndex( n, Fulfills.equality( eq, e ), 1 );
+			: new NthFulfilledListIndex( n, Fulfills.equality( eq, e ), 1 );
 	}
 
 	public ListIndex duplicate() {
@@ -149,7 +153,7 @@ public class UtileListIndex {
 	}
 
 	public ListIndex minimumBy( Ord<Object> ord ) {
-		return new MinimumListIndex( ord );
+		return new MinimumElementListIndex( ord );
 	}
 
 	public ListIndex maximum() {
@@ -157,7 +161,7 @@ public class UtileListIndex {
 	}
 
 	public ListIndex maximumBy( Ord<Object> ord ) {
-		return new MaximimListIndex( ord );
+		return new MaximimElementListIndex( ord );
 	}
 
 	static final class RelativListIndex
@@ -267,10 +271,29 @@ public class UtileListIndex {
 		abstract <E> boolean improving( Ordering ordering );
 	}
 
-	static final class MinimumListIndex
+	static final class MaximumLimitListIndex
+			implements ListIndex {
+
+		private final ListIndex index;
+		private final int maxIndex;
+
+		MaximumLimitListIndex( ListIndex index, int maxIndex ) {
+			super();
+			this.index = index;
+			this.maxIndex = maxIndex;
+		}
+
+		@Override
+		public <E> int in( Sequence<E> list ) {
+			return Math.min( maxIndex, index.in( list ) );
+		}
+
+	}
+
+	static final class MinimumElementListIndex
 			extends OrderingListIndex {
 
-		MinimumListIndex( Ord<Object> ord ) {
+		MinimumElementListIndex( Ord<Object> ord ) {
 			super( ord );
 		}
 
@@ -281,10 +304,10 @@ public class UtileListIndex {
 
 	}
 
-	static final class MaximimListIndex
+	static final class MaximimElementListIndex
 			extends OrderingListIndex {
 
-		MaximimListIndex( Ord<Object> ord ) {
+		MaximimElementListIndex( Ord<Object> ord ) {
 			super( ord );
 		}
 
@@ -379,14 +402,14 @@ public class UtileListIndex {
 		}
 	}
 
-	static final class NthEqualListIndex
+	static final class NthFulfilledListIndex
 			implements ListIndex {
 
 		private final int n;
 		private final int step;
 		private final Predicate<Object> predicate;
 
-		NthEqualListIndex( int n, Predicate<Object> predicate, int step ) {
+		NthFulfilledListIndex( int n, Predicate<Object> predicate, int step ) {
 			super();
 			this.n = n;
 			this.predicate = predicate;
@@ -402,15 +425,15 @@ public class UtileListIndex {
 				return NOT_CONTAINED;
 			}
 			int length = list.length();
-			int equal = 0;
+			int fulfilled = 0;
 			int idx = step > 0
 				? 0
 				: length - 1;
 			while ( idx >= 0 && idx < length ) {
 				final E e = list.at( idx );
 				if ( predicate.fulfilledBy( e ) ) {
-					equal++;
-					if ( equal == n ) {
+					fulfilled++;
+					if ( fulfilled == n ) {
 						return idx;
 					}
 				}

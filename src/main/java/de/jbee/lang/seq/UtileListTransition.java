@@ -1,5 +1,6 @@
 package de.jbee.lang.seq;
 
+import static de.jbee.lang.ListIndex.NOT_CONTAINED;
 import de.jbee.lang.Array;
 import de.jbee.lang.Eq;
 import de.jbee.lang.Equal;
@@ -17,11 +18,13 @@ public class UtileListTransition
 		implements ListTransition {
 
 	public static final ListTransition none = new NoneTranstion();
+	public static final ListTransition empty = new EmptyTransition();
 	public static final ListTransition reverse = new ReversingTransition();
-	public static final ListTransition tail = new DropFirstNTransition( 1 );
-	public static final ListTransition init = new DropLastNTransition( 1 );
 	public static final ListTransition shuffle = new ShuffleTransition();
 	public static final ListTransition tidyUp = new TidyUpTransition();
+	public static final ListTransition init = new TakeTillIndexTransition(
+			List.indexFor.elemOn( -2 ) );
+	public static final ListTransition tail = new DropTillIndexTransition( lastUpTo( 1 ) );
 
 	public static final UtileListTransition instance = new UtileListTransition( none );
 
@@ -43,18 +46,22 @@ public class UtileListTransition
 		return new UtileListTransition( consec( utilised, next ) );
 	}
 
-	private ListTransition plain( ListTransition t ) {
+	private static ListIndex lastUpTo( int count ) {
+		return List.indexFor.lastUpTo( count );
+	}
+
+	private static ListTransition pure( ListTransition t ) {
 		return t instanceof UtileListTransition
 			? ( (UtileListTransition) t ).utilised
 			: t;
 	}
 
-	public ListTransition plain() {
+	public ListTransition pure() {
 		return utilised;
 	}
 
 	public ListTransition tidiesUp() {
-		return followedBy( tidyUp ).plain();
+		return followedBy( tidyUp ).pure();
 	}
 
 	//TODO some kind of dropWhile working with a condition types with the list's type -> other interface
@@ -68,21 +75,27 @@ public class UtileListTransition
 	}
 
 	public UtileListTransition dropsFirst( int count ) {
-		return followedBy( count == 1
-			? tail
-			: new DropFirstNTransition( count ) );
+		return count < 0
+			? this
+			: count == 1
+				? followedBy( tail )
+				: followedBy( new DropTillIndexTransition( lastUpTo( count ) ) );
 	}
 
 	public UtileListTransition dropsLast( int count ) {
-		return followedBy( new DropLastNTransition( count ) );
+		return count < 0
+			? this
+			: followedBy( new TakeTillIndexTransition( List.indexFor.elemOn( -count - 1 ) ) );
 	}
 
 	public UtileListTransition takesFirst( int count ) {
-		return followedBy( new TakeFirstNTransition( count ) );
+		return count <= 0
+			? followedBy( empty )
+			: followedBy( new TakeTillIndexTransition( lastUpTo( count ) ) );
 	}
 
 	public UtileListTransition takesLast( int count ) {
-		return followedBy( new TakeLastNTransition( count ) );
+		return followedBy( new DropTillIndexTransition( List.indexFor.elemOn( -count - 1 ) ) );
 	}
 
 	public UtileListTransition takesFrom( int index ) {
@@ -134,7 +147,8 @@ public class UtileListTransition
 	public UtileListTransition swaps( int idx1, int idx2 ) {
 		return idx1 == idx2
 			? this
-			: followedBy( new SwapTransition( idx2, idx1 ) );
+			: followedBy( new SwapTransition( List.indexFor.elemAt( idx1 ),
+					List.indexFor.elemAt( idx2 ) ) );
 	}
 
 	public UtileListTransition sorts() {
@@ -184,8 +198,8 @@ public class UtileListTransition
 	}
 
 	public ListTransition consec( ListTransition fst, ListTransition snd ) {
-		fst = plain( fst );
-		snd = plain( snd );
+		fst = pure( fst );
+		snd = pure( snd );
 		if ( fst == none ) {
 			return snd;
 		}
@@ -196,7 +210,7 @@ public class UtileListTransition
 	}
 
 	public SetTrasition consec( ListTransition fst, SetTrasition snd ) {
-		fst = plain( fst );
+		fst = pure( fst );
 		if ( fst == none ) {
 			return snd;
 		}
@@ -214,6 +228,15 @@ public class UtileListTransition
 		}
 	}
 
+	static final class EmptyTransition
+			implements ListTransition {
+
+		@Override
+		public <E> List<E> from( List<E> list ) {
+			return list.take( 0 ); // get a empty one
+		}
+	}
+
 	static final class TimesTranstion
 			implements ListTransition {
 
@@ -228,21 +251,29 @@ public class UtileListTransition
 	static final class SwapTransition
 			implements ListTransition {
 
-		private final int idx1;
-		private final int idx2;
+		private final ListIndex index1;
+		private final ListIndex index2;
 
-		SwapTransition( int idx1, int idx2 ) {
-			super(); // swap indices so that idx1 is always smaller - that will change higher index first
-			this.idx1 = idx1 <= idx2
-				? idx1
-				: idx2;
-			this.idx2 = idx2 >= idx1
-				? idx2
-				: idx1;
+		SwapTransition( ListIndex idx1, ListIndex idx2 ) {
+			super();
+			this.index1 = idx1;
+			this.index2 = idx2;
 		}
 
 		@Override
 		public <E> List<E> from( List<E> list ) {
+			final int idx1 = index1.in( list );
+			final int idx2 = index2.in( list );
+			if ( idx1 == idx2 ) {
+				return list;
+			}
+			// swap indices so that idx1 is always smaller - that will change higher index first
+			return idx1 > idx2
+				? swap( idx2, idx1, list )
+				: swap( idx1, idx2, list );
+		}
+
+		private <E> List<E> swap( int idx1, int idx2, List<E> list ) {
 			final E e1 = list.at( idx2 );
 			return list.replaceAt( idx2, list.at( idx1 ) ).replaceAt( idx1, e1 );
 		}
@@ -292,8 +323,10 @@ public class UtileListTransition
 
 		@Override
 		public <E> Set<E> from( List<E> list ) {
-			return new SortedSet<E>( ord, List.which.sortsBy( ord ).nubsBy( Equal.by( ord ) ).from(
-					list ) );
+			return list instanceof Set<?>
+				? (Set<E>) list
+				: new SortedSet<E>( ord, List.which.sortsBy( ord ).nubsBy( Equal.by( ord ) ).from(
+						list ) );
 		}
 
 	}
@@ -395,69 +428,39 @@ public class UtileListTransition
 
 	}
 
-	static final class TakeFirstNTransition
+	static final class TakeTillIndexTransition
 			implements ListTransition {
 
-		private final int count;
+		private final ListIndex index;
 
-		TakeFirstNTransition( int count ) {
+		TakeTillIndexTransition( ListIndex index ) {
 			super();
-			this.count = count;
+			this.index = index;
 		}
 
 		@Override
 		public <E> List<E> from( List<E> list ) {
-			return list.take( count );
+			int idx = index.in( list );
+			return list.take( idx == NOT_CONTAINED
+				? 1
+				: idx + 1 );
 		}
 
 	}
 
-	static final class DropFirstNTransition
+	static final class DropTillIndexTransition
 			implements ListTransition {
 
-		private final int count;
+		private final ListIndex index;
 
-		DropFirstNTransition( int count ) {
+		DropTillIndexTransition( ListIndex index ) {
 			super();
-			this.count = count;
+			this.index = index;
 		}
 
 		@Override
 		public <E> List<E> from( List<E> list ) {
-			return list.drop( count );
-		}
-
-	}
-
-	static final class TakeLastNTransition
-			implements ListTransition {
-
-		private final int count;
-
-		TakeLastNTransition( int count ) {
-			super();
-			this.count = count;
-		}
-
-		@Override
-		public <E> List<E> from( List<E> list ) {
-			return list.drop( list.length() - count );
-		}
-	}
-
-	static final class DropLastNTransition
-			implements ListTransition {
-
-		private final int count;
-
-		DropLastNTransition( int count ) {
-			super();
-			this.count = count;
-		}
-
-		@Override
-		public <E> List<E> from( List<E> list ) {
-			return list.take( list.length() - count );
+			return list.drop( index.in( list ) + 1 );
 		}
 
 	}
@@ -501,16 +504,19 @@ public class UtileListTransition
 	static final class TakeWhileTransition
 			implements ListTransition {
 
-		final Predicate<Object> condition;
+		final Predicate<Object> predicate;
 
-		TakeWhileTransition( Predicate<Object> condition ) {
+		TakeWhileTransition( Predicate<Object> predicate ) {
 			super();
-			this.condition = condition;
+			this.predicate = predicate;
 		}
 
 		@Override
 		public <E> List<E> from( List<E> list ) {
-			return list.take( List.indexFor.firstFalse( condition ).in( list ) - 1 );
+			final int index = List.indexFor.firstFalse( predicate ).in( list );
+			return index == NOT_CONTAINED
+				? list
+				: list.take( index );
 		}
 
 	}

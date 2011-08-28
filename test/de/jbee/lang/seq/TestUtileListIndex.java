@@ -86,7 +86,7 @@ public class TestUtileListIndex {
 	@Test
 	public void testMaximumByListIndex() {
 		List<Integer> l = List.with.elements( 2, 5, 1, 3, 8, 4 );
-		Ord<Object> ord = Order.typesave( Order.numerical, Integer.class );
+		Ord<Object> ord = Order.typeaware( Order.numerical, Integer.class );
 		assertThat( List.indexFor.maximum().in( l ), is( 4 ) );
 		assertThat( List.indexFor.maximumBy( ord ).in( l ), is( 4 ) );
 	}
@@ -94,26 +94,26 @@ public class TestUtileListIndex {
 	@Test
 	public void testMaximumByListIndexMistypedOrder() {
 		List<Character> l = List.with.charactersIn( "Hello" );
-		Ord<Object> ord = Order.typesave( Order.numerical, Integer.class );
+		Ord<Object> ord = Order.typeaware( Order.numerical, Integer.class );
 		assertThat( List.indexFor.maximumBy( ord ).in( l ), is( NOT_CONTAINED ) );
 		// just check that a proper order would do it:
-		ord = Order.typesave( Order.abecedarian, Character.class );
+		ord = Order.typeaware( Order.abecedarian, Character.class );
 		assertThat( List.indexFor.maximumBy( ord ).in( l ), is( 4 ) );
 	}
 
 	@Test
 	public void testMaximumByListIndexMixed() {
 		List<Object> l = List.with.<Object> elements( 1, 2, 'c', "blue", 'd', "e" );
-		Ord<Object> intOrd = Order.typesave( Order.numerical, Integer.class );
+		Ord<Object> intOrd = Order.typeaware( Order.numerical, Integer.class );
 		assertThat( List.indexFor.maximumBy( intOrd ).in( l ), is( 1 ) );
-		Ord<Object> charOrd = Order.typesave( Order.abecedarian, Character.class );
+		Ord<Object> charOrd = Order.typeaware( Order.abecedarian, Character.class );
 		assertThat( List.indexFor.maximumBy( charOrd ).in( l ), is( 4 ) );
 	}
 
 	@Test
 	public void testMinimumByListIndex() {
 		List<Integer> l = List.with.elements( 2, 5, 1, 3, 8, 4 );
-		Ord<Object> ord = Order.typesave( Order.numerical, Integer.class );
+		Ord<Object> ord = Order.typeaware( Order.numerical, Integer.class );
 		assertThat( List.indexFor.minimum().in( l ), is( 2 ) );
 		assertThat( List.indexFor.minimumBy( ord ).in( l ), is( 2 ) );
 	}

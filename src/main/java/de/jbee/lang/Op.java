@@ -8,4 +8,5 @@ package de.jbee.lang;
 public interface Op<T> {
 
 	T operate( T left, T right );
+
 }

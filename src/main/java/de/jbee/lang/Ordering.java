@@ -1,8 +1,7 @@
 package de.jbee.lang;
 
-
 public enum Ordering
-		implements RelationalOp<Object> {
+		implements RelationalOp<Object> { // Eq, Ord, Bounded, Enum, Read, Show
 
 	LT,
 	EQ,
@@ -51,11 +50,11 @@ public enum Ordering
 		return trueFalse( other, one );
 	}
 
-	public static Ordering ascOf( Sortable one, Sortable other ) {
+	public static Ordering ascOf( Quantifiable one, Quantifiable other ) {
 		return fromComparison( one.ordinal() - other.ordinal() );
 	}
 
-	public static Ordering descOf( Sortable one, Sortable other ) {
+	public static Ordering descOf( Quantifiable one, Quantifiable other ) {
 		return fromComparison( other.ordinal() - one.ordinal() );
 	}
 

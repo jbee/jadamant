@@ -1,5 +1,7 @@
 package de.jbee.lang.seq;
 
+import java.util.Arrays;
+
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -45,7 +47,7 @@ public class ListMatcher {
 
 		@Override
 		public void describeTo( Description description ) {
-			description.appendText( "Equal elements as in " + expected );
+			description.appendText( "Equal elements as in " + Arrays.toString( expected ) );
 		}
 
 	}

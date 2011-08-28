@@ -6,7 +6,7 @@ import de.jbee.lang.dev.Nullsave;
 
 public final class Traverse {
 
-	public static Traverse instance = new Traverse();
+	public static final Traverse instance = new Traverse();
 
 	private Traverse() {
 		// singleton

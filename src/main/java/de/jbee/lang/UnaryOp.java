@@ -5,7 +5,7 @@ package de.jbee.lang;
  * 
  * @author Jan Bernitt (jan.bernitt@gmx.de)
  */
-public interface UniOp<T> {
+public interface UnaryOp<T> {
 
 	T operate( T value );
 }

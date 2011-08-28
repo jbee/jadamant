@@ -1,7 +1,7 @@
 package de.jbee.lang;
 
 /**
- * Sets are always sorted and therefore a {@link List} that doesn't allow duplicates.
+ * Sets are always {@link Sorted} and therefore a {@link List} that doesn't allow duplicates.
  * 
  * @author Jan Bernitt (jan.bernitt@gmx.de)
  */

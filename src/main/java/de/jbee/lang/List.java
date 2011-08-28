@@ -52,6 +52,7 @@ public interface List<E>
 	char CONCAT_OPERATOR_SYMBOL = '+';
 
 	UtileLister with = Lang.list;
+	UtileListIndex indexFor = new UtileListIndex();
 	UtileEnumeratorFactory does = Lang.enumerator;
 	//TODO proxy from Lang.
 	UtileListTransition which = UtileListTransition.instance;
@@ -59,8 +60,6 @@ public interface List<E>
 	UtileEnumerator<Integer> numbers = Lang.numbers;
 	UtileEnumerator<Character> letters = Lang.letters;
 	UtileEnumerator<Character> characters = Lang.characters;
-
-	UtileListIndex indexFor = new UtileListIndex();
 
 	//TODO a util for string handling strings as list of characters
 

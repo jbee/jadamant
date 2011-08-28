@@ -1,4 +1,4 @@
-package de.jbee.lang;
+package de.jbee.draft;
 
 
 public interface Num {

@@ -8,8 +8,38 @@ import org.junit.Test;
 
 import de.jbee.lang.Fulfills;
 import de.jbee.lang.List;
+import de.jbee.lang.Operator;
+import de.jbee.lang.Order;
+import de.jbee.lang.Predicate;
+import de.jbee.lang.Set;
 
 public class TestUtileListTranstion {
+
+	@Test
+	public void testDropsLast() {
+		List<Integer> l = List.with.elements( 7, 9, 3, 1, 5 );
+		assertThat( List.which.dropsLast( -1 ).from( l ), hasEqualElementsAsIn( 7, 9, 3, 1, 5 ) );
+		assertThat( List.which.dropsLast( 0 ).from( l ), hasEqualElementsAsIn( 7, 9, 3, 1, 5 ) );
+		assertThat( List.which.dropsLast( 1 ).from( l ), hasEqualElementsAsIn( 7, 9, 3, 1 ) );
+		assertThat( List.which.dropsLast( 2 ).from( l ), hasEqualElementsAsIn( 7, 9, 3 ) );
+		assertThat( List.which.dropsLast( 3 ).from( l ), hasEqualElementsAsIn( 7, 9 ) );
+		assertThat( List.which.dropsLast( 4 ).from( l ), hasEqualElementsAsIn( 7 ) );
+		assertThat( List.which.dropsLast( 5 ).from( l ), hasEqualElementsAsIn( new Integer[0] ) );
+		assertThat( List.which.dropsLast( 6 ).from( l ), hasEqualElementsAsIn( new Integer[0] ) );
+	}
+
+	@Test
+	public void testTakesLast() {
+		List<Integer> l = List.with.elements( 7, 9, 3, 1, 5 );
+		assertThat( List.which.takesFirst( -1 ).from( l ), hasEqualElementsAsIn( new Integer[0] ) );
+		assertThat( List.which.takesFirst( 0 ).from( l ), hasEqualElementsAsIn( new Integer[0] ) );
+		assertThat( List.which.takesFirst( 1 ).from( l ), hasEqualElementsAsIn( 7 ) );
+		assertThat( List.which.takesFirst( 2 ).from( l ), hasEqualElementsAsIn( 7, 9 ) );
+		assertThat( List.which.takesFirst( 3 ).from( l ), hasEqualElementsAsIn( 7, 9, 3 ) );
+		assertThat( List.which.takesFirst( 4 ).from( l ), hasEqualElementsAsIn( 7, 9, 3, 1 ) );
+		assertThat( List.which.takesFirst( 5 ).from( l ), hasEqualElementsAsIn( 7, 9, 3, 1, 5 ) );
+		assertThat( List.which.takesFirst( 6 ).from( l ), hasEqualElementsAsIn( 7, 9, 3, 1, 5 ) );
+	}
 
 	@Test
 	public void testTakeFirstDropLast() {
@@ -79,9 +109,21 @@ public class TestUtileListTranstion {
 
 	@Test
 	public void testTakeWhile() {
-		List<Integer> l = List.with.elements( 1, 4, 7, 9, 2, 4 );
-		assertThat( List.which.takesWhile( Fulfills.every( 2 ) ).from( l ), hasEqualElementsAsIn(
-				1, 7, 2 ) );
+		Integer[] larr = { 2, 4, 7, 9, 1, 4 };
+		List<Integer> l = List.with.elements( larr );
+		assertThat( List.which.takesWhile( Fulfills.always() ).from( l ),
+				hasEqualElementsAsIn( larr ) );
+		Predicate<Object> le7 = Operator.apply( 7, Operator.leBy( Order.inherent ) );
+		assertThat( List.which.takesWhile( le7 ).from( l ), hasEqualElementsAsIn( 2, 4, 7 ) );
+		Predicate<Object> lt9 = Operator.apply( 9, Operator.ltBy( Order.inherent ) );
+		assertThat( List.which.takesWhile( lt9 ).from( l ), hasEqualElementsAsIn( 2, 4, 7 ) );
+		Predicate<Object> gt1 = Operator.apply( 1, Operator.gtBy( Order.inherent ) );
+		assertThat( List.which.takesWhile( gt1 ).from( l ), hasEqualElementsAsIn( 2, 4, 7, 9 ) );
 	}
 
+	@Test
+	public void testRestrictsToSet() {
+		Set<Integer> s = List.which.restrictsToSet().from( List.with.elements( 1, 2, 3, 4, 2, 5 ) );
+		assertThat( s, hasEqualElementsAsIn( 1, 2, 3, 4, 5 ) );
+	}
 }

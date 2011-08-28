@@ -2,9 +2,9 @@ package de.jbee.lang;
 
 /**
  * Can be implemented by enums to easily support {@link Ord} interface by using
- * {@link Order#sortable}.
+ * {@link Order#quantifiable}.
  * 
- * The {@linkplain Sortable} interface is an alternative to the problematic {@link Comparable}
+ * The {@linkplain Quantifiable} interface is an alternative to the problematic {@link Comparable}
  * interface which is more common these days.
  * 
  * <h4>What's the problem with {@linkplain Comparable} ?</h4>
@@ -31,13 +31,12 @@ package de.jbee.lang;
  * {@link ClassCastException} or not. A similar problem raised by null arguments. Is it valid to
  * call it with null ? Or will that lead to a NPE ? And if you check for null in every of your
  * implementation this is fairly code duplication. Code having the same intention. In both cases you
- * end up with guessing: <i>"I guess it will work with these two... both are Comparable..."</i>
+ * end up guessing.
  * </p>
  * 
  * @author Jan Bernitt (jan.bernitt@gmx.de)
  */
-//TODO rename this to something else and use Sortable in combination with Sorted
-public interface Sortable {
+public interface Quantifiable {
 
 	int ordinal();
 

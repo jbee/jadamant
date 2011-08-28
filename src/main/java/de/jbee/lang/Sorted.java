@@ -15,6 +15,8 @@ public interface Sorted {
 
 	/**
 	 * returns the instance controlling the order of the sequence. this might be a computed object.
+	 * 
+	 * OPEN ask for Ord<Object> instead ? typesafety
 	 */
 	Ord<?> order();
 }

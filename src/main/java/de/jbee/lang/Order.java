@@ -1,5 +1,6 @@
 package de.jbee.lang;
 
+import static de.jbee.lang.ListIndex.NOT_CONTAINED;
 import static de.jbee.lang.Ordering.fromComparison;
 
 import java.math.BigDecimal;
@@ -36,7 +37,8 @@ public final class Order {
 	 */
 	public static final Ord<Object> inherent = nullsave( new InherentOrder() );
 
-	public static final Ord<Sortable> sortable = new SortableOrder();
+	public static final Ord<Object> keep = new KeepOrder();
+	public static final Ord<Quantifiable> quantifiable = new QuantifiableOrder();
 	public static final Ord<Number> numerical = new NumericalOrder();
 	public static final Ord<Character> abecedarian = new AbecedarianOrder();
 	public static final Ord<CharSequence> alphabetical = new AlphabeticalOrder();
@@ -93,8 +95,8 @@ public final class Order {
 		return new SubOrder<T>( primary, secondary );
 	}
 
-	public static <T> Ord<Object> typesave( Ord<? super T> ord, Class<T> type ) {
-		return new TypesaveOrder<T>( type, ord );
+	public static <T> Ord<Object> typeaware( Ord<? super T> ord, Class<T> type ) {
+		return new TypeawareOrder<T>( type, ord );
 	}
 
 	public static <T> Ord<T> unequalEqualTo( T value, Eq<T> eq ) {
@@ -113,8 +115,25 @@ public final class Order {
 		return new FulfillingUnfulfillingOrder<T>( condition );
 	}
 
+	@SuppressWarnings ( "unchecked" )
+	public static <T> Ord<T> by( Sequence<T> seq, Eq<Object> eq ) {
+		return seq.isEmpty()
+			? (Ord<T>) keep
+			: new SequenceOrder<T>( seq, eq );
+	}
+
 	private Order() {
 		throw new UnsupportedOperationException( "util" );
+	}
+
+	static final class KeepOrder
+			implements Ord<Object> {
+
+		@Override
+		public Ordering ord( Object left, Object right ) {
+			return Ordering.LT;
+		}
+
 	}
 
 	static final class FulfillingUnfulfillingOrder<T>
@@ -266,8 +285,8 @@ public final class Order {
 		@SuppressWarnings ( "unchecked" )
 		@Override
 		public Ordering ord( Object left, Object right ) {
-			if ( left instanceof Sortable && right instanceof Sortable ) {
-				return sortable.ord( (Sortable) left, (Sortable) right );
+			if ( left instanceof Quantifiable && right instanceof Quantifiable ) {
+				return quantifiable.ord( (Quantifiable) left, (Quantifiable) right );
 			}
 			if ( left.getClass().isEnum() && right.getClass().isEnum() ) {
 				return enumerative.ord( (java.lang.Enum<?>) left, (java.lang.Enum<?>) right );
@@ -382,11 +401,11 @@ public final class Order {
 
 	}
 
-	static final class SortableOrder
-			implements Ord<Sortable> {
+	static final class QuantifiableOrder
+			implements Ord<Quantifiable> {
 
 		@Override
-		public Ordering ord( Sortable left, Sortable right ) {
+		public Ordering ord( Quantifiable left, Quantifiable right ) {
 			return fromComparison( left.ordinal() - right.ordinal() );
 		}
 
@@ -414,13 +433,48 @@ public final class Order {
 
 	}
 
-	static final class TypesaveOrder<T>
+	/**
+	 * Order is given by a sequence. All elements not contained in the sequence are considered to be
+	 * less than any element contained.
+	 * 
+	 * @author Jan Bernitt (jan.bernitt@gmx.de)
+	 */
+	static final class SequenceOrder<T>
+			implements Ord<T> {
+
+		private final Sequence<T> seq;
+		private final Eq<Object> eq;
+
+		SequenceOrder( Sequence<T> seq, Eq<Object> eq ) {
+			super();
+			this.seq = seq;
+			this.eq = eq;
+		}
+
+		@Override
+		public Ordering ord( T left, T right ) {
+			final int leftIndex = List.indexFor.elem( left, eq ).in( seq );
+			final int rightIndex = List.indexFor.elem( right, eq ).in( seq );
+			if ( leftIndex == NOT_CONTAINED ) {
+				return rightIndex == NOT_CONTAINED
+					? Ordering.EQ
+					: Ordering.LT;
+			}
+			if ( rightIndex == NOT_CONTAINED ) {
+				return Ordering.GT;
+			}
+			return Ordering.fromComparison( leftIndex - rightIndex );
+		}
+
+	}
+
+	static final class TypeawareOrder<T>
 			implements Ord<Object>, Nullsave {
 
 		final Class<T> type;
 		final Ord<? super T> ord;
 
-		TypesaveOrder( Class<T> type, Ord<? super T> ord ) {
+		TypeawareOrder( Class<T> type, Ord<? super T> ord ) {
 			super();
 			this.type = type;
 			this.ord = ord;
