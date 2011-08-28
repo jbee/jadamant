@@ -22,9 +22,8 @@ public class UtileListTransition
 	public static final ListTransition reverse = new ReversingTransition();
 	public static final ListTransition shuffle = new ShuffleTransition();
 	public static final ListTransition tidyUp = new TidyUpTransition();
-	public static final ListTransition init = new TakeTillIndexTransition(
-			List.indexFor.elemOn( -2 ) );
-	public static final ListTransition tail = new DropTillIndexTransition( lastUpTo( 1 ) );
+	public static final ListTransition init = new TakeTillIndexTransition( List.indexFor.LAST, 1 );
+	public static final ListTransition tail = new DropTillIndexTransition( List.indexFor.HEAD, 1 );
 
 	public static final UtileListTransition instance = new UtileListTransition( none );
 
@@ -42,6 +41,9 @@ public class UtileListTransition
 	private UtileListTransition followedBy( ListTransition next ) {
 		if ( next == none ) {
 			return this;
+		}
+		if ( next == empty ) {
+			return new UtileListTransition( next );
 		}
 		return new UtileListTransition( consec( utilised, next ) );
 	}
@@ -79,23 +81,41 @@ public class UtileListTransition
 			? this
 			: count == 1
 				? followedBy( tail )
-				: followedBy( new DropTillIndexTransition( lastUpTo( count ) ) );
+				: dropsTill( lastUpTo( count ), 1 );
 	}
 
 	public UtileListTransition dropsLast( int count ) {
-		return count < 0
+		return count <= 0
 			? this
-			: followedBy( new TakeTillIndexTransition( List.indexFor.elemOn( -count - 1 ) ) );
+			: takesTill( List.indexFor.elemOn( -count ) );
 	}
 
 	public UtileListTransition takesFirst( int count ) {
 		return count <= 0
 			? followedBy( empty )
-			: followedBy( new TakeTillIndexTransition( lastUpTo( count ) ) );
+			: takesTill( lastUpTo( count ), 1 );
 	}
 
 	public UtileListTransition takesLast( int count ) {
-		return followedBy( new DropTillIndexTransition( List.indexFor.elemOn( -count - 1 ) ) );
+		return count <= 0
+			? followedBy( empty )
+			: dropsTill( List.indexFor.elemOn( -count ) );
+	}
+
+	public UtileListTransition takesTill( ListIndex index ) {
+		return takesTill( index, 0 );
+	}
+
+	public UtileListTransition takesTill( ListIndex index, int offset ) {
+		return followedBy( new TakeTillIndexTransition( index, offset ) );
+	}
+
+	public UtileListTransition dropsTill( ListIndex index ) {
+		return dropsTill( index, 0 );
+	}
+
+	public UtileListTransition dropsTill( ListIndex index, int offset ) {
+		return followedBy( new DropTillIndexTransition( index, offset ) );
 	}
 
 	public UtileListTransition takesFrom( int index ) {
@@ -178,7 +198,7 @@ public class UtileListTransition
 	}
 
 	public UtileListTransition deletes( Object elem, Eq<Object> eq ) {
-		return deletes( List.indexFor.elem( elem, eq ) );
+		return deletes( List.indexFor.elemBy( elem, eq ) );
 	}
 
 	public UtileListTransition deletes( ListIndex index ) {
@@ -432,18 +452,17 @@ public class UtileListTransition
 			implements ListTransition {
 
 		private final ListIndex index;
+		private final int offset;
 
-		TakeTillIndexTransition( ListIndex index ) {
+		TakeTillIndexTransition( ListIndex index, int offset ) {
 			super();
 			this.index = index;
+			this.offset = offset;
 		}
 
 		@Override
 		public <E> List<E> from( List<E> list ) {
-			int idx = index.in( list );
-			return list.take( idx == NOT_CONTAINED
-				? 1
-				: idx + 1 );
+			return list.take( index.in( list ) + offset );
 		}
 
 	}
@@ -452,15 +471,17 @@ public class UtileListTransition
 			implements ListTransition {
 
 		private final ListIndex index;
+		private final int offset;
 
-		DropTillIndexTransition( ListIndex index ) {
+		DropTillIndexTransition( ListIndex index, int offset ) {
 			super();
 			this.index = index;
+			this.offset = offset;
 		}
 
 		@Override
 		public <E> List<E> from( List<E> list ) {
-			return list.drop( index.in( list ) + 1 );
+			return list.drop( index.in( list ) + offset );
 		}
 
 	}

@@ -453,8 +453,8 @@ public final class Order {
 
 		@Override
 		public Ordering ord( T left, T right ) {
-			final int leftIndex = List.indexFor.elem( left, eq ).in( seq );
-			final int rightIndex = List.indexFor.elem( right, eq ).in( seq );
+			final int leftIndex = List.indexFor.elemBy( left, eq ).in( seq );
+			final int rightIndex = List.indexFor.elemBy( right, eq ).in( seq );
 			if ( leftIndex == NOT_CONTAINED ) {
 				return rightIndex == NOT_CONTAINED
 					? Ordering.EQ

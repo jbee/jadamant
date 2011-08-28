@@ -91,26 +91,26 @@ public class UtileListIndex {
 	}
 
 	public ListIndex elem( Object e ) {
-		return elem( e, Equal.equals );
+		return elemBy( e, Equal.equals );
 	}
 
-	public ListIndex elem( Object e, Eq<Object> eq ) {
-		return nthElem( 1, e, eq );
+	public ListIndex elemBy( Object e, Eq<Object> eq ) {
+		return nthElemBy( 1, e, eq );
 	}
 
-	public ListIndex notElem( Object e, Eq<Object> eq ) {
-		return elem( e, Equal.not( eq ) );
+	public ListIndex notElemBy( Object e, Eq<Object> eq ) {
+		return elemBy( e, Equal.not( eq ) );
 	}
 
 	public ListIndex notElem( Object e ) {
-		return notElem( e, Equal.equals );
+		return notElemBy( e, Equal.equals );
 	}
 
 	public ListIndex nthElem( int n, Object e ) {
-		return nthElem( n, e, Equal.equals );
+		return nthElemBy( n, e, Equal.equals );
 	}
 
-	public ListIndex nthElem( int n, Object e, Eq<Object> eq ) {
+	public ListIndex nthElemBy( int n, Object e, Eq<Object> eq ) {
 		return n == 0
 			? NONE
 			: new NthFulfilledListIndex( n, Fulfills.equality( eq, e ), 1 );

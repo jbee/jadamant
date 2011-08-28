@@ -8,6 +8,8 @@ package de.jbee.lang;
 public interface Set<E>
 		extends Sorted, List<E> {
 
+	//OPEN how to make the ListIndex work with the Ord from this Set (Sorted) for Ord or Eq depended indexes 
+
 	/**
 	 * Inserts e at the correct position if not already contained in this set.
 	 */

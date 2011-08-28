@@ -6,12 +6,17 @@ import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 
+import de.jbee.lang.Array;
 import de.jbee.lang.List;
 
 public class ListMatcher {
 
 	public static <E> Matcher<List<E>> hasEqualElementsAsIn( E... expected ) {
 		return new EqualElementsMatcher<E>( expected );
+	}
+
+	public static <E> Matcher<List<E>> hasNoElements( Class<E> type ) {
+		return hasEqualElementsAsIn( Array.newInstance( type, 0 ) );
 	}
 
 	static final class EqualElementsMatcher<E>
@@ -31,8 +36,8 @@ public class ListMatcher {
 			}
 			List<?> actual = ( (List<?>) item );
 			int length = actual.length();
-			if ( expected == null && length > 0 ) {
-				return false;
+			if ( expected == null || expected.length == 0 ) {
+				return length == 0;
 			}
 			if ( length < expected.length ) {
 				return false;

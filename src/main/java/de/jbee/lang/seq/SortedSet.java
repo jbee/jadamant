@@ -5,6 +5,7 @@ import de.jbee.lang.Ord;
 import de.jbee.lang.Set;
 import de.jbee.lang.Traversal;
 
+//TODO make this class package local
 public class SortedSet<E>
 		implements Set<E> {
 

@@ -1,6 +1,7 @@
 package de.jbee.lang.seq;
 
 import static de.jbee.lang.seq.ListMatcher.hasEqualElementsAsIn;
+import static de.jbee.lang.seq.ListMatcher.hasNoElements;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 
@@ -16,6 +17,22 @@ import de.jbee.lang.Set;
 public class TestUtileListTranstion {
 
 	@Test
+	public void testInit() {
+		List<Integer> l = List.with.elements( 7, 9 );
+		assertThat( List.which.init.from( l ), hasEqualElementsAsIn( 7 ) );
+	}
+
+	@Test
+	public void testTail() {
+		assertThat( List.which.tail.from( List.with.<Integer> noElements() ),
+				hasNoElements( Integer.class ) );
+		assertThat( List.which.tail.from( List.with.elements( 7 ) ), hasNoElements( Integer.class ) );
+		assertThat( List.which.tail.from( List.with.elements( 7, 9 ) ), hasEqualElementsAsIn( 9 ) );
+		assertThat( List.which.tail.from( List.with.elements( 7, 9, 2 ) ), hasEqualElementsAsIn( 9,
+				2 ) );
+	}
+
+	@Test
 	public void testDropsLast() {
 		List<Integer> l = List.with.elements( 7, 9, 3, 1, 5 );
 		assertThat( List.which.dropsLast( -1 ).from( l ), hasEqualElementsAsIn( 7, 9, 3, 1, 5 ) );
@@ -24,21 +41,47 @@ public class TestUtileListTranstion {
 		assertThat( List.which.dropsLast( 2 ).from( l ), hasEqualElementsAsIn( 7, 9, 3 ) );
 		assertThat( List.which.dropsLast( 3 ).from( l ), hasEqualElementsAsIn( 7, 9 ) );
 		assertThat( List.which.dropsLast( 4 ).from( l ), hasEqualElementsAsIn( 7 ) );
-		assertThat( List.which.dropsLast( 5 ).from( l ), hasEqualElementsAsIn( new Integer[0] ) );
-		assertThat( List.which.dropsLast( 6 ).from( l ), hasEqualElementsAsIn( new Integer[0] ) );
+		assertThat( List.which.dropsLast( 5 ).from( l ), hasNoElements( Integer.class ) );
+		assertThat( List.which.dropsLast( 6 ).from( l ), hasNoElements( Integer.class ) );
 	}
 
 	@Test
-	public void testTakesLast() {
+	public void testTakesFirst() {
 		List<Integer> l = List.with.elements( 7, 9, 3, 1, 5 );
-		assertThat( List.which.takesFirst( -1 ).from( l ), hasEqualElementsAsIn( new Integer[0] ) );
-		assertThat( List.which.takesFirst( 0 ).from( l ), hasEqualElementsAsIn( new Integer[0] ) );
+		assertThat( List.which.takesFirst( -1 ).from( l ), hasNoElements( Integer.class ) );
+		assertThat( List.which.takesFirst( 0 ).from( l ), hasNoElements( Integer.class ) );
 		assertThat( List.which.takesFirst( 1 ).from( l ), hasEqualElementsAsIn( 7 ) );
 		assertThat( List.which.takesFirst( 2 ).from( l ), hasEqualElementsAsIn( 7, 9 ) );
 		assertThat( List.which.takesFirst( 3 ).from( l ), hasEqualElementsAsIn( 7, 9, 3 ) );
 		assertThat( List.which.takesFirst( 4 ).from( l ), hasEqualElementsAsIn( 7, 9, 3, 1 ) );
 		assertThat( List.which.takesFirst( 5 ).from( l ), hasEqualElementsAsIn( 7, 9, 3, 1, 5 ) );
 		assertThat( List.which.takesFirst( 6 ).from( l ), hasEqualElementsAsIn( 7, 9, 3, 1, 5 ) );
+	}
+
+	@Test
+	public void testDropsFirst() {
+		List<Integer> l = List.with.elements( 7, 9, 3, 1, 5 );
+		assertThat( List.which.dropsFirst( -1 ).from( l ), hasEqualElementsAsIn( 7, 9, 3, 1, 5 ) );
+		assertThat( List.which.dropsFirst( 0 ).from( l ), hasEqualElementsAsIn( 7, 9, 3, 1, 5 ) );
+		assertThat( List.which.dropsFirst( 1 ).from( l ), hasEqualElementsAsIn( 9, 3, 1, 5 ) );
+		assertThat( List.which.dropsFirst( 2 ).from( l ), hasEqualElementsAsIn( 3, 1, 5 ) );
+		assertThat( List.which.dropsFirst( 3 ).from( l ), hasEqualElementsAsIn( 1, 5 ) );
+		assertThat( List.which.dropsFirst( 4 ).from( l ), hasEqualElementsAsIn( 5 ) );
+		assertThat( List.which.dropsFirst( 5 ).from( l ), hasNoElements( Integer.class ) );
+		assertThat( List.which.dropsFirst( 6 ).from( l ), hasNoElements( Integer.class ) );
+	}
+
+	@Test
+	public void testTakesLast() {
+		List<Integer> l = List.with.elements( 7, 9, 3, 1, 5 );
+		assertThat( List.which.takesLast( -1 ).from( l ), hasNoElements( Integer.class ) );
+		assertThat( List.which.takesLast( 0 ).from( l ), hasNoElements( Integer.class ) );
+		assertThat( List.which.takesLast( 1 ).from( l ), hasEqualElementsAsIn( 5 ) );
+		assertThat( List.which.takesLast( 2 ).from( l ), hasEqualElementsAsIn( 1, 5 ) );
+		assertThat( List.which.takesLast( 3 ).from( l ), hasEqualElementsAsIn( 3, 1, 5 ) );
+		assertThat( List.which.takesLast( 4 ).from( l ), hasEqualElementsAsIn( 9, 3, 1, 5 ) );
+		assertThat( List.which.takesLast( 5 ).from( l ), hasEqualElementsAsIn( 7, 9, 3, 1, 5 ) );
+		assertThat( List.which.takesLast( 6 ).from( l ), hasEqualElementsAsIn( 7, 9, 3, 1, 5 ) );
 	}
 
 	@Test
@@ -53,7 +96,7 @@ public class TestUtileListTranstion {
 		List<Integer> l = List.with.elements( 1, 2, 3, 4, 5 );
 		assertThat( List.which.trims( 1 ).from( l ), hasEqualElementsAsIn( 2, 3, 4 ) );
 		assertThat( List.which.trims( 2 ).from( l ), hasEqualElementsAsIn( 3 ) );
-		assertThat( List.which.trims( 3 ).from( l ), hasEqualElementsAsIn( new Integer[0] ) );
+		assertThat( List.which.trims( 3 ).from( l ), hasNoElements( Integer.class ) );
 	}
 
 	@Test
