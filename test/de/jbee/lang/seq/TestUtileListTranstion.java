@@ -162,6 +162,19 @@ public class TestUtileListTranstion {
 	}
 
 	@Test
+	public void testDropWhile() {
+		Integer[] larr = { 2, 4, 7, 9, 1, 4 };
+		List<Integer> l = List.with.elements( larr );
+		assertThat( List.which.dropsWhile( Is.true_() ).from( l ), hasNoElements( Integer.class ) );
+		Predicate<Object> le7 = Is.<Object> le( 7 );
+		assertThat( List.which.dropsWhile( le7 ).from( l ), hasEqualElementsAsIn( 9, 1, 4 ) );
+		Predicate<Object> lt9 = Is.<Object> lt( 9 );
+		assertThat( List.which.dropsWhile( lt9 ).from( l ), hasEqualElementsAsIn( 9, 1, 4 ) );
+		Predicate<Object> gt1 = Is.<Object> gt( 1 );
+		assertThat( List.which.dropsWhile( gt1 ).from( l ), hasEqualElementsAsIn( 1, 4 ) );
+	}
+
+	@Test
 	public void testRestrictsToSet() {
 		Set<Integer> s = List.which.restrictsToSet().from( List.with.elements( 1, 2, 3, 4, 2, 5 ) );
 		assertThat( s, hasEqualElementsAsIn( 1, 2, 3, 4, 5 ) );

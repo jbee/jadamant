@@ -546,22 +546,19 @@ public class UtileListTransition
 	static final class DropWhileTransition
 			implements ListTransition {
 
-		final Predicate<Object> condition;
+		final Predicate<Object> predicate;
 
 		DropWhileTransition( Predicate<Object> condition ) {
 			super();
-			this.condition = condition;
+			this.predicate = condition;
 		}
 
 		@Override
 		public <E> List<E> from( List<E> list ) {
-			int size = list.length();
-			for ( int i = 0; i < size; i++ ) {
-				if ( condition.is( list.at( i ) ) ) {
-					return list.drop( i );
-				}
-			}
-			return list.drop( size ); // will return the empty list
+			final int index = List.indexFor.firstFalse( predicate ).in( list );
+			return index == NOT_CONTAINED
+				? list.take( 0 ) // drop all by take nothing -> empty list
+				: list.drop( index );
 		}
 	}
 

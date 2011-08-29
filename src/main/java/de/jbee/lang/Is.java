@@ -84,6 +84,10 @@ public final class Is {
 		return new InstanceOfPredicate( type );
 	}
 
+	public static Predicate<Class<?>> assignable( Class<?> type ) {
+		return new AssignableTypePredicate( type );
+	}
+
 	public static <T> Predicate<T> lt( T value ) {
 		return fulfilledBy( Operator.<T> ltBy( Order.inherent ), value );
 	}
@@ -140,6 +144,23 @@ public final class Is {
 		@Override
 		public boolean isNullsave() {
 			return Null.isSave( op );
+		}
+
+	}
+
+	private static final class AssignableTypePredicate
+			implements Predicate<Class<?>> {
+
+		private final Class<?> type;
+
+		AssignableTypePredicate( Class<?> type ) {
+			super();
+			this.type = type;
+		}
+
+		@Override
+		public boolean is( Class<?> obj ) {
+			return obj.isAssignableFrom( type );
 		}
 
 	}
