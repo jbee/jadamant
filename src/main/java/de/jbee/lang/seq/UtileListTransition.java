@@ -48,6 +48,7 @@ public class UtileListTransition
 		return new UtileListTransition( consec( utilised, next ) );
 	}
 
+	//TODO find better naming - this is not clear enough
 	private static ListIndex lastUpTo( int count ) {
 		return List.indexFor.lastUpTo( count );
 	}

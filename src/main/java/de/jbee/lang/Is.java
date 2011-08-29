@@ -1,6 +1,7 @@
 package de.jbee.lang;
 
 import de.jbee.lang.dev.Null;
+import de.jbee.lang.dev.Nullfragile;
 import de.jbee.lang.dev.Nullproof;
 
 public final class Is {
@@ -20,6 +21,8 @@ public final class Is {
 			return false;
 		}
 	};
+
+	public static final Predicate<Object> NULL = new NullPredicate();
 
 	@SuppressWarnings ( "unchecked" )
 	public static <T> Predicate<T> true_() {
@@ -77,6 +80,10 @@ public final class Is {
 			: new NegatePredicate<T>( predicate );
 	}
 
+	public static Predicate<Object> instanceOf( Class<?> type ) {
+		return new InstanceOfPredicate( type );
+	}
+
 	public static <T> Predicate<T> lt( T value ) {
 		return fulfilledBy( Operator.<T> ltBy( Order.inherent ), value );
 	}
@@ -93,11 +100,27 @@ public final class Is {
 		return fulfilledBy( Operator.<T> geBy( Order.inherent ), value );
 	}
 
+	public static <T> Predicate<T> between( T min, T max ) {
+		return and( ge( min ), le( max ) );
+	}
+
+	public static Predicate<String> containing( String infix ) {
+		return new InfixPredicate( infix );
+	}
+
+	public static Predicate<String> endingWith( String suffix ) {
+		return new EndsWithPredicate( suffix );
+	}
+
+	public static Predicate<String> startingWith( String prefix ) {
+		return new StartsWithPredicate( prefix );
+	}
+
 	private Is() {
 		throw new UnsupportedOperationException( "util" );
 	}
 
-	static final class PartiallyAppliedRelationalOpPredicate<T>
+	private static final class PartiallyAppliedRelationalOpPredicate<T>
 			implements Predicate<T>, Nullproof {
 
 		private final T left;
@@ -117,6 +140,88 @@ public final class Is {
 		@Override
 		public boolean isNullsave() {
 			return Null.isSave( op );
+		}
+
+	}
+
+	private static final class InfixPredicate
+			implements Predicate<String>, Nullfragile {
+
+		private final String infix;
+
+		InfixPredicate( String infix ) {
+			super();
+			this.infix = infix;
+		}
+
+		@Override
+		public boolean is( String obj ) {
+			return obj.contains( infix );
+		}
+
+	}
+
+	private static final class EndsWithPredicate
+			implements Predicate<String>, Nullfragile {
+
+		private final String suffix;
+
+		EndsWithPredicate( String suffix ) {
+			super();
+			this.suffix = suffix;
+		}
+
+		@Override
+		public boolean is( String obj ) {
+			return obj.endsWith( suffix );
+		}
+
+	}
+
+	private static final class NullPredicate
+			implements Predicate<Object> {
+
+		NullPredicate() {
+			// make visible
+		}
+
+		@Override
+		public boolean is( Object obj ) {
+			return obj == null;
+		}
+
+	}
+
+	private static final class StartsWithPredicate
+			implements Predicate<String>, Nullfragile {
+
+		private final String prefix;
+
+		StartsWithPredicate( String prefix ) {
+			super();
+			this.prefix = prefix;
+		}
+
+		@Override
+		public boolean is( String obj ) {
+			return obj.startsWith( prefix );
+		}
+
+	}
+
+	private static final class InstanceOfPredicate
+			implements Predicate<Object> {
+
+		private final Class<?> type;
+
+		InstanceOfPredicate( Class<?> type ) {
+			super();
+			this.type = type;
+		}
+
+		@Override
+		public boolean is( Object obj ) {
+			return type.isInstance( obj );
 		}
 
 	}
