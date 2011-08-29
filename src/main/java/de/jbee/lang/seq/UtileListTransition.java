@@ -335,18 +335,18 @@ public class UtileListTransition
 	static final class ToSetTranstion
 			implements SetTrasition {
 
-		private final Ord<Object> ord;
+		private final Ord<Object> order;
 
 		ToSetTranstion( Ord<Object> ord ) {
 			super();
-			this.ord = ord;
+			this.order = ord;
 		}
 
 		@Override
 		public <E> Set<E> from( List<E> list ) {
 			return list instanceof Set<?>
 				? (Set<E>) list
-				: new SortedSet<E>( ord, List.which.sortsBy( ord ).nubsBy( Equal.by( ord ) ).from(
+				: new SortedSet<E>( order, List.which.sortsBy( order ).nubsBy( Equal.by( order ) ).from(
 						list ) );
 		}
 

@@ -107,12 +107,12 @@ public final class Order {
 		return new EqualUnequalOrder<T>( eq, value );
 	}
 
-	public static <T> Ord<T> unfulfillingFulfilling( Predicate<T> condition ) {
-		return fulfillingUnfulfilling( Is.not( condition ) );
+	public static <T> Ord<T> unfulfillingFulfilling( Predicate<T> predicate ) {
+		return fulfillingUnfulfilling( Is.not( predicate ) );
 	}
 
-	public static <T> Ord<T> fulfillingUnfulfilling( Predicate<T> condition ) {
-		return new FulfillingUnfulfillingOrder<T>( condition );
+	public static <T> Ord<T> fulfillingUnfulfilling( Predicate<T> predicate ) {
+		return new FulfillingUnfulfillingOrder<T>( predicate );
 	}
 
 	@SuppressWarnings ( "unchecked" )
@@ -282,36 +282,34 @@ public final class Order {
 	static final class InherentOrder
 			implements Ord<Object> {
 
-		@SuppressWarnings ( "unchecked" )
 		@Override
 		public Ordering ord( Object left, Object right ) {
-			if ( left instanceof Quantifiable && right instanceof Quantifiable ) {
-				return quantifiable.ord( (Quantifiable) left, (Quantifiable) right );
-			}
-			if ( left.getClass().isEnum() && right.getClass().isEnum() ) {
-				return enumerative.ord( (java.lang.Enum<?>) left, (java.lang.Enum<?>) right );
-			}
-			if ( left instanceof Number && right instanceof Number ) {
-				return numerical.ord( (Number) left, (Number) right );
-			}
-			if ( left instanceof CharSequence && right instanceof CharSequence ) {
-				return alphabetical.ord( (CharSequence) left, (CharSequence) right );
-			}
-			if ( left instanceof Character && right instanceof Character ) {
-				return abecedarian.ord( (Character) left, (Character) right );
-			}
-			if ( left instanceof Date && right instanceof Date ) {
-				return chronological.ord( (Date) left, (Date) right );
-			}
-			if ( left instanceof Comparable<?> && right instanceof Comparable<?>
-					&& left.getClass() == right.getClass() ) {
-				return compare( (Comparable) left, (Comparable) right );
+			if ( left.getClass() == right.getClass() ) {
+				return identicalTypeOrd( left, right );
 			}
 			return identity.ord( left, right );
 		}
 
-		private <T extends Comparable<T>> Ordering compare( T one, T other ) {
-			return Order.<T> byCompare().ord( one, other );
+		private Ordering identicalTypeOrd( Object left, Object right ) {
+			if ( left instanceof Quantifiable ) {
+				return quantifiable.ord( (Quantifiable) left, (Quantifiable) right );
+			}
+			if ( left.getClass().isEnum() ) {
+				return enumerative.ord( (java.lang.Enum<?>) left, (java.lang.Enum<?>) right );
+			}
+			if ( left instanceof Number ) {
+				return numerical.ord( (Number) left, (Number) right );
+			}
+			if ( left instanceof CharSequence ) {
+				return alphabetical.ord( (CharSequence) left, (CharSequence) right );
+			}
+			if ( left instanceof Character ) {
+				return abecedarian.ord( (Character) left, (Character) right );
+			}
+			if ( left instanceof Date ) {
+				return chronological.ord( (Date) left, (Date) right );
+			}
+			return identity.ord( left, right );
 		}
 	}
 
@@ -364,19 +362,26 @@ public final class Order {
 
 		@Override
 		public Ordering ord( Number left, Number right ) {
-			if ( left instanceof Float && right instanceof Float ) {
+			if ( left.getClass() == right.getClass() ) {
+				return identicalTypeOrd( left, right );
+			}
+			return fromComparison( Double.compare( left.doubleValue(), right.doubleValue() ) );
+		}
+
+		private Ordering identicalTypeOrd( Number left, Number right ) {
+			if ( left instanceof Float ) {
 				return fromComparison( Float.compare( left.floatValue(), right.floatValue() ) );
 			}
-			if ( left instanceof Long && right instanceof Long ) {
+			if ( left instanceof Long ) {
 				return fromComparison( Long.signum( left.longValue() - right.longValue() ) );
 			}
-			if ( left instanceof Integer && right instanceof Integer ) {
+			if ( left instanceof Integer ) {
 				return fromComparison( left.intValue() - right.intValue() );
 			}
-			if ( left instanceof BigDecimal && right instanceof BigDecimal ) {
+			if ( left instanceof BigDecimal ) {
 				return fromComparison( ( (BigDecimal) left ).compareTo( (BigDecimal) right ) );
 			}
-			if ( left instanceof BigInteger && right instanceof BigInteger ) {
+			if ( left instanceof BigInteger ) {
 				return fromComparison( ( (BigInteger) left ).compareTo( (BigInteger) right ) );
 			}
 			return fromComparison( Double.compare( left.doubleValue(), right.doubleValue() ) );

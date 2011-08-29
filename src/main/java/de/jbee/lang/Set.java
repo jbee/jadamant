@@ -8,6 +8,8 @@ package de.jbee.lang;
 public interface Set<E>
 		extends Sorted, List<E> {
 
+	//TODO Set<E> derive.from(Sequence<E>); // readable way to create sets from lists 
+
 	//OPEN how to make the ListIndex work with the Ord from this Set (Sorted) for Ord or Eq depended indexes 
 
 	/**
