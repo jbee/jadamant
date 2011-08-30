@@ -1,8 +1,8 @@
 package de.jbee.lang;
 
 /**
- * {@linkplain Bag}s are {@link Sorted} {@link List}s as well as {@link Set}. In contrast to sets
- * they accept multiple equal elements.
+ * {@linkplain Bag}s are {@link Sorted} {@link List}s as well as {@link Set}s are. In contrast to
+ * sets they allow multiple equal elements.
  * 
  * All equal elements will be positioned at successive indexes.
  * 
@@ -18,11 +18,10 @@ public interface Bag<E>
 	Bag<E> add( E e );
 
 	/**
-	 * @return The amount of elements in this bag equal to <code>e</code>. Thereby equality is
-	 *         derived from this bag's {@link Ord}er. All elements having {@link Ordering#EQ} when
-	 *         compared to <code>e</code> are considered to be equal.
+	 * @return A list of all elements that are equal (by {@link Ordering#EQ} to the element at
+	 *         <code>index</code>. If there is no such element a empty list is returned.
 	 */
-	int count( E e );
+	List<E> entriesAt( int index );
 
 	/*
 	 * Overrides from List interface with Set return type

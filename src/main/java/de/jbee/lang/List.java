@@ -67,9 +67,9 @@ public interface List<E>
 
 	Traverse traverse = Traverse.instance;
 
-	ListTransition reverse = ListTransition.reverse;
+	ListTransition reverse = UtileListTransition.reverse;
 
-	ListTransition tail = ListTransition.tail;
+	ListTransition tail = UtileListTransition.tail;
 
 	/*
 	 * override inherited methods with extending return types

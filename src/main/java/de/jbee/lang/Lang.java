@@ -10,8 +10,7 @@ import de.jbee.lang.seq.UtileEnumeratorFactory;
 import de.jbee.lang.seq.UtileLister;
 
 /**
- * Provides the basis utilities.
- * 
+ * Provides the basic utilities. <br/>
  * <h3>Lists</h3>
  * <p>
  * The {@link Lister} creates {@link List} along with a bunch of static factory methods

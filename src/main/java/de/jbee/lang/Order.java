@@ -37,7 +37,17 @@ public final class Order {
 	 */
 	public static final Ord<Object> inherent = nullsave( new InherentOrder() );
 
-	public static final Ord<Object> keep = new KeepOrder();
+	/**
+	 * A {@link Ord} that keeps the order as it is. Useable in some special cases as kind of a
+	 * NULL-object.
+	 */
+	public static final Ord<Object> keep = new FixOrderingOrder( Ordering.LT );
+
+	/**
+	 * A {@link Ord} that will reverse the order each time it is applied.
+	 */
+	public static final Ord<Object> reverse = new FixOrderingOrder( Ordering.GT );
+
 	public static final Ord<Quantifiable> quantifiable = new QuantifiableOrder();
 	public static final Ord<Number> numerical = new NumericalOrder();
 	public static final Ord<Character> abecedarian = new AbecedarianOrder();
@@ -126,12 +136,19 @@ public final class Order {
 		throw new UnsupportedOperationException( "util" );
 	}
 
-	static final class KeepOrder
+	static final class FixOrderingOrder
 			implements Ord<Object> {
+
+		private final Ordering ordering;
+
+		FixOrderingOrder( Ordering ordering ) {
+			super();
+			this.ordering = ordering;
+		}
 
 		@Override
 		public Ordering ord( Object left, Object right ) {
-			return Ordering.LT;
+			return ordering;
 		}
 
 	}

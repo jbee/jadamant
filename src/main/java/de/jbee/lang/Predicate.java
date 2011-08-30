@@ -11,4 +11,5 @@ public interface Predicate<T> {
 
 	boolean is( T obj );
 
+	//OPEN how to support isn't negation ? just for readability
 }

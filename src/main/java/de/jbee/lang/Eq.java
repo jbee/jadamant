@@ -1,10 +1,11 @@
 package de.jbee.lang;
 
-
 /**
  * The {@linkplain Eq}-operation is one special case of the {@link RelationalOp} tests for equality
- * of left and right argument. To be able to limit arguments to just the equality-operation it
- * extends the more general {@linkplain RelationalOp}.
+ * of left and right argument.
+ * 
+ * To be able to limit arguments to just the equality-operation it extends the more general
+ * {@linkplain RelationalOp}.
  * 
  * @author Jan Bernitt (jan.bernitt@gmx.de)
  */
