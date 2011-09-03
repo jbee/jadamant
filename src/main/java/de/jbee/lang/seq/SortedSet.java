@@ -1,12 +1,12 @@
 package de.jbee.lang.seq;
 
+import de.jbee.lang.Bag;
 import de.jbee.lang.List;
 import de.jbee.lang.Ord;
 import de.jbee.lang.Set;
 import de.jbee.lang.Traversal;
 
-//TODO make this class package local
-public class SortedSet<E>
+class SortedSet<E>
 		implements Set<E> {
 
 	private final Ord<Object> ord;
@@ -30,7 +30,7 @@ public class SortedSet<E>
 	}
 
 	@Override
-	public Ord<?> order() {
+	public Ord<Object> order() {
 		return ord;
 	}
 
@@ -105,8 +105,7 @@ public class SortedSet<E>
 	}
 
 	@Override
-	public E at( int index )
-			throws IndexOutOfBoundsException {
+	public E at( int index ) {
 		return elems.at( index );
 	}
 
@@ -118,6 +117,17 @@ public class SortedSet<E>
 	@Override
 	public void traverse( int start, Traversal<? super E> traversal ) {
 		elems.traverse( start, traversal );
+	}
+
+	@Override
+	public Bag<E> add( E e ) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<E> entriesAt( int index ) {
+		return List.with.element( at( index ) );
 	}
 
 }

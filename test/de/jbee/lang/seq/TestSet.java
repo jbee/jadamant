@@ -12,8 +12,7 @@ public class TestSet {
 
 	@Test
 	public void testToSet() {
-		Set<Integer> s = List.which.restrictsToSet().from(
-				List.with.elements( 1, 1, 2, 5, 3, 4, 2, 5 ) );
+		Set<Integer> s = Set.derive.from( List.with.elements( 1, 1, 2, 5, 3, 4, 2, 5 ) );
 		assertThat( s, hasEqualElementsAsIn( 1, 2, 3, 4, 5 ) );
 	}
 }

@@ -1,14 +1,19 @@
 package de.jbee.lang;
 
+import de.jbee.lang.ListTransition.SetTrasition;
+import de.jbee.lang.seq.UtileBagger;
+
 /**
  * Sets are always {@link Sorted} and therefore a {@link List} that doesn't allow duplicates.
  * 
  * @author Jan Bernitt (jan.bernitt@gmx.de)
  */
 public interface Set<E>
-		extends Sorted, List<E> {
+		extends Bag<E> {
 
-	//TODO Set<E> derive.from(Sequence<E>); // readable way to create sets from lists 
+	UtileBagger with = new UtileBagger();
+
+	SetTrasition derive = List.which.disambiguates();
 
 	//OPEN how to make the ListIndex work with the Ord from this Set (Sorted) for Ord or Eq depended indexes 
 
@@ -18,7 +23,7 @@ public interface Set<E>
 	Set<E> insert( E e );
 
 	/*
-	 * Overrides from List interface with Set return type
+	 * Overrides from List/Bag interface with Set return type
 	 */
 
 	@Override

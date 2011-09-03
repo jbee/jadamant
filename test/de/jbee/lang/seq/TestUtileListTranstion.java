@@ -176,7 +176,7 @@ public class TestUtileListTranstion {
 
 	@Test
 	public void testRestrictsToSet() {
-		Set<Integer> s = List.which.restrictsToSet().from( List.with.elements( 1, 2, 3, 4, 2, 5 ) );
+		Set<Integer> s = List.which.disambiguates().from( List.with.elements( 1, 2, 3, 4, 2, 5 ) );
 		assertThat( s, hasEqualElementsAsIn( 1, 2, 3, 4, 5 ) );
 	}
 }

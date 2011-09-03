@@ -2,6 +2,7 @@ package de.jbee.lang.seq;
 
 import static de.jbee.lang.ListIndex.NOT_CONTAINED;
 import de.jbee.lang.Array;
+import de.jbee.lang.Bag;
 import de.jbee.lang.Eq;
 import de.jbee.lang.Equal;
 import de.jbee.lang.Lang;
@@ -12,6 +13,7 @@ import de.jbee.lang.Ord;
 import de.jbee.lang.Order;
 import de.jbee.lang.Predicate;
 import de.jbee.lang.Set;
+import de.jbee.lang.Sorted;
 import de.jbee.lang.Traversal;
 
 public class UtileListTransition
@@ -210,11 +212,11 @@ public class UtileListTransition
 		return followedBy( new ConcatTransition( head, tail ) );
 	}
 
-	public SetTrasition restrictsToSet() {
-		return restrictsToSet( Order.inherent );
+	public SetTrasition disambiguates() {
+		return disambiguatesBy( Order.inherent );
 	}
 
-	public SetTrasition restrictsToSet( Ord<Object> ord ) {
+	public SetTrasition disambiguatesBy( Ord<Object> ord ) {
 		return consec( utilised, new ToSetTranstion( ord ) );
 	}
 
@@ -332,7 +334,7 @@ public class UtileListTransition
 
 	}
 
-	static final class ToSetTranstion
+	private static final class ToSetTranstion
 			implements SetTrasition {
 
 		private final Ord<Object> order;
@@ -346,13 +348,54 @@ public class UtileListTransition
 		public <E> Set<E> from( List<E> list ) {
 			return list instanceof Set<?>
 				? (Set<E>) list
-				: new SortedSet<E>( order, List.which.sortsBy( order ).nubsBy( Equal.by( order ) ).from(
-						list ) );
+				: Set.with.elements( order,
+						List.which.sortsBy( order ).nubsBy( Equal.by( order ) ).from( list ) );
 		}
 
 	}
 
-	static final class NubTransition
+	private static final class DisambiguateTranstion
+			implements SetTrasition {
+
+		@Override
+		public <E> Set<E> from( List<E> list ) {
+			if ( list instanceof Set<?> ) {
+				return (Set<E>) list;
+			}
+			if ( list.isEmpty() ) {
+				return Set.with.noElements();
+			}
+			if ( ! ( list instanceof Sorted ) ) {
+				list = List.which.sorts().from( list );
+			}
+			Ord<Object> order = ( (Sorted) list ).order();
+			List<E> res = list;
+			//FIXME remove duplicates
+			return Set.with.elements( order, res );
+		}
+
+	}
+
+	private static final class ToBagTransition
+			implements BagTransition {
+
+		private final Ord<Object> order;
+
+		ToBagTransition( Ord<Object> order ) {
+			super();
+			this.order = order;
+		}
+
+		@Override
+		public <E> Bag<E> from( List<E> list ) {
+			return list instanceof Bag<?>
+				? (Bag<E>) list
+				: new SortedBag<E>( order, List.which.sortsBy( order ).from( list ) );
+		}
+
+	}
+
+	private static final class NubTransition
 			implements ListTransition {
 
 		private final Eq<Object> eq;
@@ -379,7 +422,7 @@ public class UtileListTransition
 
 	}
 
-	static final class DeleteIndexTransition
+	private static final class DeleteIndexTransition
 			implements ListTransition {
 
 		private final ListIndex index;
@@ -398,7 +441,7 @@ public class UtileListTransition
 		}
 	}
 
-	static final class ConcatTransition
+	private static final class ConcatTransition
 			implements ListTransition {
 
 		private final ListTransition head;
@@ -417,7 +460,7 @@ public class UtileListTransition
 
 	}
 
-	static final class SublistTransition
+	private static final class SublistTransition
 			implements ListTransition {
 
 		private final int start;
@@ -449,7 +492,7 @@ public class UtileListTransition
 
 	}
 
-	static final class TakeTillIndexTransition
+	private static final class TakeTillIndexTransition
 			implements ListTransition {
 
 		private final ListIndex index;
@@ -468,7 +511,7 @@ public class UtileListTransition
 
 	}
 
-	static final class DropTillIndexTransition
+	private static final class DropTillIndexTransition
 			implements ListTransition {
 
 		private final ListIndex index;
@@ -487,7 +530,7 @@ public class UtileListTransition
 
 	}
 
-	static final class ConsecutivelyTransition
+	private static final class ConsecutivelyTransition
 			implements ListTransition {
 
 		final ListTransition fst;
@@ -505,7 +548,7 @@ public class UtileListTransition
 		}
 	}
 
-	static final class ConsecutivelySetTransition
+	private static final class ConsecutivelySetTransition
 			implements SetTrasition {
 
 		final ListTransition fst;
@@ -523,7 +566,7 @@ public class UtileListTransition
 		}
 	}
 
-	static final class TakeWhileTransition
+	private static final class TakeWhileTransition
 			implements ListTransition {
 
 		final Predicate<Object> predicate;
@@ -543,7 +586,7 @@ public class UtileListTransition
 
 	}
 
-	static final class DropWhileTransition
+	private static final class DropWhileTransition
 			implements ListTransition {
 
 		final Predicate<Object> predicate;
@@ -562,7 +605,7 @@ public class UtileListTransition
 		}
 	}
 
-	static final class ReversingTransition
+	private static final class ReversingTransition
 			implements ListTransition {
 
 		@Override
@@ -614,7 +657,7 @@ public class UtileListTransition
 		}
 	}
 
-	final static class ReversingList<E>
+	private final static class ReversingList<E>
 			implements List<E> {
 
 		final List<E> list;

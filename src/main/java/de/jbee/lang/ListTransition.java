@@ -15,20 +15,6 @@ public interface ListTransition {
 	<E> List<E> from( List<E> list );
 
 	/**
-	 * Any {@link ListTransition} results in a {@link Set} may expose itself as a
-	 * {@linkplain SetTrasition} to hide its implementation type but communicate the more precise
-	 * {@linkplain Set} result type.
-	 * 
-	 * @author Jan Bernitt (jan.bernitt@gmx.de)
-	 */
-	interface SetTrasition
-			extends ListTransition {
-
-		@Override
-		<E> Set<E> from( List<E> list );
-	}
-
-	/**
 	 * Any {@link ListTransition} results in a {@link Bag} may expose itself as a
 	 * {@linkplain BagTransition} to hide its implementation type but communicate the more precise
 	 * {@linkplain Bag} result type.
@@ -41,4 +27,19 @@ public interface ListTransition {
 		@Override
 		<E> Bag<E> from( List<E> list );
 	}
+
+	/**
+	 * Any {@link ListTransition} results in a {@link Set} may expose itself as a
+	 * {@linkplain SetTrasition} to hide its implementation type but communicate the more precise
+	 * {@linkplain Set} result type.
+	 * 
+	 * @author Jan Bernitt (jan.bernitt@gmx.de)
+	 */
+	interface SetTrasition
+			extends BagTransition {
+
+		@Override
+		<E> Set<E> from( List<E> list );
+	}
+
 }
