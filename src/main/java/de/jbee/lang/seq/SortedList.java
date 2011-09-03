@@ -18,12 +18,12 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 		return new SortedBag<E>( ord, elements );
 	}
 
-	private final Ord<Object> ord;
+	private final Ord<Object> order;
 	private final List<E> elems;
 
-	SortedList( Ord<Object> ord, List<E> elements ) {
+	SortedList( Ord<Object> order, List<E> elements ) {
 		super();
-		this.ord = ord;
+		this.order = order;
 		this.elems = elements;
 	}
 
@@ -33,86 +33,87 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 	}
 
 	@Override
-	public List<E> append( E e ) {
+	public final List<E> append( E e ) {
+		//TODO might keep Set/Bag alive - check 
 		return elems.append( e );
 	}
 
 	@Override
-	public E at( int index ) {
+	public final E at( int index ) {
 		return elems.at( index );
 	}
 
 	@Override
-	public List<E> concat( List<E> other ) {
+	public final List<E> concat( List<E> other ) {
 		return elems.concat( other );
 	}
 
 	@Override
-	public L deleteAt( int index ) {
+	public final L deleteAt( int index ) {
 		return thisWith( elems.deleteAt( index ) );
 	}
 
 	@Override
-	public L drop( int count ) {
+	public final L drop( int count ) {
 		return count <= 0
 			? self()
 			: thisWith( elems.drop( count ) );
 	}
 
 	@Override
-	public void fill( int offset, Object[] array, int start, int length ) {
+	public final void fill( int offset, Object[] array, int start, int length ) {
 		elems.fill( offset, array, start, length );
 	}
 
 	@Override
-	public List<E> insertAt( int index, E e ) {
-		int inOrderIndex = List.indexFor.insertBy( e, ord ).in( elems );
+	public final List<E> insertAt( int index, E e ) {
+		int inOrderIndex = List.indexFor.insertBy( e, order ).in( elems );
 		List<E> inserted = elems.insertAt( inOrderIndex, e );
 		return inOrderIndex == index
-			? thisWith( inserted )
+			? thisWith( inserted ) //FIXME destroys set !?
 			: inserted;
 	}
 
 	@Override
-	public boolean isEmpty() {
+	public final boolean isEmpty() {
 		return elems.isEmpty();
 	}
 
 	@Override
-	public int length() {
+	public final int length() {
 		return elems.length();
 	}
 
 	@Override
-	public Ord<Object> order() {
-		return ord;
+	public final Ord<Object> order() {
+		return order;
 	}
 
 	@Override
-	public List<E> prepand( E e ) {
+	public final List<E> prepand( E e ) {
 		return elems.prepand( e );
 	}
 
 	@Override
-	public List<E> replaceAt( int index, E e ) {
+	public final List<E> replaceAt( int index, E e ) {
 		List<E> replaced = elems.replaceAt( index, e );
 		return isSortedIndex( index, replaced )
-			? thisWith( replaced )
+			? thisWith( replaced ) //FIXME destroys set !?
 			: replaced;
 	}
 
 	@Override
-	public L take( int count ) {
+	public final L take( int count ) {
 		return thisWith( elems.take( count ) );
 	}
 
 	@Override
-	public L tidyUp() {
+	public final L tidyUp() {
 		return thisWith( elems.tidyUp() );
 	}
 
 	@Override
-	public void traverse( int start, Traversal<? super E> traversal ) {
+	public final void traverse( int start, Traversal<? super E> traversal ) {
 		elems.traverse( start, traversal );
 	}
 
@@ -132,8 +133,16 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 
 	private boolean isSortedIndex( int index, List<E> l ) {
 		final E e = l.at( index );
-		return ( index == 0 || ord.ord( l.at( index - 1 ), e ).isLe() )
-				&& ( index == l.length() - 1 || ord.ord( l.at( l.length() - 1 ), e ).isGe() );
+		return ( index == 0 || order.ord( l.at( index - 1 ), e ).isLe() )
+				&& ( index == l.length() - 1 || order.ord( l.at( l.length() - 1 ), e ).isGe() );
+	}
+
+	final int indexFor( E e ) {
+		return List.indexFor.insertBy( e, order ).in( elems );
+	}
+
+	final boolean containsAt( int index, E e ) {
+		return order.ord( e, at( index ) ).isEq();
 	}
 
 	private static class SortedBag<E>
@@ -146,14 +155,18 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 
 		@Override
 		public Bag<E> add( E e ) {
-			// TODO Auto-generated method stub
-			return null;
+			return thisWith( elems().insertAt( indexFor( e ), e ) );
 		}
 
 		@Override
 		public List<E> entriesAt( int index ) {
-			// TODO Auto-generated method stub
-			return null;
+			E e = at( index );
+			int l = length();
+			int end = index + 1;
+			while ( end < l && containsAt( end, e ) ) {
+				end++;
+			}
+			return List.which.slices( index, end ).from( elems() );
 		}
 
 		@Override
@@ -166,6 +179,11 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 			return new SortedBag<E>( order(), elements );
 		}
 
+		@Override
+		public String toString() {
+			String list = super.toString();
+			return "#(" + list.substring( 1, list.length() - 1 ) + ")";
+		}
 	}
 
 	private static class SortedSet<E>
@@ -179,7 +197,14 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 		@Override
 		public Bag<E> add( E e ) {
 			int idx = indexFor( e );
-			return null;
+			if ( !containsAt( idx, e ) ) {
+				return insert( e, idx );
+			}
+			return asBag( order(), elems().insertAt( idx, e ) );
+		}
+
+		private Set<E> insert( E e, int index ) {
+			return thisWith( elems().insertAt( index, e ) );
 		}
 
 		@Override
@@ -190,15 +215,10 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 		@Override
 		public Set<E> insert( E e ) {
 			int idx = indexFor( e );
-			final List<E> elements = elems();
-			if ( order().ord( e, elements.at( idx ) ).isEq() ) {
+			if ( containsAt( idx, e ) ) {
 				return this;
 			}
-			return thisWith( elements.insertAt( idx, e ) );
-		}
-
-		private int indexFor( E e ) {
-			return List.indexFor.insertBy( e, order() ).in( elems() );
+			return insert( e, idx );
 		}
 
 		@Override
@@ -209,6 +229,12 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 		@Override
 		Set<E> selfWith( List<E> elements ) {
 			return new SortedSet<E>( order(), elements );
+		}
+
+		@Override
+		public String toString() {
+			String list = super.toString();
+			return "(" + list.substring( 1, list.length() - 1 ) + ")";
 		}
 	}
 

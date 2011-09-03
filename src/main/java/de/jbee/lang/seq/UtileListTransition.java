@@ -137,7 +137,7 @@ public class UtileListTransition
 		return dropsFirst( index );
 	}
 
-	public UtileListTransition slice( int startInclusive, int endExclusive ) {
+	public UtileListTransition slices( int startInclusive, int endExclusive ) {
 		return takesFromTo( startInclusive, endExclusive - 1 );
 	}
 
@@ -346,6 +346,7 @@ public class UtileListTransition
 
 		@Override
 		public <E> Set<E> from( List<E> list ) {
+			//TODO move to asSet to make it save
 			return list instanceof Set<?>
 				? (Set<E>) list
 				: Set.with.elements( order,
@@ -388,6 +389,7 @@ public class UtileListTransition
 
 		@Override
 		public <E> Bag<E> from( List<E> list ) {
+			//TODO move to asBag to make it save
 			return list instanceof Bag<?>
 				? (Bag<E>) list
 				: SortedList.asBag( order, List.which.sortsBy( order ).from( list ) );
