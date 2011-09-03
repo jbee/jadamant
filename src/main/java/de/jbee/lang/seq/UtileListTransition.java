@@ -390,7 +390,7 @@ public class UtileListTransition
 		public <E> Bag<E> from( List<E> list ) {
 			return list instanceof Bag<?>
 				? (Bag<E>) list
-				: new SortedBag<E>( order, List.which.sortsBy( order ).from( list ) );
+				: SortedList.asBag( order, List.which.sortsBy( order ).from( list ) );
 		}
 
 	}

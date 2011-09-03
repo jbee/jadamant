@@ -167,11 +167,15 @@ final class EnumList<E>
 	public List<E> insertAt( int index, E e ) {
 		Nonnull.element( e );
 		if ( index == 0 ) {
-			SingleElementList.with( e, this );
+			final int eOrdinal = type.toOrdinal( e );
+			if ( eOrdinal == ordinalMinus( firstOrdinal, 1 ) ) {
+				return list( eOrdinal, lastOrdinal );
+			}
+			return SingleElementList.with( e, this );
 		}
 		final int l = len();
 		if ( index >= l ) {
-			thisWithTail( tail.insertAt( index - l, e ) );
+			return thisWithTail( tail.insertAt( index - l, e ) );
 		}
 		// somewhere in between this enumeration
 		return list( firstOrdinal, firstPlus( index - 1 ), SingleElementList.with( e, list(
