@@ -1,4 +1,4 @@
-<project name="Java Immutable Collections" default="dist" basedir=".">
+<project name="Jadamant" default="dist" basedir=".">
 
 	<property name="src" location="src/main/java" />
 	<property name="build" location="build" />

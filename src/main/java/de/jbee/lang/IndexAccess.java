@@ -18,13 +18,33 @@ public class IndexAccess {
 	}
 
 	public static <E> Iterable<E> iterable( final Sequence<E> seq ) {
-		return new Iterable<E>() {
+		return new IndexAccessIterable<E>( seq, 0, seq.length(), 1 );
+	}
 
-			@Override
-			public Iterator<E> iterator() {
-				return IndexAccess.iterator( seq, 0, seq.length() );
-			}
-		};
+	public static <E> Iterable<E> reverseIterable( final Sequence<E> seq ) {
+		return new IndexAccessIterable<E>( seq, seq.length(), 0, -1 );
+	}
+
+	private static final class IndexAccessIterable<E>
+			implements Iterable<E> {
+
+		private final Sequence<E> seq;
+		private final int start;
+		private final int end;
+		private final int increment;
+
+		IndexAccessIterable( Sequence<E> seq, int start, int end, int increment ) {
+			super();
+			this.seq = seq;
+			this.start = start;
+			this.end = end;
+			this.increment = increment;
+		}
+
+		@Override
+		public Iterator<E> iterator() {
+			return IndexAccess.iterator( seq, start, end, increment );
+		}
 	}
 
 	private static final class IndexAccessIterator<E>

@@ -3,8 +3,6 @@ package de.jbee.dying;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
-import org.joda.time.DateTime;
-
 public final class Range {
 
 	private Range() {
@@ -16,7 +14,6 @@ public final class Range {
 	static {
 		EMPTY_RANGES.put( Integer.class, IntRange.EMPTY );
 		EMPTY_RANGES.put( int.class, IntRange.EMPTY );
-		EMPTY_RANGES.put( DateTime.class, DateTimeRange.EMPTY );
 	}
 
 	public static abstract class AbstractRange<T>
@@ -55,13 +52,6 @@ public final class Range {
 	public static IRange<Integer> between( int startInclusive, int endInclusive ) {
 		return new IntRange( startInclusive, endInclusive );
 	}
-
-	public static IRange<DateTime> between( DateTime startInclusive, DateTime endInclusive ) {
-		return DateTimeRange.auto( startInclusive, endInclusive );
-	}
-
-	public static final IRange<DateTime> ANY_TIME = between( new DateTime( Long.MIN_VALUE ),
-			new DateTime( Long.MAX_VALUE ) );
 
 	@SuppressWarnings ( "unchecked" )
 	public static <T> IRange<Integer> empty( Class<T> type ) {
