@@ -368,7 +368,7 @@ public class UtileListTransition
 
 		@Override
 		public <E> Set<E> from( List<E> list ) {
-			return SortedList.asSet( list, order );
+			return SortedList.toSet( list, order );
 		}
 
 	}
@@ -411,7 +411,7 @@ public class UtileListTransition
 
 		@Override
 		public <E> Bag<E> from( List<E> list ) {
-			return SortedList.asBag( list, order );
+			return SortedList.toBag( list, order );
 		}
 
 	}

@@ -38,5 +38,9 @@ public interface Set<E>
 	@Override
 	Set<E> tidyUp();
 
-	//TODO some kind of int indexFor(E e) - more like a traverse ?
+	/**
+	 * In contrast to the usual {@link List} index lookup a {@link Set}'s index search algorithm has
+	 * a O(log(n)) runtime complexity instead of O(n).
+	 */
+	int indexFor( E e );
 }

@@ -203,30 +203,10 @@ public class UtileListIndex {
 			if ( list.isEmpty() ) {
 				return 0;
 			}
-			int pos = binarySearch( list, 0, list.length(), key, ord );
+			int pos = Order.binarySearch( list, 0, list.length(), key, ord );
 			return pos < 0
 				? -pos - 1
 				: pos;
-		}
-
-		//TODO find a place for such utils like binarySearch and sort (which is in Order now)
-		static <E> int binarySearch( Sequence<E> list, int startInclusive, int endExcluisve,
-				Object key, Ord<Object> ord ) {
-			int low = startInclusive;
-			int high = endExcluisve - 1;
-			while ( low <= high ) {
-				int mid = ( low + high ) >>> 1;
-				E midVal = list.at( mid );
-				Ordering cmp = ord.ord( midVal, key );
-				if ( cmp.isLt() ) {
-					low = mid + 1;
-				} else if ( cmp.isGt() ) {
-					high = mid - 1;
-				} else {
-					return mid; // key found
-				}
-			}
-			return - ( low + 1 ); // key not found.
 		}
 	}
 

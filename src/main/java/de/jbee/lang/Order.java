@@ -136,6 +136,26 @@ public final class Order {
 		throw new UnsupportedOperationException( "util" );
 	}
 
+	//TODO find a place for such utils like binarySearch and sort
+	public static <E> int binarySearch( Sequence<E> list, int startInclusive, int endExcluisve,
+			Object key, Ord<Object> ord ) {
+		int low = startInclusive;
+		int high = endExcluisve - 1;
+		while ( low <= high ) {
+			int mid = ( low + high ) >>> 1;
+			E midVal = list.at( mid );
+			Ordering cmp = ord.ord( midVal, key );
+			if ( cmp.isLt() ) {
+				low = mid + 1;
+			} else if ( cmp.isGt() ) {
+				high = mid - 1;
+			} else {
+				return mid; // key found
+			}
+		}
+		return - ( low + 1 ); // key not found.
+	}
+
 	static final class FixOrderingOrder
 			implements Ord<Object> {
 

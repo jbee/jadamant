@@ -4,6 +4,7 @@ import de.jbee.lang.Bag;
 import de.jbee.lang.Equal;
 import de.jbee.lang.List;
 import de.jbee.lang.Ord;
+import de.jbee.lang.Order;
 import de.jbee.lang.Set;
 import de.jbee.lang.Sorted;
 import de.jbee.lang.Traversal;
@@ -11,17 +12,24 @@ import de.jbee.lang.Traversal;
 abstract class SortedList<E, L extends Sorted & List<E>>
 		implements Sorted, List<E> {
 
-	public static <E> Set<E> asSet( List<E> list, Ord<Object> order ) {
+	public static <E> Set<E> toSet( List<E> list, Ord<Object> order ) {
 		return list instanceof Set<?>
 			? (Set<E>) list
-			: new SortedSet<E>( order,
-					List.which.sortsBy( order ).nubsBy( Equal.by( order ) ).from( list ) );
+			: asSet( List.which.sortsBy( order ).nubsBy( Equal.by( order ) ).from( list ), order );
 	}
 
-	public static <E> Bag<E> asBag( List<E> list, Ord<Object> order ) {
+	public static <E> Bag<E> toBag( List<E> list, Ord<Object> order ) {
 		return list instanceof Bag<?>
 			? (Bag<E>) list
-			: new SortedBag<E>( order, List.which.sortsBy( order ).from( list ) );
+			: asBag( List.which.sortsBy( order ).from( list ), order );
+	}
+
+	static <E> Bag<E> asBag( List<E> elements, Ord<Object> order ) {
+		return new SortedBag<E>( order, elements );
+	}
+
+	static <E> Set<E> asSet( List<E> elements, Ord<Object> order ) {
+		return new SortedSet<E>( order, elements );
 	}
 
 	private final Ord<Object> order;
@@ -143,7 +151,7 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 				&& ( index == l.length() - 1 || order.ord( l.at( l.length() - 1 ), e ).isGe() );
 	}
 
-	final int indexFor( E e ) {
+	final int insertionIndexFor( E e ) {
 		return List.indexFor.insertBy( e, order ).in( elems );
 	}
 
@@ -161,7 +169,7 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 
 		@Override
 		public Bag<E> add( E e ) {
-			return thisWith( elems().insertAt( indexFor( e ), e ) );
+			return thisWith( elems().insertAt( insertionIndexFor( e ), e ) );
 		}
 
 		@Override
@@ -202,7 +210,7 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 
 		@Override
 		public Bag<E> add( E e ) {
-			int idx = indexFor( e );
+			int idx = insertionIndexFor( e );
 			if ( !containsAt( idx, e ) ) {
 				return insert( e, idx );
 			}
@@ -220,7 +228,7 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 
 		@Override
 		public Set<E> insert( E e ) {
-			int idx = indexFor( e );
+			int idx = insertionIndexFor( e );
 			if ( containsAt( idx, e ) ) {
 				return this;
 			}
@@ -241,6 +249,14 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 		public String toString() {
 			String list = super.toString();
 			return "(" + list.substring( 1, list.length() - 1 ) + ")";
+		}
+
+		@Override
+		public int indexFor( E e ) {
+			int pos = Order.binarySearch( elems(), 0, length(), e, order() );
+			return pos < 0
+				? -pos - 1
+				: pos;
 		}
 	}
 
