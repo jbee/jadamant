@@ -1,5 +1,7 @@
 package de.jbee.lang;
 
+import de.jbee.lang.ListTransition.BagTransition;
+
 /**
  * {@linkplain Bag}s are {@link Sorted} {@link List}s as well as {@link Set}s are. In contrast to
  * sets they allow multiple equal elements.
@@ -10,6 +12,8 @@ package de.jbee.lang;
  */
 public interface Bag<E>
 		extends Sorted, List<E> {
+
+	BagTransition derive = List.which.narrowsToBag();
 
 	/**
 	 * Adds e at the correct index in this bag. If this bag contains a element equal to e this will

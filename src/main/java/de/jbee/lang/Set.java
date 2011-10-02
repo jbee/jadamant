@@ -1,6 +1,6 @@
 package de.jbee.lang;
 
-import de.jbee.lang.ListTransition.SetTrasition;
+import de.jbee.lang.ListTransition.SetTransition;
 import de.jbee.lang.seq.UtileBagger;
 
 /**
@@ -13,7 +13,7 @@ public interface Set<E>
 
 	UtileBagger with = new UtileBagger();
 
-	SetTrasition derive = List.which.disambiguates();
+	SetTransition derive = List.which.narrowsToSet();
 
 	//OPEN how to make the ListIndex work with the Ord from this Set (Sorted) for Ord or Eq depended indexes 
 

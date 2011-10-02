@@ -30,12 +30,12 @@ public interface ListTransition {
 
 	/**
 	 * Any {@link ListTransition} results in a {@link Set} may expose itself as a
-	 * {@linkplain SetTrasition} to hide its implementation type but communicate the more precise
+	 * {@linkplain SetTransition} to hide its implementation type but communicate the more precise
 	 * {@linkplain Set} result type.
 	 * 
 	 * @author Jan Bernitt (jan.bernitt@gmx.de)
 	 */
-	interface SetTrasition
+	interface SetTransition
 			extends BagTransition {
 
 		@Override

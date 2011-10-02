@@ -15,7 +15,7 @@ public class UtileBagger
 
 	@Override
 	public <E> Set<E> elements( Ord<Object> order, List<E> elems ) {
-		return SortedList.asSet( order, elems );
+		return SortedList.asSet( elems, order );
 	}
 
 	@Override

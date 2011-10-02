@@ -1,6 +1,7 @@
 package de.jbee.lang.seq;
 
 import de.jbee.lang.Bag;
+import de.jbee.lang.Equal;
 import de.jbee.lang.List;
 import de.jbee.lang.Ord;
 import de.jbee.lang.Set;
@@ -10,12 +11,17 @@ import de.jbee.lang.Traversal;
 abstract class SortedList<E, L extends Sorted & List<E>>
 		implements Sorted, List<E> {
 
-	public static <E> Set<E> asSet( Ord<Object> ord, List<E> elements ) {
-		return new SortedSet<E>( ord, elements );
+	public static <E> Set<E> asSet( List<E> list, Ord<Object> order ) {
+		return list instanceof Set<?>
+			? (Set<E>) list
+			: new SortedSet<E>( order,
+					List.which.sortsBy( order ).nubsBy( Equal.by( order ) ).from( list ) );
 	}
 
-	public static <E> Bag<E> asBag( Ord<Object> ord, List<E> elements ) {
-		return new SortedBag<E>( ord, elements );
+	public static <E> Bag<E> asBag( List<E> list, Ord<Object> order ) {
+		return list instanceof Bag<?>
+			? (Bag<E>) list
+			: new SortedBag<E>( order, List.which.sortsBy( order ).from( list ) );
 	}
 
 	private final Ord<Object> order;
@@ -200,7 +206,7 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 			if ( !containsAt( idx, e ) ) {
 				return insert( e, idx );
 			}
-			return asBag( order(), elems().insertAt( idx, e ) );
+			return asBag( elems().insertAt( idx, e ), order() );
 		}
 
 		private Set<E> insert( E e, int index ) {

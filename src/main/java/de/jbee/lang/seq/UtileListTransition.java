@@ -19,13 +19,15 @@ import de.jbee.lang.Traversal;
 public class UtileListTransition
 		implements ListTransition {
 
+	private static final DisambiguateTranstion DISAMBIGUATE = new DisambiguateTranstion();
+
 	public static final ListTransition none = new NoneTranstion();
 	public static final ListTransition empty = new EmptyTransition();
 	public static final ListTransition reverse = new ReversingTransition();
 	public static final ListTransition shuffle = new ShuffleTransition();
 	public static final ListTransition tidyUp = new TidyUpTransition();
-	public static final ListTransition init = new TakeTillIndexTransition( List.indexFor.LAST, 1 );
-	public static final ListTransition tail = new DropTillIndexTransition( List.indexFor.HEAD, 1 );
+	public static final ListTransition init = new TakeTillIndexTransition( List.indexFor.last(), 1 );
+	public static final ListTransition tail = new DropTillIndexTransition( List.indexFor.head(), 1 );
 
 	public static final UtileListTransition instance = new UtileListTransition( none );
 
@@ -212,12 +214,24 @@ public class UtileListTransition
 		return followedBy( new ConcatTransition( head, tail ) );
 	}
 
-	public SetTrasition disambiguates() {
-		return disambiguatesBy( Order.inherent );
+	public SetTransition disambiguates() {
+		return DISAMBIGUATE;
 	}
 
-	public SetTrasition disambiguatesBy( Ord<Object> ord ) {
+	public SetTransition narrowsToSet() {
+		return narrowsToSetBy( Order.inherent );
+	}
+
+	public SetTransition narrowsToSetBy( Ord<Object> ord ) {
 		return consec( utilised, new ToSetTranstion( ord ) );
+	}
+
+	public BagTransition narrowsToBag() {
+		return narrowsToBagBy( Order.inherent );
+	}
+
+	public BagTransition narrowsToBagBy( Ord<Object> ord ) {
+		return consec( utilised, new ToBagTransition( ord ) );
 	}
 
 	public ListTransition consec( ListTransition fst, ListTransition snd ) {
@@ -232,12 +246,20 @@ public class UtileListTransition
 		return new ConsecutivelyTransition( fst, snd );
 	}
 
-	public SetTrasition consec( ListTransition fst, SetTrasition snd ) {
+	public SetTransition consec( ListTransition fst, SetTransition snd ) {
 		fst = pure( fst );
 		if ( fst == none ) {
 			return snd;
 		}
 		return new ConsecutivelySetTransition( fst, snd );
+	}
+
+	public BagTransition consec( ListTransition fst, BagTransition snd ) {
+		fst = pure( fst );
+		if ( fst == none ) {
+			return snd;
+		}
+		return new ConsecutivelyBagTransition( fst, snd );
 	}
 
 	//TODO filter(Predicate)
@@ -335,7 +357,7 @@ public class UtileListTransition
 	}
 
 	private static final class ToSetTranstion
-			implements SetTrasition {
+			implements SetTransition {
 
 		private final Ord<Object> order;
 
@@ -346,17 +368,17 @@ public class UtileListTransition
 
 		@Override
 		public <E> Set<E> from( List<E> list ) {
-			//TODO move to asSet to make it save
-			return list instanceof Set<?>
-				? (Set<E>) list
-				: Set.with.elements( order,
-						List.which.sortsBy( order ).nubsBy( Equal.by( order ) ).from( list ) );
+			return SortedList.asSet( list, order );
 		}
 
 	}
 
 	private static final class DisambiguateTranstion
-			implements SetTrasition {
+			implements SetTransition {
+
+		DisambiguateTranstion() {
+			// make visible
+		}
 
 		@Override
 		public <E> Set<E> from( List<E> list ) {
@@ -371,7 +393,7 @@ public class UtileListTransition
 			}
 			Ord<Object> order = ( (Sorted) list ).order();
 			List<E> res = list;
-			//FIXME remove duplicates
+			//FIXME remove duplicates - can be done in O(n) since list is sorted in any case
 			return Set.with.elements( order, res );
 		}
 
@@ -389,10 +411,7 @@ public class UtileListTransition
 
 		@Override
 		public <E> Bag<E> from( List<E> list ) {
-			//TODO move to asBag to make it save
-			return list instanceof Bag<?>
-				? (Bag<E>) list
-				: SortedList.asBag( order, List.which.sortsBy( order ).from( list ) );
+			return SortedList.asBag( list, order );
 		}
 
 	}
@@ -551,12 +570,12 @@ public class UtileListTransition
 	}
 
 	private static final class ConsecutivelySetTransition
-			implements SetTrasition {
+			implements SetTransition {
 
 		final ListTransition fst;
-		final SetTrasition snd;
+		final SetTransition snd;
 
-		ConsecutivelySetTransition( ListTransition fst, SetTrasition snd ) {
+		ConsecutivelySetTransition( ListTransition fst, SetTransition snd ) {
 			super();
 			this.fst = fst;
 			this.snd = snd;
@@ -564,6 +583,24 @@ public class UtileListTransition
 
 		@Override
 		public <E> Set<E> from( List<E> list ) {
+			return snd.from( fst.from( list ) );
+		}
+	}
+
+	private static final class ConsecutivelyBagTransition
+			implements BagTransition {
+
+		final ListTransition fst;
+		final BagTransition snd;
+
+		ConsecutivelyBagTransition( ListTransition fst, BagTransition snd ) {
+			super();
+			this.fst = fst;
+			this.snd = snd;
+		}
+
+		@Override
+		public <E> Bag<E> from( List<E> list ) {
 			return snd.from( fst.from( list ) );
 		}
 	}
@@ -609,6 +646,10 @@ public class UtileListTransition
 
 	private static final class ReversingTransition
 			implements ListTransition {
+
+		ReversingTransition() {
+			// make visible
+		}
 
 		@Override
 		public <E> List<E> from( List<E> list ) {

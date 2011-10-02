@@ -27,6 +27,10 @@ public class UtileListIndex {
 				: new MaximumLimitListIndex( LAST, count - 1 );
 	}
 
+	public ListIndex last() {
+		return LAST;
+	}
+
 	public ListIndex head() {
 		return HEAD;
 	}
