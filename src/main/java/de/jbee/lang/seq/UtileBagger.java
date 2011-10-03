@@ -20,8 +20,7 @@ public class UtileBagger
 
 	@Override
 	public <E> Set<E> noElements() {
-		// TODO Auto-generated method stub
-		return null;
+		return elements( List.with.<E> noElements() );
 	}
 
 }

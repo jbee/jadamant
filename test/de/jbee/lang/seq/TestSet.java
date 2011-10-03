@@ -57,6 +57,7 @@ public class TestSet {
 		assertThat( s.indexFor( "a.d" ), is( ListIndex.NOT_CONTAINED ) );
 	}
 
+	@Test
 	public void testIndexForEmptySet() {
 		Set<Integer> s = Set.with.noElements();
 		assertThat( s.indexFor( 0 ), is( ListIndex.NOT_CONTAINED ) );
