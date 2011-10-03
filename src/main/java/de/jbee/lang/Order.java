@@ -230,7 +230,7 @@ public final class Order {
 					return ord;
 				}
 			}
-			return Ordering.EQ;
+			return numerical.ord( left.length(), right.length() );
 		}
 
 	}

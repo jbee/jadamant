@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import de.jbee.lang.List;
 import de.jbee.lang.ListIndex;
+import de.jbee.lang.Order;
 import de.jbee.lang.Set;
 
 public class TestSet {
@@ -44,6 +45,16 @@ public class TestSet {
 		assertThat( s.indexFor( 0 ), is( ListIndex.NOT_CONTAINED ) );
 		assertThat( s.indexFor( 6 ), is( ListIndex.NOT_CONTAINED ) );
 		assertThat( s.indexFor( -1 ), is( ListIndex.NOT_CONTAINED ) );
+	}
+
+	@Test
+	public void testIndexForPrefixMiss() {
+		Set<String> s = Set.with.elements( Order.typeaware( Order.alphabetical, String.class ),
+				List.with.elements( "a.b", "a.c" ) );
+		assertThat( s.indexFor( "a" ), is( ListIndex.NOT_CONTAINED ) );
+		assertThat( s.indexFor( "a." ), is( ListIndex.NOT_CONTAINED ) );
+		assertThat( s.indexFor( "a.a" ), is( ListIndex.NOT_CONTAINED ) );
+		assertThat( s.indexFor( "a.d" ), is( ListIndex.NOT_CONTAINED ) );
 	}
 
 	public void testIndexForEmptySet() {
