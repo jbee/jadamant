@@ -3,6 +3,7 @@ package de.jbee.lang.seq;
 import de.jbee.lang.Bag;
 import de.jbee.lang.Equal;
 import de.jbee.lang.List;
+import de.jbee.lang.ListIndex;
 import de.jbee.lang.Ord;
 import de.jbee.lang.Order;
 import de.jbee.lang.Set;
@@ -255,7 +256,7 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 		public int indexFor( E e ) {
 			int pos = Order.binarySearch( elems(), 0, length(), e, order() );
 			return pos < 0
-				? -pos - 1
+				? ListIndex.NOT_CONTAINED
 				: pos;
 		}
 	}
