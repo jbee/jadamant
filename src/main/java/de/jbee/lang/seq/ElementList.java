@@ -8,7 +8,15 @@ import de.jbee.lang.List;
 import de.jbee.lang.Traversal;
 import de.jbee.lang.dev.Nonnull;
 
-final class SingleElementList<E>
+/**
+ * A list consists of a single element and another {@link List} as tail.
+ * 
+ * So a {@linkplain ElementList} will not have {@link #length()} of 1 as soon as the tail list isn't
+ * empty.
+ * 
+ * @author Jan Bernitt (jan.bernitt@gmx.de)
+ */
+final class ElementList<E>
 		implements List<E> {
 
 	static <E> List<E> with( E element ) {
@@ -17,13 +25,13 @@ final class SingleElementList<E>
 
 	static <E> List<E> with( E element, List<E> tail ) {
 		Nonnull.element( element );
-		return new SingleElementList<E>( element, tail );
+		return new ElementList<E>( element, tail );
 	}
 
 	private final E element;
 	private final List<E> tail;
 
-	private SingleElementList( E element, List<E> tail ) {
+	private ElementList( E element, List<E> tail ) {
 		super();
 		this.element = element;
 		this.tail = tail;
@@ -43,7 +51,11 @@ final class SingleElementList<E>
 
 	@Override
 	public List<E> append( E e ) {
-		return thisWithTail( tail.append( e ) );
+		Nonnull.element( e );
+		return tail.isEmpty()
+			// if tail is empty another single element list would be appended to this one.
+			? List.with.elements( Array.sequence( element, e ) )
+			: thisWithTail( tail.append( e ) );
 	}
 
 	@Override
@@ -99,6 +111,7 @@ final class SingleElementList<E>
 	@Override
 	public List<E> prepand( E e ) {
 		Nonnull.element( e );
+		//TODO not use StackList directly - Lister has to be extended to support tail list arguments in some way
 		return StackList.tidy( length() + 1, Array.withLastElement( e, 2 ), this );
 	}
 
@@ -136,7 +149,7 @@ final class SingleElementList<E>
 	}
 
 	private List<E> thisWithTail( List<E> tail ) {
-		return new SingleElementList<E>( element, tail );
+		return new ElementList<E>( element, tail );
 	}
 
 }

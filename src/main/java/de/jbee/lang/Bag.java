@@ -11,9 +11,9 @@ import de.jbee.lang.ListTransition.BagTransition;
  * @author Jan Bernitt (jan.bernitt@gmx.de)
  */
 public interface Bag<E>
-		extends Sorted, List<E> {
+		extends IndexDeterminable<E>, Sorted, List<E> {
 
-	BagTransition derive = List.which.narrowsToBag();
+	BagTransition refine = List.that.refinesToBag();
 
 	/**
 	 * Adds e at the correct index in this bag. If this bag contains a element equal to e this will
@@ -22,13 +22,16 @@ public interface Bag<E>
 	Bag<E> add( E e );
 
 	/**
+	 * Can be used together with {@link #indexFor(Object)} to receive a {@link Bag} of all elements
+	 * equal to a sample.
+	 * 
 	 * @return A list of all elements that are equal (by {@link Ordering#EQ} to the element at
 	 *         <code>index</code>. If there is no such element a empty list is returned.
 	 */
-	List<E> entriesAt( int index );
+	Bag<E> entriesAt( int index );
 
 	/*
-	 * Overrides from List interface with Set return type
+	 * Covariant return type overrides from List interface with Set return type
 	 */
 
 	@Override

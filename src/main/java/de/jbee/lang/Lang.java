@@ -4,13 +4,13 @@ import static de.jbee.lang.Enumerate.CHARACTERS;
 import static de.jbee.lang.Enumerate.DIGITS;
 import static de.jbee.lang.Enumerate.INTEGERS;
 import static de.jbee.lang.Enumerate.LETTERS;
-import de.jbee.lang.seq.InitList;
+import de.jbee.lang.seq.Seq;
 import de.jbee.lang.seq.UtileEnumerator;
 import de.jbee.lang.seq.UtileEnumeratorFactory;
 import de.jbee.lang.seq.UtileLister;
 
 /**
- * Provides the basic utilities. <br/>
+ * Provides the basic utilities. <br>
  * <h3>Lists</h3>
  * <p>
  * The {@link Lister} creates {@link List} along with a bunch of static factory methods
@@ -30,7 +30,7 @@ public final class Lang {
 	public static final UtileLister list = new UtileLister( listProxy );
 
 	private static final ProxyEnumeratorFactory enumeratorProxy = new ProxyEnumeratorFactory(
-			InitList.ENUMERATOR_FACTORY );
+			Seq.ENUMERATOR_FACTORY );
 	public static final UtileEnumeratorFactory enumerator = new UtileEnumeratorFactory(
 			enumeratorProxy );
 
@@ -225,7 +225,7 @@ public final class Lang {
 	static final class ProxyLister
 			implements Lister {
 
-		Lister factory = InitList.LISTER;
+		Lister factory = Seq.LISTER;
 
 		ProxyLister() {
 			// hide for singleton

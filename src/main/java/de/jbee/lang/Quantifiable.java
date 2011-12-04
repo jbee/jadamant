@@ -1,13 +1,15 @@
 package de.jbee.lang;
 
 /**
- * Can be implemented by enums to easily support {@link Ord} interface by using
- * {@link Order#quantifiable}.
  * <p>
  * The {@linkplain Quantifiable} interface is an alternative to the problematic {@link Comparable}
  * interface which is more common these days.
  * </p>
- * 
+ * <p>
+ * It can be implemented by enum's to easily support the {@link Ord} interface by using
+ * {@link Order#quantifiable}.
+ * </p>
+ * <br>
  * <h4>What's the problem with {@linkplain Comparable} ?</h4>
  * <p>
  * It has a strong connection to the illusion about the existence of a natural order. With natural
@@ -39,6 +41,12 @@ package de.jbee.lang;
  */
 public interface Quantifiable {
 
+	/**
+	 * @return A integral value describes the object in a numeric form. Multiple call on the same
+	 *         object have to raise the same result value. Two objects of the same type have to
+	 *         result in different values if they aren't {@link #equals(Object)} and in the same in
+	 *         case they are.
+	 */
 	int ordinal();
 
 }

@@ -22,7 +22,7 @@ public class IndexAccess {
 	}
 
 	public static <E> Iterable<E> reverseIterable( final Sequence<E> seq ) {
-		return new IndexAccessIterable<E>( seq, seq.length(), 0, -1 );
+		return new IndexAccessIterable<E>( seq, seq.length(), -1, -1 );
 	}
 
 	private static final class IndexAccessIterable<E>

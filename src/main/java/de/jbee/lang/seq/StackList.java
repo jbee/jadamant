@@ -4,14 +4,7 @@
 package de.jbee.lang.seq;
 
 import de.jbee.lang.Array;
-import de.jbee.lang.Enum;
-import de.jbee.lang.Enumerate;
-import de.jbee.lang.Enumerator;
-import de.jbee.lang.EnumeratorFactory;
-import de.jbee.lang.Lang;
 import de.jbee.lang.List;
-import de.jbee.lang.Lister;
-import de.jbee.lang.Sequence;
 import de.jbee.lang.Traversal;
 import de.jbee.lang.dev.Nonnull;
 
@@ -33,9 +26,6 @@ import de.jbee.lang.dev.Nonnull;
  */
 abstract class StackList<E>
 		implements List<E> {
-
-	static final Lister LISTER = new StackLister();
-	static final EnumeratorFactory ENUMERATOR_FACTORY = new StackListEnumeratorFactory();
 
 	static <E> List<E> tidy( int size, Object[] stack, List<E> tail ) {
 		return new TidyStackList<E>( size, stack, tail );
@@ -79,7 +69,7 @@ abstract class StackList<E>
 			inc = traversal.incrementOn( element( i, l ) );
 			i += inc;
 		}
-		if ( inc > 0 ) {
+		if ( inc >= 0 ) {
 			tail.traverse( i - l, traversal );
 		}
 	}
@@ -361,103 +351,6 @@ abstract class StackList<E>
 		@Override
 		List<E> thisWith( int size, List<E> tail ) {
 			return untidy( size, offset, stack, tail );
-		}
-
-	}
-
-	static final class StackListEnumerator<E>
-			extends Enumerate.StepwiseEnumerator<E> {
-
-		StackListEnumerator( Enum<E> type ) {
-			super( type );
-		}
-
-		@Override
-		protected List<E> fromTo( E first, E last, Enum<E> type ) {
-			int fo = type.toOrdinal( first );
-			int lo = type.toOrdinal( last );
-			if ( fo == lo ) { // length 1
-				return LISTER.element( first );
-			}
-			int l = Math.abs( fo - lo ) + 1;
-			if ( l == 2 ) {
-				return LISTER.element( last ).prepand( first );
-			}
-			int capacity = 2;
-			List<E> res = LISTER.noElements();
-			E cur = last;
-			final boolean asc = fo < lo;
-			int size = 0;
-			while ( size < l ) { // length will be > 2
-				Object[] stack = new Object[capacity];
-				int min = size + capacity < l
-					? 0
-					: capacity - ( l - size );
-				for ( int i = capacity - 1; i >= min; i-- ) {
-					stack[i] = cur;
-					size++;
-					if ( size < l ) {
-						cur = asc
-							? type.pred( cur )
-							: type.succ( cur );
-					}
-				}
-				res = new TidyStackList<E>( size, stack, res );
-				capacity += capacity;
-			}
-			return res;
-		}
-
-	}
-
-	static final class StackListEnumeratorFactory
-			implements EnumeratorFactory {
-
-		@Override
-		public <E> Enumerator<E> enumerates( Enum<E> type ) {
-			return new StackListEnumerator<E>( type );
-		}
-
-	}
-
-	// TODO this is not exactly the Lister for stack list - its the one using all the different default core List impl. - move and rename proper
-	static class StackLister
-			implements Lister {
-
-		@Override
-		public <E> List<E> element( E e ) {
-			return SingleElementList.with( e );
-		}
-
-		@Override
-		public <E> List<E> elements( E... elems ) {
-			List<E> res = noElements();
-			for ( int i = elems.length - 1; i >= 0; i-- ) {
-				res = res.prepand( elems[i] );
-			}
-			return res;
-		}
-
-		@Override
-		public <E> List<E> elements( Sequence<E> elems ) {
-			if ( elems.isEmpty() ) {
-				return noElements();
-			}
-			final int size = elems.length();
-			if ( size == 1 ) {
-				return element( elems.at( 0 ) );
-			}
-			Object[] stack = new Object[Lang.nextHighestPowerOf2( size )];
-			int index = stack.length - size;
-			for ( int i = 0; i < size; i++ ) {
-				stack[index++] = elems.at( i );
-			}
-			return tidy( size, stack, EmptyList.<E> instance() );
-		}
-
-		@Override
-		public <E> List<E> noElements() {
-			return EmptyList.instance();
 		}
 
 	}

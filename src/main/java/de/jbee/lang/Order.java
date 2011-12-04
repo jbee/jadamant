@@ -322,12 +322,12 @@ public final class Order {
 		@Override
 		public Ordering ord( Object left, Object right ) {
 			if ( left.getClass() == right.getClass() ) {
-				return identicalTypeOrd( left, right );
+				return ordIdenticalType( left, right );
 			}
 			return identity.ord( left, right );
 		}
 
-		private Ordering identicalTypeOrd( Object left, Object right ) {
+		private Ordering ordIdenticalType( Object left, Object right ) {
 			if ( left instanceof Quantifiable ) {
 				return quantifiable.ord( (Quantifiable) left, (Quantifiable) right );
 			}

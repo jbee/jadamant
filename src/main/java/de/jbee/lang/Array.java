@@ -20,6 +20,52 @@ public final class Array {
 		fill( a, value, 0, a.length );
 	}
 
+	private static final class ArraySequence<E>
+			implements Sequence<E>, Arrayable {
+
+		private final Object[] elems;
+
+		ArraySequence( Object[] elems ) {
+			super();
+			this.elems = elems;
+		}
+
+		@Override
+		public boolean isEmpty() {
+			return length() == 0;
+		}
+
+		@Override
+		public int length() {
+			return elems.length;
+		}
+
+		@SuppressWarnings ( "unchecked" )
+		@Override
+		public E at( int index )
+				throws ArrayIndexOutOfBoundsException {
+			return (E) elems[index];
+		}
+
+		@Override
+		public void fill( int offset, Object[] array, int start, int length ) {
+			System.arraycopy( elems, start, array, offset, Math.min( length, elems.length - start ) );
+		}
+
+		@Override
+		public String toString() {
+			return Arrays.toString( elems );
+		}
+	}
+
+	public static <E> Sequence<E> sequence( E e1 ) {
+		return new ArraySequence<E>( new Object[] { e1 } );
+	}
+
+	public static <E> Sequence<E> sequence( E e1, E e2 ) {
+		return new ArraySequence<E>( new Object[] { e1, e2 } );
+	}
+
 	/**
 	 * A more effective way to fill long arrays.
 	 * <p>

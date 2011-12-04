@@ -9,6 +9,6 @@ public class TestStackLister
 
 	@BeforeClass
 	public static void setUp() {
-		Lang.setUp( StackList.ENUMERATOR_FACTORY );
+		Lang.setUp( Seq.LISTER_ENUMERATOR_FACTORY );
 	}
 }

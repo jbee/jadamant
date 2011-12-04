@@ -12,9 +12,9 @@ import de.jbee.lang.seq.UtileLister;
 
 /**
  * <p>
- * Lists are immutable and use a persistent data-structure whereby they are thread-save by
- * definition. There is no need to offer/have or use another concurrent collection API. Just use
- * {@link List}s for everything everywhere!
+ * Lists are immutable and use a persistent data-structure whereby they are thread-save by design.
+ * There is no need to offer/have or use another concurrent collection API. Just use {@link List}s
+ * for everything everywhere!
  * </p>
  * <p>
  * This interface is intentionally not a <i>minimal class interface</i>. It provides several methods
@@ -55,7 +55,7 @@ public interface List<E>
 	UtileListIndex indexFor = new UtileListIndex();
 	UtileEnumeratorFactory does = Lang.enumerator;
 	//TODO proxy from Lang.
-	UtileListTransition which = UtileListTransition.instance;
+	UtileListTransition that = UtileListTransition.instance;
 
 	UtileEnumerator<Integer> numbers = Lang.numbers;
 	UtileEnumerator<Character> letters = Lang.letters;
@@ -72,7 +72,7 @@ public interface List<E>
 	ListTransition tail = UtileListTransition.tail;
 
 	/*
-	 * override inherited methods with extending return types
+	 * Covariant return type overrides for inherited methods from Appendable and Prepandable
 	 */
 
 	/**
@@ -90,9 +90,7 @@ public interface List<E>
 	List<E> append( E e );
 
 	/*
-	 * override inherited methods with extending return types
-	 * 
-	 * FROM: ModifiableSequence
+	 * Covariant return type overrides for inherited methods from ModifiableSequence
 	 */
 
 	@Override

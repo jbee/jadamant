@@ -2,6 +2,7 @@ package de.jbee.lang.seq;
 
 import de.jbee.lang.Bag;
 import de.jbee.lang.Equal;
+import de.jbee.lang.IndexDeterminable;
 import de.jbee.lang.List;
 import de.jbee.lang.ListIndex;
 import de.jbee.lang.Ord;
@@ -11,26 +12,26 @@ import de.jbee.lang.Sorted;
 import de.jbee.lang.Traversal;
 
 abstract class SortedList<E, L extends Sorted & List<E>>
-		implements Sorted, List<E> {
+		implements IndexDeterminable<E>, Sorted, List<E> {
 
 	public static <E> Set<E> toSet( List<E> list, Ord<Object> order ) {
 		return list instanceof Set<?>
 			? (Set<E>) list
-			: asSet( List.which.sortsBy( order ).nubsBy( Equal.by( order ) ).from( list ), order );
+			: asSet( List.that.sortsBy( order ).nubsBy( Equal.by( order ) ).from( list ), order );
 	}
 
 	public static <E> Bag<E> toBag( List<E> list, Ord<Object> order ) {
 		return list instanceof Bag<?>
 			? (Bag<E>) list
-			: asBag( List.which.sortsBy( order ).from( list ), order );
+			: asBag( List.that.sortsBy( order ).from( list ), order );
 	}
 
 	static <E> Bag<E> asBag( List<E> elements, Ord<Object> order ) {
-		return new SortedBag<E>( order, elements );
+		return new BagList<E>( order, elements );
 	}
 
 	static <E> Set<E> asSet( List<E> elements, Ord<Object> order ) {
-		return new SortedSet<E>( order, elements );
+		return new SetList<E>( order, elements );
 	}
 
 	private final Ord<Object> order;
@@ -85,8 +86,16 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 		int inOrderIndex = List.indexFor.insertBy( e, order ).in( elems );
 		List<E> inserted = elems.insertAt( inOrderIndex, e );
 		return inOrderIndex == index
-			? thisWith( inserted ) //FIXME destroys set !?
+			? thisWith( inserted ) //FIXME might destroy Set through duplicate element!
 			: inserted;
+	}
+
+	@Override
+	public int indexFor( E e ) {
+		int pos = Order.binarySearch( elems(), 0, length(), e, order() );
+		return pos < 0
+			? ListIndex.NOT_CONTAINED
+			: pos;
 	}
 
 	@Override
@@ -112,8 +121,8 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 	@Override
 	public final List<E> replaceAt( int index, E e ) {
 		List<E> replaced = elems.replaceAt( index, e );
-		return isSortedIndex( index, replaced )
-			? thisWith( replaced ) //FIXME destroys set !?
+		return indexInOrder( index, replaced )
+			? thisWith( replaced ) //FIXME might destroy Set through duplicate element!
 			: replaced;
 	}
 
@@ -146,7 +155,7 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 			: selfWith( elements );
 	}
 
-	private boolean isSortedIndex( int index, List<E> l ) {
+	private boolean indexInOrder( int index, List<E> l ) {
 		final E e = l.at( index );
 		return ( index == 0 || order.ord( l.at( index - 1 ), e ).isLe() )
 				&& ( index == l.length() - 1 || order.ord( l.at( l.length() - 1 ), e ).isGe() );
@@ -160,11 +169,11 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 		return order.ord( e, at( index ) ).isEq();
 	}
 
-	private static class SortedBag<E>
+	private static class BagList<E>
 			extends SortedList<E, Bag<E>>
 			implements Bag<E> {
 
-		SortedBag( Ord<Object> ord, List<E> elements ) {
+		BagList( Ord<Object> ord, List<E> elements ) {
 			super( ord, elements );
 		}
 
@@ -174,14 +183,17 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 		}
 
 		@Override
-		public List<E> entriesAt( int index ) {
-			E e = at( index );
+		public Bag<E> entriesAt( int index ) {
 			int l = length();
+			if ( index < 0 || index >= l ) {
+				return asBag( List.with.<E> noElements(), order() );
+			}
+			E e = at( index );
 			int end = index + 1;
 			while ( end < l && containsAt( end, e ) ) {
 				end++;
 			}
-			return List.which.slices( index, end ).from( elems() );
+			return asBag( List.that.slices( index, end ).from( elems() ), order() );
 		}
 
 		@Override
@@ -191,7 +203,7 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 
 		@Override
 		Bag<E> selfWith( List<E> elements ) {
-			return new SortedBag<E>( order(), elements );
+			return new BagList<E>( order(), elements );
 		}
 
 		@Override
@@ -201,11 +213,11 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 		}
 	}
 
-	private static class SortedSet<E>
+	private static class SetList<E>
 			extends SortedList<E, Set<E>>
 			implements Set<E> {
 
-		SortedSet( Ord<Object> ord, List<E> elements ) {
+		SetList( Ord<Object> ord, List<E> elements ) {
 			super( ord, elements );
 		}
 
@@ -223,8 +235,11 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 		}
 
 		@Override
-		public List<E> entriesAt( int index ) {
-			return List.with.element( at( index ) );
+		public Bag<E> entriesAt( int index ) {
+			if ( index < 0 || index >= length() ) {
+				return asBag( List.with.<E> noElements(), order() );
+			}
+			return asBag( List.with.element( at( index ) ), order() );
 		}
 
 		@Override
@@ -243,7 +258,7 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 
 		@Override
 		Set<E> selfWith( List<E> elements ) {
-			return new SortedSet<E>( order(), elements );
+			return new SetList<E>( order(), elements );
 		}
 
 		@Override
@@ -252,13 +267,6 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 			return "(" + list.substring( 1, list.length() - 1 ) + ")";
 		}
 
-		@Override
-		public int indexFor( E e ) {
-			int pos = Order.binarySearch( elems(), 0, length(), e, order() );
-			return pos < 0
-				? ListIndex.NOT_CONTAINED
-				: pos;
-		}
 	}
 
 }

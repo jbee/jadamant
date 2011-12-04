@@ -19,10 +19,11 @@ import de.jbee.lang.Traversal;
 public class UtileListTransition
 		implements ListTransition {
 
-	private static final DisambiguateTranstion DISAMBIGUATE = new DisambiguateTranstion();
+	private static final DisambiguateTranstion DISAMBIGUATE = new DisambiguateTranstion(
+			Order.inherent );
 
 	public static final ListTransition none = new NoneTranstion();
-	public static final ListTransition empty = new EmptyTransition();
+	public static final ListTransition empty = new EmptyingTransition();
 	public static final ListTransition reverse = new ReversingTransition();
 	public static final ListTransition shuffle = new ShuffleTransition();
 	public static final ListTransition tidyUp = new TidyUpTransition();
@@ -215,23 +216,23 @@ public class UtileListTransition
 	}
 
 	public SetTransition disambiguates() {
-		return DISAMBIGUATE;
+		return DISAMBIGUATE; //TODO replace with refine and improve refine with disam. impl. way 
 	}
 
-	public SetTransition narrowsToSet() {
-		return narrowsToSetBy( Order.inherent );
+	public SetTransition refinesToSet() {
+		return refinesToSetBy( Order.inherent );
 	}
 
-	public SetTransition narrowsToSetBy( Ord<Object> ord ) {
-		return consec( utilised, new ToSetTranstion( ord ) );
+	public SetTransition refinesToSetBy( Ord<Object> order ) {
+		return consec( utilised, new ToSetTranstion( order ) );
 	}
 
-	public BagTransition narrowsToBag() {
-		return narrowsToBagBy( Order.inherent );
+	public BagTransition refinesToBag() {
+		return refinesToBagBy( Order.inherent );
 	}
 
-	public BagTransition narrowsToBagBy( Ord<Object> ord ) {
-		return consec( utilised, new ToBagTransition( ord ) );
+	public BagTransition refinesToBagBy( Ord<Object> order ) {
+		return consec( utilised, new ToBagTransition( order ) );
 	}
 
 	public ListTransition consec( ListTransition fst, ListTransition snd ) {
@@ -273,7 +274,7 @@ public class UtileListTransition
 		}
 	}
 
-	static final class EmptyTransition
+	static final class EmptyingTransition
 			implements ListTransition {
 
 		@Override
@@ -334,7 +335,7 @@ public class UtileListTransition
 				return list;
 			}
 			if ( size == 2 ) {
-				return List.which.swaps( 0, 1 ).from( list );
+				return List.that.swaps( 0, 1 ).from( list );
 			}
 			return arrangedStackList( list );
 		}
@@ -376,8 +377,10 @@ public class UtileListTransition
 	private static final class DisambiguateTranstion
 			implements SetTransition {
 
-		DisambiguateTranstion() {
-			// make visible
+		private final Ord<Object> order;
+
+		DisambiguateTranstion( Ord<Object> order ) {
+			this.order = order;
 		}
 
 		@Override
@@ -389,7 +392,7 @@ public class UtileListTransition
 				return Set.with.noElements();
 			}
 			if ( ! ( list instanceof Sorted ) ) {
-				list = List.which.sorts().from( list );
+				list = List.that.sortsBy( order ).from( list );
 			}
 			Ord<Object> order = ( (Sorted) list ).order();
 			List<E> res = list;

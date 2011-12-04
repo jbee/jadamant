@@ -76,7 +76,7 @@ final class EmptyList<E>
 		if ( e.getClass().isEnum() ) {
 			return enumList( e );
 		}
-		return SingleElementList.with( e, this );
+		return ElementList.with( e, this );
 	}
 
 	@SuppressWarnings ( "unchecked" )

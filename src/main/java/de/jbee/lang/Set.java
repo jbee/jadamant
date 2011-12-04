@@ -7,15 +7,19 @@ import de.jbee.lang.seq.UtileBagger;
  * Sets are always {@link Sorted} and therefore a {@link List} that doesn't allow duplicates.
  * 
  * @author Jan Bernitt (jan.bernitt@gmx.de)
+ * 
+ * @see Bag
+ * @see List
  */
 public interface Set<E>
 		extends Bag<E> {
 
 	UtileBagger with = new UtileBagger();
 
-	SetTransition derive = List.which.narrowsToSet();
+	SetTransition refine = List.that.refinesToSet();
 
 	//OPEN how to make the ListIndex work with the Ord from this Set (Sorted) for Ord or Eq depended indexes 
+	// idea: Oder.inherent means a Sorted object uses its order instead of the inherent one.
 
 	/**
 	 * Inserts e at the correct position if not already contained in this set.
@@ -23,7 +27,7 @@ public interface Set<E>
 	Set<E> insert( E e );
 
 	/*
-	 * Overrides from List/Bag interface with Set return type
+	 * Covariant return type overrides from List/Bag interface with Set return type
 	 */
 
 	@Override
@@ -38,9 +42,5 @@ public interface Set<E>
 	@Override
 	Set<E> tidyUp();
 
-	/**
-	 * In contrast to the usual {@link List} index lookup a {@link Set}'s index search algorithm has
-	 * a O(log(n)) runtime complexity instead of O(n).
-	 */
-	int indexFor( E e );
+	//OPEN union/intersection as methods or SetTransition ? 
 }

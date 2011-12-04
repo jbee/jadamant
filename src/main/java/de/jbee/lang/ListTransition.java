@@ -2,7 +2,7 @@ package de.jbee.lang;
 
 /**
  * {@link ListTransition}s are manipulations on a {@link List} that doesn't change the type of
- * elements - just the elements contained in the resulting list and/or their sequence.
+ * elements but their composition in the resulting list.
  * 
  * A {@linkplain ListTransition} doesn't take any additional state. It has no internal state that
  * can change whereby same input always causes same output. Nevertheless they might have a fix
@@ -16,7 +16,7 @@ public interface ListTransition {
 
 	/**
 	 * Any {@link ListTransition} results in a {@link Bag} may expose itself as a
-	 * {@linkplain BagTransition} to hide its implementation type but communicate the more precise
+	 * {@linkplain BagTransition} to hide its implementation type but guarantee the more precise
 	 * {@linkplain Bag} result type.
 	 * 
 	 * @author Jan Bernitt (jan.bernitt@gmx.de)
@@ -30,7 +30,7 @@ public interface ListTransition {
 
 	/**
 	 * Any {@link ListTransition} results in a {@link Set} may expose itself as a
-	 * {@linkplain SetTransition} to hide its implementation type but communicate the more precise
+	 * {@linkplain SetTransition} to hide its implementation type but guarantee the more precise
 	 * {@linkplain Set} result type.
 	 * 
 	 * @author Jan Bernitt (jan.bernitt@gmx.de)
