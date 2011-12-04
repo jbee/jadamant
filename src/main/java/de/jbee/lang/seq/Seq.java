@@ -32,6 +32,12 @@ public final class Seq {
 
 		@Override
 		public <E> List<E> element( E e ) {
+			if ( e instanceof java.lang.Enum<?> ) {
+				java.lang.Enum<?> elem = (java.lang.Enum<?>) e;
+				@SuppressWarnings ( "unchecked" )
+				List<E> res = (List<E>) EnumList.withElement( elem );
+				return res;
+			}
 			return ElementList.with( e );
 		}
 
