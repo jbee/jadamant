@@ -20,6 +20,12 @@ public final class Array {
 		fill( a, value, 0, a.length );
 	}
 
+	public static Object[] copy( Object[] src, int start, int len ) {
+		Object[] copy = new Object[src.length];
+		System.arraycopy( src, start, copy, start, len );
+		return copy;
+	}
+
 	private static final class ArraySequence<E>
 			implements Sequence<E>, Arrayable {
 

@@ -48,7 +48,7 @@ public class UtileLister
 	}
 
 	public <E> List<E> readonly( java.util.Collection<E> c ) {
-		return StackList.tidy( c.size(), c.toArray(), this.<E> noElements() );
+		return HarpList.tidy( c.size(), c.toArray(), this.<E> noElements() );
 	}
 
 	public <E> List<E> readonly( java.util.Iterator<E> c ) {
@@ -83,6 +83,6 @@ public class UtileLister
 	public <E> List<E> replicate( int n, E e ) {
 		Object[] stack = new Object[Lang.nextHighestPowerOf2( n )];
 		Array.fill( stack, e, stack.length - n, n );
-		return StackList.tidy( n, stack, utilised.<E> noElements() );
+		return HarpList.tidy( n, stack, utilised.<E> noElements() );
 	}
 }

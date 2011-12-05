@@ -112,7 +112,7 @@ final class ElementList<E>
 	public List<E> prepand( E e ) {
 		Nonnull.element( e );
 		//TODO not use StackList directly - Lister has to be extended to support tail list arguments in some way
-		return StackList.tidy( length() + 1, Array.withLastElement( e, 2 ), this );
+		return HarpList.tidy( length() + 1, Array.withLastElement( e, 2 ), this );
 	}
 
 	@Override

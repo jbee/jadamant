@@ -9,7 +9,7 @@ import de.jbee.lang.Lang;
 import de.jbee.lang.List;
 import de.jbee.lang.Lister;
 import de.jbee.lang.Sequence;
-import de.jbee.lang.seq.StackList.TidyStackList;
+import de.jbee.lang.seq.HarpList.TidyHarpList;
 
 public final class Seq {
 
@@ -19,7 +19,7 @@ public final class Seq {
 
 	/**
 	 * A {@link Lister} uses the default implementations {@link EmptyList}, {@link ElementList},
-	 * {@link StackList} and {@link EnumList}.
+	 * {@link HarpList} and {@link EnumList}.
 	 * 
 	 * @author Jan Bernitt (jan.bernitt@gmx.de)
 	 */
@@ -33,12 +33,14 @@ public final class Seq {
 		@Override
 		public <E> List<E> element( E e ) {
 			if ( e instanceof java.lang.Enum<?> ) {
-				java.lang.Enum<?> elem = (java.lang.Enum<?>) e;
-				@SuppressWarnings ( "unchecked" )
-				List<E> res = (List<E>) EnumList.withElement( elem );
-				return res;
+				return elementEnum( e );
 			}
 			return ElementList.with( e );
+		}
+
+		@SuppressWarnings ( "unchecked" )
+		private <E> List<E> elementEnum( E e ) {
+			return (List<E>) EnumList.withElement( (java.lang.Enum<?>) e );
 		}
 
 		@Override
@@ -49,7 +51,7 @@ public final class Seq {
 			}
 			Object[] stack = new Object[Lang.nextHighestPowerOf2( size )];
 			System.arraycopy( elems, 0, stack, stack.length - size, size );
-			return StackList.tidy( size, stack, EmptyList.<E> instance() );
+			return HarpList.tidy( size, stack, EmptyList.<E> instance() );
 		}
 
 		@Override
@@ -70,7 +72,7 @@ public final class Seq {
 					stack[index++] = elems.at( i );
 				}
 			}
-			return StackList.tidy( size, stack, EmptyList.<E> instance() );
+			return HarpList.tidy( size, stack, EmptyList.<E> instance() );
 		}
 
 		@Override
@@ -122,7 +124,7 @@ public final class Seq {
 							: type.succ( cur );
 					}
 				}
-				res = new TidyStackList<E>( size, stack, res );
+				res = new TidyHarpList<E>( size, stack, res );
 				capacity += capacity;
 			}
 			return res;

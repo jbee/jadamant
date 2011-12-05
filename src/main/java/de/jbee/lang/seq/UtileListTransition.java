@@ -672,7 +672,7 @@ public class UtileListTransition
 			Object[] elems = new Object[Lang.nextHighestPowerOf2( size )];
 			list.fill( elems.length - size, elems, 0, size );
 			rearrange( elems, elems.length - size );
-			return StackList.tidy( list.length(), elems, list.take( 0 ) );
+			return HarpList.tidy( list.length(), elems, list.take( 0 ) );
 		}
 
 		protected abstract <E> void rearrange( Object[] list, int start );

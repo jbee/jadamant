@@ -12,9 +12,26 @@ public final class Traverse {
 		// singleton
 	}
 
+	static final class Res<T> {
+
+		public static <T> Res<T> of( T init ) {
+			return new Res<T>( init );
+		}
+
+		public static <T> Res<T> newInstance() {
+			return new Res<T>( null );
+		}
+
+		public T value;
+
+		private Res( T init ) {
+			this.value = init;
+		}
+	}
+
 	public <E> E[] toArray( List<E> t, Class<E> elementType ) {
 		E[] res = Array.newInstance( elementType, t.length() );
-		t.traverse( 0, new ArrayFillingTraversal<E>( res, 0 ) );
+		t.traverse( 0, new ToArrayTraversal<E>( res, 0 ) );
 		return res;
 	}
 
@@ -90,7 +107,7 @@ public final class Traverse {
 	 * Combines two traversal into one. Can be used to build an endless chain of traversals whereby
 	 * any number of traversals can be executed in a single traverse.
 	 */
-	static final class BiTraversal<E>
+	static final class DualTraversal<E>
 			implements Traversal<E>, Nullproof {
 
 		private final Traversal<E> fst;
@@ -99,7 +116,7 @@ public final class Traverse {
 		private int incFst = 0;
 		private int incSnd = 0;
 
-		BiTraversal( Traversal<E> fst, Traversal<E> snd ) {
+		DualTraversal( Traversal<E> fst, Traversal<E> snd ) {
 			super();
 			this.fst = fst;
 			this.snd = snd;
@@ -165,7 +182,7 @@ public final class Traverse {
 
 	}
 
-	static class ArrayFillingTraversal<E>
+	static class ToArrayTraversal<E>
 			implements Traversal<E>, Nullsave {
 
 		private final Object[] dest;
@@ -173,7 +190,7 @@ public final class Traverse {
 
 		private int index;
 
-		ArrayFillingTraversal( Object[] dest, int startIndex ) {
+		ToArrayTraversal( Object[] dest, int startIndex ) {
 			super();
 			this.dest = dest;
 			this.index = startIndex;
