@@ -38,8 +38,8 @@ public final class Equal {
 			: new NotEquality<T>( eq );
 	}
 
-	public static <T> Eq<T> by( Ord<T> ord ) {
-		return new OrdEquality<T>( ord );
+	public static <T> Eq<T> by( Ord<T> order ) {
+		return new OrderEquality<T>( order );
 	}
 
 	static final class IdentityEquality
@@ -72,19 +72,19 @@ public final class Equal {
 
 	}
 
-	static final class OrdEquality<T>
+	static final class OrderEquality<T>
 			implements Eq<T> {
 
-		private final Ord<T> ord;
+		private final Ord<T> order;
 
-		OrdEquality( Ord<T> ord ) {
+		OrderEquality( Ord<T> order ) {
 			super();
-			this.ord = ord;
+			this.order = order;
 		}
 
 		@Override
 		public boolean holds( T one, T other ) {
-			return ord.ord( one, other ).isEq();
+			return order.ord( one, other ).isEq();
 		}
 
 	}

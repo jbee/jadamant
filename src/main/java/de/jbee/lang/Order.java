@@ -41,12 +41,12 @@ public final class Order {
 	 * A {@link Ord} that keeps the order as it is. Useable in some special cases as kind of a
 	 * NULL-object.
 	 */
-	public static final Ord<Object> keep = new FixOrderingOrder( Ordering.LT );
+	public static final Ord<Object> keep = new StaticOrder( Ordering.LT );
 
 	/**
 	 * A {@link Ord} that will reverse the order each time it is applied.
 	 */
-	public static final Ord<Object> reverse = new FixOrderingOrder( Ordering.GT );
+	public static final Ord<Object> reverse = new StaticOrder( Ordering.GT );
 
 	public static final Ord<Quantifiable> quantifiable = new QuantifiableOrder();
 	public static final Ord<Number> numerical = new NumericalOrder();
@@ -56,57 +56,73 @@ public final class Order {
 	public static final Ord<java.lang.Enum<?>> enumerative = new EnumerativeOrder();
 	public static final Ord<Date> chronological = new ChronologicalOrder();
 	public static final Ord<Calendar> calendrical = new CalendricalOrder();
-	public static final Ord<Object> byHashCode = new HashCodeOrder();
+	public static final Ord<Object> hashCode = new HashCodeOrder();
 
-	public static <T> Ord<T> asc( Ord<T> ord ) {
-		if ( ord instanceof InverseOrder<?> ) {
-			return asc( ( (InverseOrder<T>) ord ).ord );
+	public static boolean keepable( Sorted sorted, Ord<?> required ) {
+		if ( required == inherent ) {
+			return true;
 		}
-		return ord;
+		return sorted.order() == required; //TODO improve
+	}
+
+	public static Ord<Object> inherent( Class<?> type ) {
+		//TODO analyze type and return result directly so resolution is done once.
+		return inherent;
+	}
+
+	public static <T> Ord<T> asc( Ord<T> order ) {
+		if ( order instanceof InverseOrder<?> ) {
+			return asc( ( (InverseOrder<T>) order ).order );
+		}
+		return order;
+	}
+
+	public static <T> Ord<T> by( Eq<T> equality ) {
+		return new EqualityOrder<T>( equality );
 	}
 
 	public static <T extends Comparable<T>> Ord<T> byCompare() {
 		return new CompareableOrder<T>();
 	}
 
-	public static <T> Ord<T> desc( Ord<T> ord ) {
-		if ( ord instanceof InverseOrder<?> ) {
-			return desc( ( (InverseOrder<T>) ord ).ord );
+	public static <T> Ord<T> desc( Ord<T> order ) {
+		if ( order instanceof InverseOrder<?> ) {
+			return desc( ( (InverseOrder<T>) order ).order );
 		}
-		return new InverseOrder<T>( ord );
+		return new InverseOrder<T>( order );
 	}
 
-	public static <T> Ord<T> inverse( Ord<T> ord ) {
-		if ( ord instanceof InverseOrder<?> ) {
-			return ( (InverseOrder<T>) ord ).ord;
+	public static <T> Ord<T> inverse( Ord<T> order ) {
+		if ( order instanceof InverseOrder<?> ) {
+			return ( (InverseOrder<T>) order ).order;
 		}
-		return new InverseOrder<T>( ord );
+		return new InverseOrder<T>( order );
 	}
 
-	public static <T> Ord<T> nullsave( Ord<T> ord ) {
-		return Null.isSave( ord )
-			? ord
-			: new NullsaveOrder<T>( ord );
+	public static <T> Ord<T> nullsave( Ord<T> order ) {
+		return Null.isSave( order )
+			? order
+			: new NullsaveOrder<T>( order );
 	}
 
-	public static <T> Ord<T> nullsFirst( Ord<T> ord ) {
-		return nullsave( ord );
+	public static <T> Ord<T> nullsFirst( Ord<T> order ) {
+		return nullsave( order );
 	}
 
-	public static <T> Ord<T> nullsLast( Ord<T> ord ) {
-		return inverse( nullsave( inverse( ord ) ) );
+	public static <T> Ord<T> nullsLast( Ord<T> order ) {
+		return inverse( nullsave( inverse( order ) ) );
 	}
 
-	public static <T> void sort( T[] array, Ord<T> ord ) {
-		Arrays.sort( array, new OrderAdapterComparator<T>( ord ) );
+	public static <T> void sort( T[] array, Ord<T> order ) {
+		Arrays.sort( array, new OrderAdapterComparator<T>( order ) );
 	}
 
 	public static <T> Ord<T> sub( Ord<? super T> primary, Ord<? super T> secondary ) {
 		return new SubOrder<T>( primary, secondary );
 	}
 
-	public static <T> Ord<Object> typeaware( Ord<? super T> ord, Class<T> type ) {
-		return new TypeawareOrder<T>( type, ord );
+	public static <T> Ord<Object> typeaware( Ord<? super T> order, Class<T> type ) {
+		return new TypeawareOrder<T>( type, order );
 	}
 
 	public static <T> Ord<T> unequalEqualTo( T value, Eq<T> eq ) {
@@ -132,19 +148,23 @@ public final class Order {
 			: new SequenceOrder<T>( seq, eq );
 	}
 
+	public static <T> Ord<T> by( Comparator<T> comparator ) {
+		return new ComparatorOrder<T>( comparator );
+	}
+
 	private Order() {
 		throw new UnsupportedOperationException( "util" );
 	}
 
 	//TODO find a place for such utils like binarySearch and sort
 	public static <E> int binarySearch( Sequence<E> list, int startInclusive, int endExcluisve,
-			Object key, Ord<Object> ord ) {
+			Object key, Ord<Object> order ) {
 		int low = startInclusive;
 		int high = endExcluisve - 1;
 		while ( low <= high ) {
 			int mid = ( low + high ) >>> 1;
 			E midVal = list.at( mid );
-			Ordering cmp = ord.ord( midVal, key );
+			Ordering cmp = order.ord( midVal, key );
 			if ( cmp.isLt() ) {
 				low = mid + 1;
 			} else if ( cmp.isGt() ) {
@@ -156,12 +176,12 @@ public final class Order {
 		return - ( low + 1 ); // key not found.
 	}
 
-	static final class FixOrderingOrder
+	private static final class StaticOrder
 			implements Ord<Object> {
 
 		private final Ordering ordering;
 
-		FixOrderingOrder( Ordering ordering ) {
+		StaticOrder( Ordering ordering ) {
 			super();
 			this.ordering = ordering;
 		}
@@ -173,7 +193,34 @@ public final class Order {
 
 	}
 
-	static final class FulfillingUnfulfillingOrder<T>
+	/**
+	 * A kind of adapter from {@link Eq} to {@link Ord}.
+	 * 
+	 * Elements that are equal by {@linkplain Eq} will result in {@link Ordering#EQ}.
+	 * 
+	 * @author Jan Bernitt (jan.bernitt@gmx.de)
+	 */
+	private static final class EqualityOrder<T>
+			implements Ord<T> {
+
+		private final Eq<T> equality;
+
+		EqualityOrder( Eq<T> equality ) {
+			super();
+			this.equality = equality;
+		}
+
+		@Override
+		public Ordering ord( T left, T right ) {
+			if ( equality.holds( left, right ) ) {
+				return Ordering.EQ;
+			}
+			return keep.ord( left, right );
+		}
+
+	}
+
+	private static final class FulfillingUnfulfillingOrder<T>
 			implements Ord<T> {
 
 		private final Predicate<T> condition;
@@ -189,7 +236,7 @@ public final class Order {
 		}
 	}
 
-	static final class EqualUnequalOrder<T>
+	private static final class EqualUnequalOrder<T>
 			implements Ord<T> {
 
 		private final Eq<T> eq;
@@ -208,8 +255,12 @@ public final class Order {
 
 	}
 
-	static final class AbecedarianOrder
+	private static final class AbecedarianOrder
 			implements Ord<Character> {
+
+		AbecedarianOrder() {
+			// make visible
+		}
 
 		@Override
 		public Ordering ord( Character left, Character right ) {
@@ -218,16 +269,20 @@ public final class Order {
 
 	}
 
-	static final class AlphabeticalOrder
+	private static final class AlphabeticalOrder
 			implements Ord<CharSequence> {
+
+		AlphabeticalOrder() {
+			// make visible
+		}
 
 		@Override
 		public Ordering ord( CharSequence left, CharSequence right ) {
 			final int length = Math.min( left.length(), right.length() );
 			for ( int i = 0; i < length; i++ ) {
-				Ordering ord = abecedarian.ord( left.charAt( i ), right.charAt( i ) );
-				if ( !ord.isEq() ) {
-					return ord;
+				Ordering order = abecedarian.ord( left.charAt( i ), right.charAt( i ) );
+				if ( !order.isEq() ) {
+					return order;
 				}
 			}
 			return numerical.ord( left.length(), right.length() );
@@ -235,8 +290,12 @@ public final class Order {
 
 	}
 
-	static final class CalendricalOrder
+	private static final class CalendricalOrder
 			implements Ord<Calendar> {
+
+		CalendricalOrder() {
+			// make visible
+		}
 
 		@Override
 		public Ordering ord( Calendar left, Calendar right ) {
@@ -245,8 +304,12 @@ public final class Order {
 
 	}
 
-	static final class ChronologicalOrder
+	private static final class ChronologicalOrder
 			implements Ord<Date> {
+
+		ChronologicalOrder() {
+			// make visible
+		}
 
 		@Override
 		public Ordering ord( Date left, Date right ) {
@@ -255,7 +318,7 @@ public final class Order {
 
 	}
 
-	static final class ComparatorOrder<T>
+	private static final class ComparatorOrder<T>
 			implements Ord<T> {
 
 		final Comparator<T> comparator;
@@ -272,8 +335,12 @@ public final class Order {
 
 	}
 
-	static final class CompareableOrder<T extends Comparable<T>>
+	private static final class CompareableOrder<T extends Comparable<T>>
 			implements Ord<T> {
+
+		CompareableOrder() {
+			// make visible
+		}
 
 		@Override
 		public Ordering ord( T left, T right ) {
@@ -281,8 +348,12 @@ public final class Order {
 		}
 	}
 
-	static final class EnumerativeOrder
+	private static final class EnumerativeOrder
 			implements Ord<java.lang.Enum<?>> {
+
+		EnumerativeOrder() {
+			// make visible
+		}
 
 		@Override
 		public Ordering ord( java.lang.Enum<?> left, java.lang.Enum<?> right ) {
@@ -295,8 +366,12 @@ public final class Order {
 
 	}
 
-	static final class HashCodeOrder
+	private static final class HashCodeOrder
 			implements Ord<Object> {
+
+		HashCodeOrder() {
+			// make visible
+		}
 
 		@Override
 		public Ordering ord( Object left, Object right ) {
@@ -305,8 +380,12 @@ public final class Order {
 
 	}
 
-	static final class IdentityOrder
+	private static final class IdentityOrder
 			implements Ord<Object> {
+
+		IdentityOrder() {
+			// make visible
+		}
 
 		@Override
 		public Ordering ord( Object left, Object right ) {
@@ -316,8 +395,12 @@ public final class Order {
 
 	}
 
-	static final class InherentOrder
+	private static final class InherentOrder
 			implements Ord<Object> {
+
+		InherentOrder() {
+			// make visible
+		}
 
 		@Override
 		public Ordering ord( Object left, Object right ) {
@@ -350,19 +433,19 @@ public final class Order {
 		}
 	}
 
-	static final class InverseOrder<T>
+	private static final class InverseOrder<T>
 			implements Ord<T>, Nullproof {
 
-		final Ord<T> ord;
+		final Ord<T> order;
 
-		InverseOrder( Ord<T> ord ) {
+		InverseOrder( Ord<T> order ) {
 			super();
-			this.ord = ord;
+			this.order = order;
 		}
 
 		@Override
 		public boolean isNullsave() {
-			return Null.isSave( ord );
+			return Null.isSave( order );
 		}
 
 		@Override
@@ -371,14 +454,14 @@ public final class Order {
 		}
 	}
 
-	static final class NullsaveOrder<T>
+	private static final class NullsaveOrder<T>
 			implements Ord<T>, Nullsave {
 
-		final Ord<T> ord;
+		final Ord<T> order;
 
-		NullsaveOrder( Ord<T> ord ) {
+		NullsaveOrder( Ord<T> order ) {
 			super();
-			this.ord = ord;
+			this.order = order;
 		}
 
 		@Override
@@ -389,13 +472,17 @@ public final class Order {
 			if ( right == null ) {
 				return Ordering.GT;
 			}
-			return ord.ord( left, right );
+			return order.ord( left, right );
 		}
 
 	}
 
-	static final class NumericalOrder
+	private static final class NumericalOrder
 			implements Ord<Number> {
+
+		NumericalOrder() {
+			//make visible
+		}
 
 		@Override
 		public Ordering ord( Number left, Number right ) {
@@ -426,25 +513,29 @@ public final class Order {
 
 	}
 
-	static final class OrderAdapterComparator<T>
+	private static final class OrderAdapterComparator<T>
 			implements Comparator<T> {
 
-		private final Ord<T> ord;
+		private final Ord<T> order;
 
-		OrderAdapterComparator( Ord<T> ord ) {
+		OrderAdapterComparator( Ord<T> order ) {
 			super();
-			this.ord = ord;
+			this.order = order;
 		}
 
 		@Override
 		public int compare( T one, T other ) {
-			return ord.ord( one, other ).intValue();
+			return order.ord( one, other ).intValue();
 		}
 
 	}
 
-	static final class QuantifiableOrder
+	private static final class QuantifiableOrder
 			implements Ord<Quantifiable> {
+
+		QuantifiableOrder() {
+			// make visible
+		}
 
 		@Override
 		public Ordering ord( Quantifiable left, Quantifiable right ) {
@@ -453,7 +544,7 @@ public final class Order {
 
 	}
 
-	static final class SubOrder<T>
+	private static final class SubOrder<T>
 			implements Ord<T> {
 
 		private final Ord<? super T> primary;
@@ -481,7 +572,7 @@ public final class Order {
 	 * 
 	 * @author Jan Bernitt (jan.bernitt@gmx.de)
 	 */
-	static final class SequenceOrder<T>
+	private static final class SequenceOrder<T>
 			implements Ord<T> {
 
 		private final Sequence<T> seq;
@@ -510,16 +601,16 @@ public final class Order {
 
 	}
 
-	static final class TypeawareOrder<T>
+	private static final class TypeawareOrder<T>
 			implements Ord<Object>, Nullsave {
 
 		final Class<T> type;
-		final Ord<? super T> ord;
+		final Ord<? super T> order;
 
-		TypeawareOrder( Class<T> type, Ord<? super T> ord ) {
+		TypeawareOrder( Class<T> type, Ord<? super T> order ) {
 			super();
 			this.type = type;
-			this.ord = ord;
+			this.order = order;
 		}
 
 		@SuppressWarnings ( "unchecked" )
@@ -528,7 +619,7 @@ public final class Order {
 			final boolean instLeft = type.isInstance( left );
 			final boolean instRight = type.isInstance( right );
 			if ( instLeft && instRight ) {
-				return ord.ord( (T) left, (T) right );
+				return order.ord( (T) left, (T) right );
 			}
 			if ( instLeft ) {
 				return Ordering.GT;

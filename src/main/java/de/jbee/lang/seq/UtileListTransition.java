@@ -13,14 +13,10 @@ import de.jbee.lang.Ord;
 import de.jbee.lang.Order;
 import de.jbee.lang.Predicate;
 import de.jbee.lang.Set;
-import de.jbee.lang.Sorted;
 import de.jbee.lang.Traversal;
 
 public class UtileListTransition
 		implements ListTransition {
-
-	private static final DisambiguateTranstion DISAMBIGUATE = new DisambiguateTranstion(
-			Order.inherent );
 
 	public static final ListTransition none = new NoneTranstion();
 	public static final ListTransition empty = new EmptyingTransition();
@@ -31,27 +27,6 @@ public class UtileListTransition
 	public static final ListTransition tail = new DropTillIndexTransition( List.indexFor.head(), 1 );
 
 	public static final UtileListTransition instance = new UtileListTransition( none );
-
-	private final ListTransition utilised;
-
-	private UtileListTransition( ListTransition utilised ) {
-		this.utilised = utilised;
-	}
-
-	@Override
-	public <E> List<E> from( List<E> list ) {
-		return utilised.from( list );
-	}
-
-	private UtileListTransition followedBy( ListTransition next ) {
-		if ( next == none ) {
-			return this;
-		}
-		if ( next == empty ) {
-			return new UtileListTransition( next );
-		}
-		return new UtileListTransition( consec( utilised, next ) );
-	}
 
 	//TODO find better naming - this is not clear enough
 	private static ListIndex lastUpTo( int count ) {
@@ -64,175 +39,26 @@ public class UtileListTransition
 			: t;
 	}
 
-	public ListTransition pure() {
-		return utilised;
-	}
+	private final ListTransition utilised;
 
-	public ListTransition tidiesUp() {
-		return followedBy( tidyUp ).pure();
-	}
-
-	//TODO some kind of dropWhile working with a condition types with the list's type -> other interface
-	public UtileListTransition dropsWhile( Predicate<Object> condition ) {
-		return followedBy( new DropWhileTransition( condition ) );
-	}
-
-	//TODO some kind of takeWhile working with a condition types with the list's type -> other interface
-	public UtileListTransition takesWhile( Predicate<Object> condition ) {
-		return followedBy( new TakeWhileTransition( condition ) );
-	}
-
-	public UtileListTransition dropsFirst( int count ) {
-		return count < 0
-			? this
-			: count == 1
-				? followedBy( tail )
-				: dropsTill( lastUpTo( count ), 1 );
-	}
-
-	public UtileListTransition dropsLast( int count ) {
-		return count <= 0
-			? this
-			: takesTill( List.indexFor.elemOn( -count ) );
-	}
-
-	public UtileListTransition takesFirst( int count ) {
-		return count <= 0
-			? followedBy( empty )
-			: takesTill( lastUpTo( count ), 1 );
-	}
-
-	public UtileListTransition takesLast( int count ) {
-		return count <= 0
-			? followedBy( empty )
-			: dropsTill( List.indexFor.elemOn( -count ) );
-	}
-
-	public UtileListTransition takesTill( ListIndex index ) {
-		return takesTill( index, 0 );
-	}
-
-	public UtileListTransition takesTill( ListIndex index, int offset ) {
-		return followedBy( new TakeTillIndexTransition( index, offset ) );
-	}
-
-	public UtileListTransition dropsTill( ListIndex index ) {
-		return dropsTill( index, 0 );
-	}
-
-	public UtileListTransition dropsTill( ListIndex index, int offset ) {
-		return followedBy( new DropTillIndexTransition( index, offset ) );
-	}
-
-	public UtileListTransition takesFrom( int index ) {
-		return dropsFirst( index );
-	}
-
-	public UtileListTransition takesUpTo( int index ) {
-		return takesFirst( index );
-	}
-
-	public UtileListTransition dropsFrom( int index ) {
-		return takesFirst( index );
-	}
-
-	public UtileListTransition dropsUpTo( int index ) {
-		return dropsFirst( index );
-	}
-
-	public UtileListTransition slices( int startInclusive, int endExclusive ) {
-		return takesFromTo( startInclusive, endExclusive - 1 );
-	}
-
-	public UtileListTransition takesFromTo( int start, int end ) {
-		return sublists( start, end - start + 1 );
-	}
-
-	public UtileListTransition dropsFromTo( int start, int end ) {
-		return cutsOut( start, end );
-	}
-
-	public UtileListTransition trims( int count ) {
-		return followedBy( consec( dropsFirst( count ), dropsLast( count ) ) );
+	private UtileListTransition( ListTransition utilised ) {
+		this.utilised = utilised;
 	}
 
 	public UtileListTransition chops( int start, int end ) {
 		return cutsOut( start, end );
 	}
 
-	public UtileListTransition cutsOut( int start, int end ) {
-		return start == end
-			? deletes( start )
-			: concats( takesUpTo( start - 1 ), takesFrom( end + 1 ) );
-	}
-
-	public UtileListTransition sublists( int start, int length ) {
-		return followedBy( new SublistTransition( start, length ) );
-	}
-
-	public UtileListTransition swaps( int idx1, int idx2 ) {
-		return idx1 == idx2
-			? this
-			: followedBy( new SwapTransition( List.indexFor.elemAt( idx1 ),
-					List.indexFor.elemAt( idx2 ) ) );
-	}
-
-	public UtileListTransition sorts() {
-		return sortsBy( Order.inherent );
-	}
-
-	public UtileListTransition sortsBy( Ord<Object> ord ) {
-		return followedBy( new SortingTransition( ord ) );
-	}
-
-	public UtileListTransition nubs() {
-		return nubsBy( Equal.equals );
-	}
-
-	public UtileListTransition nubsBy( Eq<Object> eq ) {
-		return followedBy( new NubTransition( eq ) );
-	}
-
-	public UtileListTransition deletes( int index ) {
-		return index < 0
-			? this
-			: deletes( List.indexFor.elemAt( index ) );
-	}
-
-	public UtileListTransition deletes( Object elem ) {
-		return deletes( elem, Equal.equals );
-	}
-
-	public UtileListTransition deletes( Object elem, Eq<Object> eq ) {
-		return deletes( List.indexFor.elemBy( elem, eq ) );
-	}
-
-	public UtileListTransition deletes( ListIndex index ) {
-		return followedBy( new DeleteIndexTransition( index ) );
-	}
-
 	public UtileListTransition concats( ListTransition head, ListTransition tail ) {
 		return followedBy( new ConcatTransition( head, tail ) );
 	}
 
-	public SetTransition disambiguates() {
-		return DISAMBIGUATE; //TODO replace with refine and improve refine with disam. impl. way 
-	}
-
-	public SetTransition refinesToSet() {
-		return refinesToSetBy( Order.inherent );
-	}
-
-	public SetTransition refinesToSetBy( Ord<Object> order ) {
-		return consec( utilised, new ToSetTranstion( order ) );
-	}
-
-	public BagTransition refinesToBag() {
-		return refinesToBagBy( Order.inherent );
-	}
-
-	public BagTransition refinesToBagBy( Ord<Object> order ) {
-		return consec( utilised, new ToBagTransition( order ) );
+	public BagTransition consec( ListTransition fst, BagTransition snd ) {
+		fst = pure( fst );
+		if ( fst == none ) {
+			return snd;
+		}
+		return new ConsecutivelyBagTransition( fst, snd );
 	}
 
 	public ListTransition consec( ListTransition fst, ListTransition snd ) {
@@ -255,24 +81,189 @@ public class UtileListTransition
 		return new ConsecutivelySetTransition( fst, snd );
 	}
 
-	public BagTransition consec( ListTransition fst, BagTransition snd ) {
-		fst = pure( fst );
-		if ( fst == none ) {
-			return snd;
+	public UtileListTransition cutsOut( int start, int end ) {
+		return start == end
+			? deletes( start )
+			: concats( takesUpTo( start - 1 ), takesFrom( end + 1 ) );
+	}
+
+	public UtileListTransition deletes( int index ) {
+		return index < 0
+			? this
+			: deletes( List.indexFor.elemAt( index ) );
+	}
+
+	public UtileListTransition deletes( ListIndex index ) {
+		return followedBy( new DeleteIndexTransition( index ) );
+	}
+
+	public UtileListTransition deletes( Object elem ) {
+		return deletes( elem, Equal.equals );
+	}
+
+	public UtileListTransition deletes( Object elem, Eq<Object> eq ) {
+		return deletes( List.indexFor.elemBy( elem, eq ) );
+	}
+
+	public UtileListTransition dropsFirst( int count ) {
+		return count < 0
+			? this
+			: count == 1
+				? followedBy( tail )
+				: dropsTill( lastUpTo( count ), 1 );
+	}
+
+	public UtileListTransition dropsFrom( int index ) {
+		return takesFirst( index );
+	}
+
+	public UtileListTransition dropsFromTo( int start, int end ) {
+		return cutsOut( start, end );
+	}
+
+	public UtileListTransition dropsLast( int count ) {
+		return count <= 0
+			? this
+			: takesTill( List.indexFor.elemOn( -count ) );
+	}
+
+	public UtileListTransition dropsTill( ListIndex index ) {
+		return dropsTill( index, 0 );
+	}
+
+	public UtileListTransition dropsTill( ListIndex index, int offset ) {
+		return followedBy( new DropTillIndexTransition( index, offset ) );
+	}
+
+	public UtileListTransition dropsUpTo( int index ) {
+		return dropsFirst( index );
+	}
+
+	//TODO some kind of dropWhile working with a condition types with the list's type -> other interface
+	public UtileListTransition dropsWhile( Predicate<Object> condition ) {
+		return followedBy( new DropWhileTransition( condition ) );
+	}
+
+	@Override
+	public <E> List<E> from( List<E> list ) {
+		return utilised.from( list );
+	}
+
+	public UtileListTransition nubs() {
+		return nubsBy( Equal.equals );
+	}
+
+	public UtileListTransition nubsBy( Eq<Object> equality ) {
+		return followedBy( new NubTransition( Order.by( equality ) ) );
+	}
+
+	public ListTransition pure() {
+		return utilised;
+	}
+
+	public BagTransition refinesToBag() {
+		return refinesToBagBy( Order.inherent );
+	}
+
+	public BagTransition refinesToBagBy( Ord<Object> order ) {
+		return followedBy( new ToBagTransition( order ) );
+	}
+
+	public SetTransition refinesToSet() {
+		return refinesToSetBy( Order.inherent );
+	}
+
+	public SetTransition refinesToSetBy( Ord<Object> order ) {
+		return followedBy( new ToSetTranstion( order ) );
+	}
+
+	public UtileListTransition slices( int startInclusive, int endExclusive ) {
+		return takesFromTo( startInclusive, endExclusive - 1 );
+	}
+
+	public BagTransition sorts() {
+		return sortsBy( Order.inherent );
+	}
+
+	public BagTransition sortsBy( Ord<Object> order ) {
+		return followedBy( new SortingTransition( order ) );
+	}
+
+	public UtileListTransition sublists( int start, int length ) {
+		return followedBy( new SublistTransition( start, length ) );
+	}
+
+	public UtileListTransition swaps( int idx1, int idx2 ) {
+		return idx1 == idx2
+			? this
+			: followedBy( new SwapTransition( List.indexFor.elemAt( idx1 ),
+					List.indexFor.elemAt( idx2 ) ) );
+	}
+
+	public UtileListTransition takesFirst( int count ) {
+		return count <= 0
+			? followedBy( empty )
+			: takesTill( lastUpTo( count ), 1 );
+	}
+
+	public UtileListTransition takesFrom( int index ) {
+		return dropsFirst( index );
+	}
+
+	public UtileListTransition takesFromTo( int start, int end ) {
+		return sublists( start, end - start + 1 );
+	}
+
+	public UtileListTransition takesLast( int count ) {
+		return count <= 0
+			? followedBy( empty )
+			: dropsTill( List.indexFor.elemOn( -count ) );
+	}
+
+	public UtileListTransition takesTill( ListIndex index ) {
+		return takesTill( index, 0 );
+	}
+
+	public UtileListTransition takesTill( ListIndex index, int offset ) {
+		return followedBy( new TakeTillIndexTransition( index, offset ) );
+	}
+
+	public UtileListTransition takesUpTo( int index ) {
+		return takesFirst( index );
+	}
+
+	//TODO some kind of takeWhile working with a condition types with the list's type -> other interface
+	public UtileListTransition takesWhile( Predicate<Object> condition ) {
+		return followedBy( new TakeWhileTransition( condition ) );
+	}
+
+	public ListTransition tidiesUp() {
+		return followedBy( tidyUp ).pure();
+	}
+
+	public UtileListTransition trims( int count ) {
+		return followedBy( consec( dropsFirst( count ), dropsLast( count ) ) );
+	}
+
+	private BagTransition followedBy( BagTransition snd ) {
+		return consec( utilised, snd );
+	}
+
+	private UtileListTransition followedBy( ListTransition next ) {
+		if ( next == none ) {
+			return this;
 		}
-		return new ConsecutivelyBagTransition( fst, snd );
+		if ( next == empty ) {
+			return new UtileListTransition( next );
+		}
+		return new UtileListTransition( consec( utilised, next ) );
+	}
+
+	private SetTransition followedBy( SetTransition snd ) {
+		return consec( utilised, snd );
 	}
 
 	//TODO filter(Predicate)
-
-	static final class NoneTranstion
-			implements ListTransition {
-
-		@Override
-		public <E> List<E> from( List<E> list ) {
-			return list;
-		}
-	}
 
 	static final class EmptyingTransition
 			implements ListTransition {
@@ -283,15 +274,74 @@ public class UtileListTransition
 		}
 	}
 
-	static final class TimesTranstion
+	static abstract class FillAndArrangeTranstion
+			implements ListTransition {
+
+		protected final <E> List<E> arrangedStackList( List<E> list ) {
+			int size = list.length();
+			Object[] elems = new Object[Lang.nextHighestPowerOf2( size )];
+			list.fill( elems.length - size, elems, 0, size );
+			rearrange( elems, elems.length - size );
+			return HarpList.tidy( list.length(), elems, list.take( 0 ) );
+		}
+
+		protected abstract <E> void rearrange( Object[] list, int start );
+	}
+
+	static final class NoneTranstion
 			implements ListTransition {
 
 		@Override
 		public <E> List<E> from( List<E> list ) {
-			//TODO
-			return null;
+			return list;
+		}
+	}
+
+	static final class ShuffleTransition
+			extends FillAndArrangeTranstion {
+
+		@Override
+		public <E> List<E> from( List<E> list ) {
+			int size = list.length();
+			if ( size < 2 ) {
+				return list;
+			}
+			if ( size == 2 ) {
+				return List.that.swaps( 0, 1 ).from( list );
+			}
+			return arrangedStackList( list );
 		}
 
+		@Override
+		protected <E> void rearrange( Object[] list, int start ) {
+			Array.shuffle( list ); //FIXME consider start / end
+		}
+
+	}
+
+	static final class SortingTransition
+			extends FillAndArrangeTranstion
+			implements BagTransition {
+
+		private final Ord<Object> order;
+
+		SortingTransition( Ord<Object> order ) {
+			super();
+			this.order = order;
+		}
+
+		@Override
+		public <E> Bag<E> from( List<E> list ) {
+			int size = list.length();
+			return size < 2
+				? SortedList.bagOf( list, order )
+				: SortedList.bagOf( arrangedStackList( list ), order );
+		}
+
+		@Override
+		public <E> void rearrange( Object[] list, int start ) {
+			Order.sort( list, order ); //FIXME consider start
+		}
 	}
 
 	static final class SwapTransition
@@ -325,28 +375,6 @@ public class UtileListTransition
 		}
 	}
 
-	static final class ShuffleTransition
-			extends FillAndArrangeTranstion {
-
-		@Override
-		public <E> List<E> from( List<E> list ) {
-			int size = list.length();
-			if ( size < 2 ) {
-				return list;
-			}
-			if ( size == 2 ) {
-				return List.that.swaps( 0, 1 ).from( list );
-			}
-			return arrangedStackList( list );
-		}
-
-		@Override
-		protected <E> void rearrange( Object[] list, int start ) {
-			Array.shuffle( list ); //FIXME consider start / end
-		}
-
-	}
-
 	static final class TidyUpTransition
 			implements ListTransition {
 
@@ -357,93 +385,88 @@ public class UtileListTransition
 
 	}
 
-	private static final class ToSetTranstion
-			implements SetTransition {
-
-		private final Ord<Object> order;
-
-		ToSetTranstion( Ord<Object> ord ) {
-			super();
-			this.order = ord;
-		}
-
-		@Override
-		public <E> Set<E> from( List<E> list ) {
-			return SortedList.toSet( list, order );
-		}
-
-	}
-
-	private static final class DisambiguateTranstion
-			implements SetTransition {
-
-		private final Ord<Object> order;
-
-		DisambiguateTranstion( Ord<Object> order ) {
-			this.order = order;
-		}
-
-		@Override
-		public <E> Set<E> from( List<E> list ) {
-			if ( list instanceof Set<?> ) {
-				return (Set<E>) list;
-			}
-			if ( list.isEmpty() ) {
-				return Set.with.noElements();
-			}
-			if ( ! ( list instanceof Sorted ) ) {
-				list = List.that.sortsBy( order ).from( list );
-			}
-			Ord<Object> order = ( (Sorted) list ).order();
-			List<E> res = list;
-			//FIXME remove duplicates - can be done in O(n) since list is sorted in any case
-			return Set.with.elements( order, res );
-		}
-
-	}
-
-	private static final class ToBagTransition
-			implements BagTransition {
-
-		private final Ord<Object> order;
-
-		ToBagTransition( Ord<Object> order ) {
-			super();
-			this.order = order;
-		}
-
-		@Override
-		public <E> Bag<E> from( List<E> list ) {
-			return SortedList.toBag( list, order );
-		}
-
-	}
-
-	private static final class NubTransition
+	static final class TimesTranstion
 			implements ListTransition {
 
-		private final Eq<Object> eq;
+		@Override
+		public <E> List<E> from( List<E> list ) {
+			//TODO
+			return null;
+		}
 
-		NubTransition( Eq<Object> eq ) {
+	}
+
+	private static final class ConcatTransition
+			implements ListTransition {
+
+		private final ListTransition head;
+		private final ListTransition tail;
+
+		ConcatTransition( ListTransition head, ListTransition tail ) {
 			super();
-			this.eq = eq;
+			this.head = head;
+			this.tail = tail;
 		}
 
 		@Override
 		public <E> List<E> from( List<E> list ) {
-			List<E> res = list;
-			int i = 0;
-			while ( i < res.length() ) {
-				int index = List.indexFor.duplicateOfBy( i, eq ).in( res );
-				if ( index == ListIndex.NOT_CONTAINED ) {
-					i++;
-				} else {
-					res = res.deleteAt( index );
-				}
-			}
-			return res;
+			return head.from( list ).concat( tail.from( list ) );
 		}
 
+	}
+
+	private static final class ConsecutivelyBagTransition
+			implements BagTransition {
+
+		final ListTransition fst;
+		final BagTransition snd;
+
+		ConsecutivelyBagTransition( ListTransition fst, BagTransition snd ) {
+			super();
+			this.fst = fst;
+			this.snd = snd;
+		}
+
+		@Override
+		public <E> Bag<E> from( List<E> list ) {
+			return snd.from( fst.from( list ) );
+		}
+	}
+
+	private static final class ConsecutivelySetTransition
+			implements SetTransition {
+
+		final ListTransition fst;
+		final SetTransition snd;
+
+		ConsecutivelySetTransition( ListTransition fst, SetTransition snd ) {
+			super();
+			this.fst = fst;
+			this.snd = snd;
+		}
+
+		@Override
+		public <E> Set<E> from( List<E> list ) {
+			return snd.from( fst.from( list ) );
+		}
+	}
+
+	private static final class ConsecutivelyTransition
+			implements ListTransition {
+
+		final ListTransition fst;
+		final ListTransition snd;
+
+		ConsecutivelyTransition( ListTransition fst, ListTransition snd ) {
+			super();
+			this.fst = fst;
+			this.snd = snd;
+		}
+
+		@Override
+		public <E> List<E> from( List<E> list ) {
+			return snd.from( fst.from( list ) );
+		}
 	}
 
 	private static final class DeleteIndexTransition
@@ -465,21 +488,194 @@ public class UtileListTransition
 		}
 	}
 
-	private static final class ConcatTransition
+	private static final class DropTillIndexTransition
 			implements ListTransition {
 
-		private final ListTransition head;
-		private final ListTransition tail;
+		private final ListIndex index;
+		private final int offset;
 
-		ConcatTransition( ListTransition head, ListTransition tail ) {
+		DropTillIndexTransition( ListIndex index, int offset ) {
 			super();
-			this.head = head;
-			this.tail = tail;
+			this.index = index;
+			this.offset = offset;
 		}
 
 		@Override
 		public <E> List<E> from( List<E> list ) {
-			return head.from( list ).concat( tail.from( list ) );
+			return list.drop( index.in( list ) + offset );
+		}
+
+	}
+
+	private static final class DropWhileTransition
+			implements ListTransition {
+
+		final Predicate<Object> predicate;
+
+		DropWhileTransition( Predicate<Object> condition ) {
+			super();
+			this.predicate = condition;
+		}
+
+		@Override
+		public <E> List<E> from( List<E> list ) {
+			final int index = List.indexFor.firstFalse( predicate ).in( list );
+			return index == NOT_CONTAINED
+				? list.take( 0 ) // drop all by take nothing -> empty list
+				: list.drop( index );
+		}
+	}
+
+	private static final class NubTransition
+			implements ListTransition {
+
+		private final Ord<Object> order;
+
+		NubTransition( Ord<Object> order ) {
+			super();
+			this.order = order;
+		}
+
+		@Override
+		public <E> List<E> from( List<E> list ) {
+			//TODO in case list is order by an order equal to order required there is a faster way to nub
+			if ( list instanceof Bag<?> ) {
+				//TODO result should be a Set since we can be sure there are no duplicates any longer
+			}
+			Set<E> uniqe = Set.with.noElements( order );
+			List<E> res = List.with.noElements();
+			for ( int i = list.length(); i >= 0; i-- ) {
+				E e = list.at( i );
+				Set<E> withE = uniqe.insert( e );
+				if ( withE.length() > uniqe.length() ) {
+					uniqe = withE;
+					res.append( e );
+				}
+			}
+			return res;
+		}
+	}
+
+	private final static class ReversingList<E>
+			implements List<E> {
+
+		final List<E> list;
+
+		ReversingList( List<E> beingReversed ) {
+			super();
+			this.list = beingReversed;
+		}
+
+		@Override
+		public List<E> append( E e ) {
+			return reverseViewOf( list.prepand( e ) );
+		}
+
+		@Override
+		public E at( int index ) {
+			return list.at( reverseIndexOf( index ) );
+		}
+
+		@Override
+		public List<E> concat( List<E> other ) {
+			return reverseViewOf( other.concat( list ) );
+		}
+
+		@Override
+		public List<E> deleteAt( int index ) {
+			return reverseViewOf( list.deleteAt( reverseIndexOf( index ) ) );
+		}
+
+		@Override
+		public List<E> drop( int count ) {
+			return reverseViewOf( list.take( list.length() - count ) );
+		}
+
+		@Override
+		public void fill( int offset, Object[] array, int start, int length ) {
+			int size = list.length();
+			if ( start < size ) {
+				for ( int i = start; i < start + length; i++ ) {
+					array[offset++] = at( i );
+				}
+			}
+		}
+
+		@Override
+		public List<E> insertAt( int index, E e ) {
+			return reverseViewOf( list.insertAt( reverseIndexOf( index ), e ) );
+		}
+
+		@Override
+		public boolean isEmpty() {
+			return list.isEmpty();
+		}
+
+		@Override
+		public int length() {
+			return list.length();
+		}
+
+		@Override
+		public List<E> prepand( E e ) {
+			return reverseViewOf( list.append( e ) );
+		}
+
+		@Override
+		public List<E> replaceAt( int index, E e ) {
+			return reverseViewOf( list.replaceAt( reverseIndexOf( index ), e ) );
+		}
+
+		@Override
+		public List<E> take( int count ) {
+			return reverseViewOf( list.drop( list.length() - count ) );
+		}
+
+		@Override
+		public List<E> tidyUp() {
+			return reverseViewOf( list.tidyUp() );
+		}
+
+		@Override
+		public String toString() {
+			return list.toString();
+		}
+
+		@Override
+		public void traverse( int start, Traversal<? super E> traversal ) {
+			final int l = list.length();
+			int i = start;
+			int inc = 0;
+			while ( inc >= 0 && i < l ) {
+				inc = traversal.incrementOn( at( i ) );
+				i += inc;
+			}
+		}
+
+		private int reverseIndexOf( int index ) {
+			return list.length() - 1 - index;
+		}
+
+		private ReversingList<E> reverseViewOf( List<E> l ) {
+			return l == list
+				? this
+				: new ReversingList<E>( l );
+		}
+	}
+
+	private static final class ReversingTransition
+			implements ListTransition {
+
+		ReversingTransition() {
+			// make visible
+		}
+
+		@Override
+		public <E> List<E> from( List<E> list ) {
+			if ( list instanceof ReversingList<?> ) {
+				return ( (ReversingList<E>) list ).list;
+			}
+			return new ReversingList<E>( list );
 		}
 
 	}
@@ -535,79 +731,6 @@ public class UtileListTransition
 
 	}
 
-	private static final class DropTillIndexTransition
-			implements ListTransition {
-
-		private final ListIndex index;
-		private final int offset;
-
-		DropTillIndexTransition( ListIndex index, int offset ) {
-			super();
-			this.index = index;
-			this.offset = offset;
-		}
-
-		@Override
-		public <E> List<E> from( List<E> list ) {
-			return list.drop( index.in( list ) + offset );
-		}
-
-	}
-
-	private static final class ConsecutivelyTransition
-			implements ListTransition {
-
-		final ListTransition fst;
-		final ListTransition snd;
-
-		ConsecutivelyTransition( ListTransition fst, ListTransition snd ) {
-			super();
-			this.fst = fst;
-			this.snd = snd;
-		}
-
-		@Override
-		public <E> List<E> from( List<E> list ) {
-			return snd.from( fst.from( list ) );
-		}
-	}
-
-	private static final class ConsecutivelySetTransition
-			implements SetTransition {
-
-		final ListTransition fst;
-		final SetTransition snd;
-
-		ConsecutivelySetTransition( ListTransition fst, SetTransition snd ) {
-			super();
-			this.fst = fst;
-			this.snd = snd;
-		}
-
-		@Override
-		public <E> Set<E> from( List<E> list ) {
-			return snd.from( fst.from( list ) );
-		}
-	}
-
-	private static final class ConsecutivelyBagTransition
-			implements BagTransition {
-
-		final ListTransition fst;
-		final BagTransition snd;
-
-		ConsecutivelyBagTransition( ListTransition fst, BagTransition snd ) {
-			super();
-			this.fst = fst;
-			this.snd = snd;
-		}
-
-		@Override
-		public <E> Bag<E> from( List<E> list ) {
-			return snd.from( fst.from( list ) );
-		}
-	}
-
 	private static final class TakeWhileTransition
 			implements ListTransition {
 
@@ -628,186 +751,38 @@ public class UtileListTransition
 
 	}
 
-	private static final class DropWhileTransition
-			implements ListTransition {
+	private static final class ToBagTransition
+			implements BagTransition {
 
-		final Predicate<Object> predicate;
+		private final Ord<Object> order;
 
-		DropWhileTransition( Predicate<Object> condition ) {
+		ToBagTransition( Ord<Object> order ) {
 			super();
-			this.predicate = condition;
+			this.order = order;
 		}
 
 		@Override
-		public <E> List<E> from( List<E> list ) {
-			final int index = List.indexFor.firstFalse( predicate ).in( list );
-			return index == NOT_CONTAINED
-				? list.take( 0 ) // drop all by take nothing -> empty list
-				: list.drop( index );
-		}
-	}
-
-	private static final class ReversingTransition
-			implements ListTransition {
-
-		ReversingTransition() {
-			// make visible
-		}
-
-		@Override
-		public <E> List<E> from( List<E> list ) {
-			if ( list instanceof ReversingList<?> ) {
-				return ( (ReversingList<E>) list ).list;
-			}
-			return new ReversingList<E>( list );
+		public <E> Bag<E> from( List<E> list ) {
+			return Bag.with.elements( order, list );
 		}
 
 	}
 
-	static abstract class FillAndArrangeTranstion
-			implements ListTransition {
+	private static final class ToSetTranstion
+			implements SetTransition {
 
-		protected final <E> List<E> arrangedStackList( List<E> list ) {
-			int size = list.length();
-			Object[] elems = new Object[Lang.nextHighestPowerOf2( size )];
-			list.fill( elems.length - size, elems, 0, size );
-			rearrange( elems, elems.length - size );
-			return HarpList.tidy( list.length(), elems, list.take( 0 ) );
-		}
+		private final Ord<Object> order;
 
-		protected abstract <E> void rearrange( Object[] list, int start );
-	}
-
-	static final class SortingTransition
-			extends FillAndArrangeTranstion {
-
-		private final Ord<Object> ord;
-
-		SortingTransition( Ord<Object> ord ) {
+		ToSetTranstion( Ord<Object> ord ) {
 			super();
-			this.ord = ord;
+			this.order = ord;
 		}
 
 		@Override
-		public <E> List<E> from( List<E> list ) {
-			int size = list.length();
-			if ( size < 2 ) {
-				return list;
-			}
-			return arrangedStackList( list );
+		public <E> Set<E> from( List<E> list ) {
+			return Set.with.elements( order, list );
 		}
 
-		@Override
-		public <E> void rearrange( Object[] list, int start ) {
-			Order.sort( list, ord ); //FIXME consider start
-		}
-	}
-
-	private final static class ReversingList<E>
-			implements List<E> {
-
-		final List<E> list;
-
-		ReversingList( List<E> beingReversed ) {
-			super();
-			this.list = beingReversed;
-		}
-
-		@Override
-		public void fill( int offset, Object[] array, int start, int length ) {
-			int size = list.length();
-			if ( start < size ) {
-				for ( int i = start; i < start + length; i++ ) {
-					array[offset++] = at( i );
-				}
-			}
-		}
-
-		@Override
-		public List<E> append( E e ) {
-			return reverseViewOf( list.prepand( e ) );
-		}
-
-		@Override
-		public E at( int index ) {
-			return list.at( reverseIndexOf( index ) );
-		}
-
-		@Override
-		public List<E> concat( List<E> other ) {
-			return reverseViewOf( other.concat( list ) );
-		}
-
-		@Override
-		public List<E> deleteAt( int index ) {
-			return reverseViewOf( list.deleteAt( reverseIndexOf( index ) ) );
-		}
-
-		@Override
-		public List<E> drop( int count ) {
-			return reverseViewOf( list.take( list.length() - count ) );
-		}
-
-		@Override
-		public List<E> insertAt( int index, E e ) {
-			return reverseViewOf( list.insertAt( reverseIndexOf( index ), e ) );
-		}
-
-		@Override
-		public boolean isEmpty() {
-			return list.isEmpty();
-		}
-
-		@Override
-		public List<E> prepand( E e ) {
-			return reverseViewOf( list.append( e ) );
-		}
-
-		@Override
-		public int length() {
-			return list.length();
-		}
-
-		@Override
-		public List<E> take( int count ) {
-			return reverseViewOf( list.drop( list.length() - count ) );
-		}
-
-		@Override
-		public List<E> tidyUp() {
-			return reverseViewOf( list.tidyUp() );
-		}
-
-		private int reverseIndexOf( int index ) {
-			return list.length() - 1 - index;
-		}
-
-		private ReversingList<E> reverseViewOf( List<E> l ) {
-			return l == list
-				? this
-				: new ReversingList<E>( l );
-		}
-
-		@Override
-		public List<E> replaceAt( int index, E e ) {
-			return reverseViewOf( list.replaceAt( reverseIndexOf( index ), e ) );
-		}
-
-		@Override
-		public String toString() {
-			return list.toString();
-		}
-
-		@Override
-		public void traverse( int start, Traversal<? super E> traversal ) {
-			final int l = list.length();
-			int i = start;
-			int inc = 0;
-			while ( inc >= 0 && i < l ) {
-				inc = traversal.incrementOn( at( i ) );
-				i += inc;
-			}
-		}
 	}
 
 }

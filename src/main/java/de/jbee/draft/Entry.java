@@ -1,5 +1,5 @@
 package de.jbee.draft;
 
-public interface Entry<K, V> {
+public interface Entry<V> {
 
 }

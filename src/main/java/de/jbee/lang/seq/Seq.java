@@ -14,6 +14,8 @@ import de.jbee.lang.seq.HarpList.TidyHarpList;
 public final class Seq {
 
 	public static final Lister LISTER = new DefaultLister();
+	public static final Lister.BagLister BAG_LISTER = new UtileBagLister();
+	public static final Lister.SetLister SET_LISTER = new UtileSetLister();
 	public static final EnumeratorFactory ENUMERATOR_FACTORY = EnumList.ENUMERATOR_FACTORY;
 	public static final EnumeratorFactory LISTER_ENUMERATOR_FACTORY = new ListerEnumeratorFactory();
 
@@ -51,7 +53,7 @@ public final class Seq {
 			}
 			Object[] stack = new Object[Lang.nextHighestPowerOf2( size )];
 			System.arraycopy( elems, 0, stack, stack.length - size, size );
-			return HarpList.tidy( size, stack, EmptyList.<E> instance() );
+			return HarpList.tidy( size, stack );
 		}
 
 		@Override
@@ -72,7 +74,7 @@ public final class Seq {
 					stack[index++] = elems.at( i );
 				}
 			}
-			return HarpList.tidy( size, stack, EmptyList.<E> instance() );
+			return HarpList.tidy( size, stack );
 		}
 
 		@Override

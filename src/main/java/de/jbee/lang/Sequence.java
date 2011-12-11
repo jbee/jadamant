@@ -1,12 +1,19 @@
 package de.jbee.lang;
 
+import de.jbee.lang.dev.Nonnull;
+
 /**
  * A {@linkplain Sequence} is a fixed length data-structure that is also {@link IndexAccessible}.
+ * <p>
+ * <b>By convention {@linkplain Sequence}s will never accept/contain <code>null</code> -references!
+ * Each implementation has to ensure this constraint!</b>
+ * </p>
  * 
  * @author Jan Bernitt (jan.bernitt@gmx.de)
  * 
  * @see List, Set, Bag
  * @see ModifiableSequence
+ * @see Nonnull#element(Object)
  */
 public interface Sequence<E>
 		extends IndexAccessible<E> {

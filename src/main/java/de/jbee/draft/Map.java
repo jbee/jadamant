@@ -2,8 +2,8 @@ package de.jbee.draft;
 
 import de.jbee.lang.Set;
 
-public interface Map<K, V>
-		extends Set<Entry<K, V>> {
+public interface Map<V>
+		extends Set<Entry<V>> {
 
-	V get( K key );
+	V get( String key );
 }

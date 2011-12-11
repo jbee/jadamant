@@ -14,12 +14,15 @@ import de.jbee.lang.dev.Nonnull;
 final class EnumList<E>
 		implements List<E> {
 
+	//OPEN isn't a EnumList also a Set ?
+
 	static final EnumeratorFactory ENUMERATOR_FACTORY = new EnumListEnumeratorFactory();
 
-	@SuppressWarnings ( "unchecked" )
 	static <T extends java.lang.Enum<?>> List<T> withElement( T e ) {
 		Class<? extends java.lang.Enum<?>> c = e.getDeclaringClass();
-		return new EnumList<T>( (Enum<T>) Enumerate.type( c ), e, e );
+		@SuppressWarnings ( "unchecked" )
+		Enum<T> type = (Enum<T>) Enumerate.type( c );
+		return new EnumList<T>( type, e, e );
 	}
 
 	private final List<E> tail;

@@ -1,13 +1,14 @@
 package de.jbee.lang.seq;
 
+import static de.jbee.lang.ListIndex.NOT_CONTAINED;
 import static de.jbee.lang.seq.ListMatcher.hasEqualElementsAsIn;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 
 import de.jbee.lang.List;
-import de.jbee.lang.ListIndex;
 import de.jbee.lang.Order;
 import de.jbee.lang.Set;
 
@@ -22,7 +23,9 @@ public class TestSet {
 	@Test
 	public void testInsert_DuplicateCase() {
 		Set<Integer> s = Set.refine.from( List.with.elements( 1, 2, 3, 4, 5 ) );
-		assertThat( s.insert( 2 ), hasEqualElementsAsIn( 1, 2, 3, 4, 5 ) );
+		Set<Integer> s2 = s.insert( 2 );
+		assertThat( s2, hasEqualElementsAsIn( 1, 2, 3, 4, 5 ) );
+		assertThat( s2, sameInstance( s ) );
 	}
 
 	@Test
@@ -42,24 +45,32 @@ public class TestSet {
 	@Test
 	public void testIndexFor_MissingElementCase() {
 		Set<Integer> s = Set.refine.from( List.with.elements( 5, 4, 3, 2, 1 ) );
-		assertThat( s.indexFor( 0 ), is( ListIndex.NOT_CONTAINED ) );
-		assertThat( s.indexFor( 6 ), is( ListIndex.NOT_CONTAINED ) );
-		assertThat( s.indexFor( -1 ), is( ListIndex.NOT_CONTAINED ) );
+		assertThat( s.indexFor( 0 ), is( NOT_CONTAINED ) );
+		assertThat( s.indexFor( 6 ), is( NOT_CONTAINED ) );
+		assertThat( s.indexFor( -1 ), is( NOT_CONTAINED ) );
 	}
 
 	@Test
 	public void testIndexFor_PrefixMatchCase() {
 		Set<String> s = Set.with.elements( Order.typeaware( Order.alphabetical, String.class ),
 				List.with.elements( "a.b", "a.c" ) );
-		assertThat( s.indexFor( "a" ), is( ListIndex.NOT_CONTAINED ) );
-		assertThat( s.indexFor( "a." ), is( ListIndex.NOT_CONTAINED ) );
-		assertThat( s.indexFor( "a.a" ), is( ListIndex.NOT_CONTAINED ) );
-		assertThat( s.indexFor( "a.d" ), is( ListIndex.NOT_CONTAINED ) );
+		assertThat( s.indexFor( "a" ), is( NOT_CONTAINED ) );
+		assertThat( s.indexFor( "a." ), is( NOT_CONTAINED ) );
+		assertThat( s.indexFor( "a.a" ), is( NOT_CONTAINED ) );
+		assertThat( s.indexFor( "a.d" ), is( NOT_CONTAINED ) );
+		assertThat( s.indexFor( "a.b" ), is( 0 ) );
+		assertThat( s.indexFor( "a.c" ), is( 1 ) );
 	}
 
 	@Test
 	public void testIndexFor_EmptySetCase() {
 		Set<Integer> s = Set.with.noElements();
-		assertThat( s.indexFor( 0 ), is( ListIndex.NOT_CONTAINED ) );
+		assertThat( s.indexFor( 0 ), is( NOT_CONTAINED ) );
+	}
+
+	@Test
+	public void testEntriesAt_ExistingElementCase() {
+		Set<Integer> s = Set.refine.from( List.with.elements( 5, 4, 3, 2, 1 ) );
+		assertThat( s.entriesAt( 0 ), hasEqualElementsAsIn( 1 ) );
 	}
 }

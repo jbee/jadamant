@@ -1,7 +1,7 @@
 package de.jbee.lang;
 
 /**
- * The ability to determine the index of a specific element.
+ * The ability to determine the index of a specific element (in a {@link Sequence}).
  * 
  * @author Jan Bernitt (jan.bernitt@gmx.de)
  * 

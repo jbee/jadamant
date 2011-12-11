@@ -1,7 +1,6 @@
 package de.jbee.lang.seq;
 
 import de.jbee.lang.Bag;
-import de.jbee.lang.Equal;
 import de.jbee.lang.IndexDeterminable;
 import de.jbee.lang.List;
 import de.jbee.lang.ListIndex;
@@ -14,23 +13,17 @@ import de.jbee.lang.Traversal;
 abstract class SortedList<E, L extends Sorted & List<E>>
 		implements IndexDeterminable<E>, Sorted, List<E> {
 
-	public static <E> Set<E> toSet( List<E> list, Ord<Object> order ) {
-		return list instanceof Set<?>
-			? (Set<E>) list
-			: asSet( List.that.sortsBy( order ).nubsBy( Equal.by( order ) ).from( list ), order );
-	}
-
-	public static <E> Bag<E> toBag( List<E> list, Ord<Object> order ) {
-		return list instanceof Bag<?>
-			? (Bag<E>) list
-			: asBag( List.that.sortsBy( order ).from( list ), order );
-	}
-
-	static <E> Bag<E> asBag( List<E> elements, Ord<Object> order ) {
+	/**
+	 * The elements are considered to be ordered by given order.
+	 */
+	static <E> Bag<E> bagOf( List<E> elements, Ord<Object> order ) {
 		return new BagList<E>( order, elements );
 	}
 
-	static <E> Set<E> asSet( List<E> elements, Ord<Object> order ) {
+	/**
+	 * The elements are considered to be ordered by given order and containing no duplicates.
+	 */
+	static <E> Set<E> setOf( List<E> elements, Ord<Object> order ) {
 		return new SetList<E>( order, elements );
 	}
 
@@ -186,14 +179,14 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 		public Bag<E> entriesAt( int index ) {
 			int l = length();
 			if ( index < 0 || index >= l ) {
-				return asBag( List.with.<E> noElements(), order() );
+				return bagOf( List.with.<E> noElements(), order() );
 			}
 			E e = at( index );
 			int end = index + 1;
 			while ( end < l && containsAt( end, e ) ) {
 				end++;
 			}
-			return asBag( List.that.slices( index, end ).from( elems() ), order() );
+			return bagOf( List.that.slices( index, end ).from( elems() ), order() );
 		}
 
 		@Override
@@ -227,7 +220,7 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 			if ( !containsAt( idx, e ) ) {
 				return insert( e, idx );
 			}
-			return asBag( elems().insertAt( idx, e ), order() );
+			return bagOf( elems().insertAt( idx, e ), order() );
 		}
 
 		private Set<E> insert( E e, int index ) {
@@ -237,9 +230,9 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 		@Override
 		public Bag<E> entriesAt( int index ) {
 			if ( index < 0 || index >= length() ) {
-				return asBag( List.with.<E> noElements(), order() );
+				return bagOf( List.with.<E> noElements(), order() );
 			}
-			return asBag( List.with.element( at( index ) ), order() );
+			return bagOf( List.with.element( at( index ) ), order() );
 		}
 
 		@Override

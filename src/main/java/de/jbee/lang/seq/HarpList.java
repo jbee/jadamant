@@ -27,6 +27,10 @@ import de.jbee.lang.dev.Nonnull;
 abstract class HarpList<E>
 		implements List<E> {
 
+	static <E> List<E> tidy( int size, Object[] string ) {
+		return tidy( size, string, List.with.<E> noElements() );
+	}
+
 	static <E> List<E> tidy( int size, Object[] string, List<E> tail ) {
 		return new TidyHarpList<E>( size, string, tail );
 	}
