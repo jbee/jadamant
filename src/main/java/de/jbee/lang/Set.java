@@ -2,7 +2,7 @@ package de.jbee.lang;
 
 import de.jbee.lang.ListTransition.SetTransition;
 import de.jbee.lang.Lister.SetLister;
-import de.jbee.lang.seq.Seq;
+import de.jbee.lang.seq.Sequences;
 
 /**
  * Sets are always {@link Sorted} and therefore a {@link List} that doesn't allow duplicates.
@@ -15,7 +15,7 @@ import de.jbee.lang.seq.Seq;
 public interface Set<E>
 		extends Bag<E> {
 
-	SetLister with = Seq.SET_LISTER;
+	SetLister with = Sequences.SET_LISTER;
 	SetTransition refine = List.that.refinesToSet();
 
 	//OPEN how to make the ListIndex work with the Ord from this Set (Sorted) for Ord or Eq depended indexes 

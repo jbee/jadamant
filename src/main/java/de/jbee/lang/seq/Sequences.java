@@ -11,7 +11,12 @@ import de.jbee.lang.Lister;
 import de.jbee.lang.Sequence;
 import de.jbee.lang.seq.HarpList.TidyHarpList;
 
-public final class Seq {
+/**
+ * Acts as a API of this package. It publishes the implementation though their interfaces.
+ * 
+ * @author Jan Bernitt (jan.bernitt@gmx.de)
+ */
+public final class Sequences {
 
 	public static final Lister LISTER = new DefaultLister();
 	public static final Lister.BagLister BAG_LISTER = new UtileBagLister();

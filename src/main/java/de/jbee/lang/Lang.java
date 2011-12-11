@@ -4,7 +4,7 @@ import static de.jbee.lang.Enumerate.CHARACTERS;
 import static de.jbee.lang.Enumerate.DIGITS;
 import static de.jbee.lang.Enumerate.INTEGERS;
 import static de.jbee.lang.Enumerate.LETTERS;
-import de.jbee.lang.seq.Seq;
+import de.jbee.lang.seq.Sequences;
 import de.jbee.lang.seq.UtileEnumerator;
 import de.jbee.lang.seq.UtileEnumeratorFactory;
 import de.jbee.lang.seq.UtileLister;
@@ -30,7 +30,7 @@ public final class Lang {
 	public static final UtileLister list = new UtileLister( listProxy );
 
 	private static final ProxyEnumeratorFactory enumeratorProxy = new ProxyEnumeratorFactory(
-			Seq.ENUMERATOR_FACTORY );
+			Sequences.ENUMERATOR_FACTORY );
 	public static final UtileEnumeratorFactory enumerator = new UtileEnumeratorFactory(
 			enumeratorProxy );
 
@@ -225,7 +225,7 @@ public final class Lang {
 	static final class ProxyLister
 			implements Lister {
 
-		Lister factory = Seq.LISTER;
+		Lister factory = Sequences.LISTER;
 
 		ProxyLister() {
 			// hide for singleton

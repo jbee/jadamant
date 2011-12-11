@@ -2,7 +2,7 @@ package de.jbee.lang;
 
 import de.jbee.lang.ListTransition.BagTransition;
 import de.jbee.lang.Lister.BagLister;
-import de.jbee.lang.seq.Seq;
+import de.jbee.lang.seq.Sequences;
 
 /**
  * {@linkplain Bag}s are {@link Sorted} {@link List}s as well as {@link Set}s are. In contrast to
@@ -16,7 +16,7 @@ public interface Bag<E>
 		extends IndexDeterminable<E>, Sorted, List<E> {
 
 	BagTransition refine = List.that.refinesToBag();
-	BagLister with = Seq.BAG_LISTER;
+	BagLister with = Sequences.BAG_LISTER;
 
 	/**
 	 * Adds e at the correct index in this bag. If this bag contains a element equal to e this will
