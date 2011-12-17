@@ -29,6 +29,11 @@ final class EmptyList<E>
 	}
 
 	@Override
+	public List<E> tail() {
+		return this;
+	}
+
+	@Override
 	public List<E> append( E e ) {
 		return prepand( e );
 	}

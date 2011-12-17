@@ -282,7 +282,7 @@ public class UtileListTransition
 			Object[] elems = new Object[Lang.nextHighestPowerOf2( size )];
 			list.fill( elems.length - size, elems, 0, size );
 			rearrange( elems, elems.length - size );
-			return HarpList.tidy( list.length(), elems, list.take( 0 ) );
+			return EvolutionList.dominant( list.length(), elems, list.take( 0 ) );
 		}
 
 		protected abstract <E> void rearrange( Object[] list, int start );
@@ -569,6 +569,11 @@ public class UtileListTransition
 		@Override
 		public List<E> append( E e ) {
 			return reverseViewOf( list.prepand( e ) );
+		}
+
+		@Override
+		public List<E> tail() {
+			return reverseViewOf( list.tail() );
 		}
 
 		@Override

@@ -43,6 +43,11 @@ final class EnumList<E>
 	}
 
 	@Override
+	public List<E> tail() {
+		return tail;
+	}
+
+	@Override
 	public void traverse( int start, Traversal<? super E> traversal ) {
 		final int l = len();
 		int i = start;

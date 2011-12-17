@@ -50,6 +50,11 @@ final class ElementList<E>
 	}
 
 	@Override
+	public List<E> tail() {
+		return tail;
+	}
+
+	@Override
 	public List<E> append( E e ) {
 		Nonnull.element( e );
 		return tail.isEmpty()
@@ -112,7 +117,7 @@ final class ElementList<E>
 	public List<E> prepand( E e ) {
 		Nonnull.element( e );
 		//TODO not use StackList directly - Lister has to be extended to support tail list arguments in some way
-		return HarpList.tidy( length() + 1, Array.withLastElement( e, 2 ), this );
+		return EvolutionList.dominant( length() + 1, Array.withLastElement( e, 2 ), this );
 	}
 
 	@Override

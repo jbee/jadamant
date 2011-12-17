@@ -9,10 +9,15 @@ import de.jbee.lang.Lang;
 import de.jbee.lang.List;
 import de.jbee.lang.Lister;
 import de.jbee.lang.Sequence;
-import de.jbee.lang.seq.HarpList.TidyHarpList;
+import de.jbee.lang.seq.EvolutionList.DominantEvolutionList;
 
 /**
- * Acts as a API of this package. It publishes the implementation though their interfaces.
+ * Acts as a API of this package. It 'publishes' the implementation (they are package local) though
+ * their interfaces.
+ * <p>
+ * This is *not* a {@link Sequence} or {@link List} util-class. In case you are looking for
+ * utilities have a look to the {@link List} interface instead.
+ * </p>
  * 
  * @author Jan Bernitt (jan.bernitt@gmx.de)
  */
@@ -26,7 +31,7 @@ public final class Sequences {
 
 	/**
 	 * A {@link Lister} uses the default implementations {@link EmptyList}, {@link ElementList},
-	 * {@link HarpList} and {@link EnumList}.
+	 * {@link EvolutionList} and {@link EnumList}.
 	 * 
 	 * @author Jan Bernitt (jan.bernitt@gmx.de)
 	 */
@@ -58,7 +63,7 @@ public final class Sequences {
 			}
 			Object[] stack = new Object[Lang.nextHighestPowerOf2( size )];
 			System.arraycopy( elems, 0, stack, stack.length - size, size );
-			return HarpList.tidy( size, stack );
+			return EvolutionList.dominant( size, stack );
 		}
 
 		@Override
@@ -79,7 +84,7 @@ public final class Sequences {
 					stack[index++] = elems.at( i );
 				}
 			}
-			return HarpList.tidy( size, stack );
+			return EvolutionList.dominant( size, stack );
 		}
 
 		@Override
@@ -131,7 +136,7 @@ public final class Sequences {
 							: type.succ( cur );
 					}
 				}
-				res = new TidyHarpList<E>( size, stack, res );
+				res = new DominantEvolutionList<E>( size, stack, res );
 				capacity += capacity;
 			}
 			return res;

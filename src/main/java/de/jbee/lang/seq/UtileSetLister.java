@@ -16,8 +16,7 @@ public class UtileSetLister
 
 	@Override
 	public <E> Set<E> elements( Ord<Object> order, List<E> elems ) {
-
-		return null;
+		throw new UnsupportedOperationException( "missing impl." );
 	}
 
 	@Override
@@ -32,7 +31,7 @@ public class UtileSetLister
 
 	@Override
 	public <E> Set<E> elements( E... elems ) {
-		return null;
+		throw new UnsupportedOperationException( "missing impl." );
 	}
 
 	@Override
@@ -42,8 +41,7 @@ public class UtileSetLister
 
 	@Override
 	public <E> Set<E> noElements( Ord<Object> order ) {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException( "missing impl." );
 	}
 
 }

@@ -171,6 +171,11 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 		}
 
 		@Override
+		public Bag<E> tail() {
+			return bagOf( elems().tail(), order() );
+		}
+
+		@Override
 		public Bag<E> add( E e ) {
 			return thisWith( elems().insertAt( insertionIndexFor( e ), e ) );
 		}
@@ -212,6 +217,11 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 
 		SetList( Ord<Object> ord, List<E> elements ) {
 			super( ord, elements );
+		}
+
+		@Override
+		public Set<E> tail() {
+			return setOf( elems().tail(), order() );
 		}
 
 		@Override
