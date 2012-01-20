@@ -18,42 +18,23 @@ public class TestList {
 	private static final int LIST_SIZE = 30;
 
 	@Test ( expected = IndexOutOfBoundsException.class )
-	public void testAtOnEmptyListOutOfBoundsException() {
+	public void testAt_OnEmptyListOutOfBoundsException() {
 		List<Integer> l = List.with.noElements();
 		l.at( 0 );
 	}
 
 	@Test ( expected = IndexOutOfBoundsException.class )
-	public void testAtOnOneElementListOutOfBoundsException() {
+	public void testAt_OnOneElementListOutOfBoundsException() {
 		List<Integer> l = List.with.noElements();
 		l = l.prepand( 1 );
 		l.at( 1 );
 	}
 
 	@Test ( expected = IndexOutOfBoundsException.class )
-	public void testAtOnTwoElementListOutOfBoundsException() {
+	public void testAt_OnTwoElementListOutOfBoundsException() {
 		List<Integer> l = List.with.noElements();
 		l = l.prepand( 1 ).prepand( 2 );
 		l.at( 2 );
-	}
-
-	@Test
-	public void testFill() {
-		verifyFillAll( List.with.elements( 1, 2, 3, 4, 5 ) );
-		verifyFillAll( List.with.elements( 9, 7, 6, 4, 3, 1 ) );
-	}
-
-	@Test
-	public void testFillEnumStack() {
-		verifyFillAll( List.numbers.fromTo( 1, 4 ).concat( List.with.elements( 6, 9, 2 ) ) );
-	}
-
-	private void verifyFillAll( List<Integer> l ) {
-		Integer[] a = new Integer[l.length()];
-		l.fill( 0, a, 0, l.length() );
-		for ( int i = 0; i < a.length; i++ ) {
-			assertThat( a[i], is( l.at( i ) ) );
-		}
 	}
 
 	@Test
@@ -77,49 +58,34 @@ public class TestList {
 	}
 
 	@Test
-	public void testDescendingDropL() {
+	public void testDropL_DescendingList() {
 		verifyDropL( descendingTo1From( LIST_SIZE ) );
 	}
 
 	@Test
-	public void testDescendingDropR() {
-		verifyDropR( descendingTo1From( LIST_SIZE ) );
-	}
-
-	@Test
-	public void testDescendingTakeL() {
-		verifyTakeL( descendingTo1From( LIST_SIZE ) );
-	}
-
-	@Test
-	public void testDescendingTakeR() {
-		verifyTakeR( descendingTo1From( LIST_SIZE ) );
-	}
-
-	@Test
-	public void testRandomDropL() {
+	public void testDropL_RandomList() {
 		verifyDropL( randomized( LIST_SIZE ) );
 	}
 
 	@Test
-	public void testRandomDropR() {
+	public void testDropR_DescendingList() {
+		verifyDropR( descendingTo1From( LIST_SIZE ) );
+	}
+
+	@Test
+	public void testDropR_RandomList() {
 		verifyDropR( randomized( LIST_SIZE ) );
 	}
 
 	@Test
-	public void testRandomTakeL() {
-		verifyTakeL( randomized( LIST_SIZE ) );
+	public void testFill() {
+		verifyFill_All( List.with.elements( 1, 2, 3, 4, 5 ) );
+		verifyFill_All( List.with.elements( 9, 7, 6, 4, 3, 1 ) );
 	}
 
 	@Test
-	public void testRandomTakeR() {
-		verifyTakeR( randomized( LIST_SIZE ) );
-	}
-
-	@Test
-	public void testDescendingFollowdByMixedTakeR() {
-		verifyTakeR( List.with.elements( 7, 1, 2, 11, 19, 11, 22, 11, 12 ) );
-		verifyTakeR( List.with.elements( 7, 1, 2, 11, 19, 11, 22, 10, 11, 12 ) );
+	public void testFill_EnumStack() {
+		verifyFill_All( List.numbers.fromTo( 1, 4 ).concat( List.with.elements( 6, 9, 2 ) ) );
 	}
 
 	@Test
@@ -135,30 +101,38 @@ public class TestList {
 	}
 
 	@Test
+	public void testTakeL_DescendingList() {
+		verifyTakeL( descendingTo1From( LIST_SIZE ) );
+	}
+
+	@Test
+	public void testTakeL_RandomList() {
+		verifyTakeL( randomized( LIST_SIZE ) );
+	}
+
+	@Test
+	public void testTakeR_DescendingFollowdByMixedList() {
+		verifyTakeR( List.with.elements( 7, 1, 2, 11, 19, 11, 22, 11, 12 ) );
+		verifyTakeR( List.with.elements( 7, 1, 2, 11, 19, 11, 22, 10, 11, 12 ) );
+	}
+
+	@Test
+	public void testTakeR_DescendingList() {
+		verifyTakeR( descendingTo1From( LIST_SIZE ) );
+	}
+
+	@Test
+	public void testTakeR_RandomList() {
+		verifyTakeR( randomized( LIST_SIZE ) );
+	}
+
+	@Test
 	public void testTraverse() {
 		verifyTraverseIterative( List.with.elements( 1, 4, 7, 2, 9 ) );
 		verifyTraverseIterative( List.with.elements( 1, 2, 3, 4, 5 ) );
 		verifyTraverseIterative( List.with.elements( 42, 20 ) );
 		verifyTraverseIterative( List.with.elements( 42 ) );
 		verifyTraverseIterative( List.with.<Integer> noElements() );
-	}
-
-	private void verifyTraverseIterative( final List<Integer> l ) {
-		final int[] readI = new int[1];
-		l.traverse( 0, new Traversal<Integer>() {
-
-			int i = 0;
-
-			@Override
-			public int incrementOn( Integer e ) {
-				assertThat( e, is( l.at( i++ ) ) );
-				readI[0] = i;
-				return 1;
-			}
-
-		} );
-		// make sure increment on has been called 
-		assertThat( readI[0], is( l.length() ) );
 	}
 
 	private List<Integer> descendingTo1From( final int start ) {
@@ -208,6 +182,14 @@ public class TestList {
 		}
 	}
 
+	private void verifyFill_All( List<Integer> l ) {
+		Integer[] a = new Integer[l.length()];
+		l.fill( 0, a, 0, l.length() );
+		for ( int i = 0; i < a.length; i++ ) {
+			assertThat( a[i], is( l.at( i ) ) );
+		}
+	}
+
 	private void verifyTakeL( List<Integer> l ) {
 		final int size = l.length();
 		assertThat( l.take( size ), sameInstance( l ) );
@@ -233,6 +215,24 @@ public class TestList {
 			assertThat( taken.length(), is( i ) );
 			assertThat( taken.at( 0 ), is( l.at( size - i ) ) );
 		}
+	}
+
+	private void verifyTraverseIterative( final List<Integer> l ) {
+		final int[] readI = new int[1];
+		l.traverse( 0, new Traversal<Integer>() {
+
+			int i = 0;
+
+			@Override
+			public int incrementOn( Integer e ) {
+				assertThat( e, is( l.at( i++ ) ) );
+				readI[0] = i;
+				return 1;
+			}
+
+		} );
+		// make sure increment on has been called 
+		assertThat( readI[0], is( l.length() ) );
 	}
 
 }
