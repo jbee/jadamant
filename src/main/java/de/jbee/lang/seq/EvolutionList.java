@@ -61,7 +61,7 @@ abstract class EvolutionList<E>
 	}
 
 	@Override
-	public List<E> tail() {
+	public List<E> subsequent() {
 		return tail;
 	}
 

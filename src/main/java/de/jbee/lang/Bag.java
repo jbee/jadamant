@@ -38,7 +38,7 @@ public interface Bag<E>
 	 */
 
 	@Override
-	Bag<E> tail();
+	Bag<E> subsequent();
 
 	@Override
 	Bag<E> deleteAt( int index );

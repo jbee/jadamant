@@ -572,8 +572,8 @@ public class UtileListTransition
 		}
 
 		@Override
-		public List<E> tail() {
-			return reverseViewOf( list.tail() );
+		public List<E> subsequent() {
+			return reverseViewOf( list.subsequent() );
 		}
 
 		@Override

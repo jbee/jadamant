@@ -43,7 +43,7 @@ final class EnumList<E>
 	}
 
 	@Override
-	public List<E> tail() {
+	public List<E> subsequent() {
 		return tail;
 	}
 

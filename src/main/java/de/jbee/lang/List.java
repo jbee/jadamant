@@ -36,8 +36,8 @@ import de.jbee.lang.seq.UtileLister;
  * 
  */
 public interface List<E>
-		extends Prepandable<E>, Appendable<E>, TailedSequence<E>, Sequence<E>, ModifiableSequence<E>,
-		Arrayable, Traversable<E>, RandomAccess, Serializable {
+		extends Prepandable<E>, Appendable<E>, PartialSequence<E>, Sequence<E>,
+		ModifiableSequence<E>, Arrayable, Traversable<E>, RandomAccess, Serializable {
 
 	/**
 	 * The operator to use in a {@link Object#toString()} when visualizing concatenation of lists.
@@ -76,7 +76,7 @@ public interface List<E>
 	 */
 
 	@Override
-	List<E> tail();
+	List<E> subsequent();
 
 	/*
 	 * Covariant return type overrides for inherited methods from Appendable and Prepandable

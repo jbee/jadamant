@@ -31,7 +31,7 @@ public interface Set<E>
 	 */
 
 	@Override
-	Set<E> tail();
+	Set<E> subsequent();
 
 	@Override
 	Set<E> deleteAt( int index );

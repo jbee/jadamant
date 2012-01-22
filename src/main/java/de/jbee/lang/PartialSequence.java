@@ -1,6 +1,6 @@
 package de.jbee.lang;
 
-public interface TailedSequence<E>
+public interface PartialSequence<E>
 		extends Sequence<E> {
 
 	/**
@@ -10,5 +10,5 @@ public interface TailedSequence<E>
 	 * may be the empty list too. In any case the tail is the ending of this list. So it will refer
 	 * to the same elements in the same sequence as the same length sublist at the end of this list.
 	 */
-	TailedSequence<E> tail();
+	PartialSequence<E> subsequent();
 }
