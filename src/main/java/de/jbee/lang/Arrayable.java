@@ -5,8 +5,8 @@ package de.jbee.lang;
  * <p>
  * This is kind of replacement for the 'asking' <code>toArray()</code> functionality. A object
  * instead is 'told' to set its data into an arrays cells. Thereby the creation of the array is
- * moved to the caller. This has the additional benefit that it can be avoided to create temporary
- * arrays just to 'get out' the data before copying multiple parts together into a larger one.
+ * moved to the caller. As an additional benefit it can be avoided to create temporary arrays just
+ * to 'get out' the data before copying multiple parts together into a larger one.
  * </p>
  * 
  * @author Jan Bernitt (jan.bernitt@gmx.de)

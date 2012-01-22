@@ -9,7 +9,7 @@ import de.jbee.lang.Traversal;
 import de.jbee.lang.dev.Nonnull;
 
 /**
- * A list consists of a single element and another {@link List} as tail.
+ * A list consists of a single element and another subsequent {@link List} as tail.
  * 
  * So a {@linkplain ElementList} will not have {@link #length()} of 1 as soon as the tail list isn't
  * empty.
