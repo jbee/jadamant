@@ -4,6 +4,7 @@ import de.jbee.lang.Bag;
 import de.jbee.lang.IndexDeterminable;
 import de.jbee.lang.List;
 import de.jbee.lang.ListIndex;
+import de.jbee.lang.Map;
 import de.jbee.lang.Ord;
 import de.jbee.lang.Order;
 import de.jbee.lang.Set;
@@ -25,6 +26,10 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 	 */
 	static <E> Set<E> setOf( List<E> elements, Ord<Object> order ) {
 		return new SetList<E>( order, elements );
+	}
+
+	static <E> Map<E> mapOf( Set<Map.Entry<E>> entries ) {
+		return new MapList<E>( entries );
 	}
 
 	private final Ord<Object> order;
@@ -159,7 +164,7 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 	}
 
 	final boolean containsAt( int index, E e ) {
-		return order.ord( e, at( index ) ).isEq();
+		return index < elems.length() && order.ord( e, at( index ) ).isEq();
 	}
 
 	private static class BagList<E>
@@ -272,4 +277,49 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 
 	}
 
+	private static class MapList<V>
+			extends SetList<Map.Entry<V>>
+			implements Map<V> {
+
+		MapList( Set<Map.Entry<V>> entries ) {
+			super( ENTRY_ORDER, entries );
+		}
+
+		@Override
+		public V get( CharSequence key ) {
+			final int idx = indexFor( new Entry<V>( key.toString(), null ) );
+			return idx >= 0
+				? at( idx ).value()
+				: null;
+		}
+
+		@Override
+		public Map<V> put( CharSequence key, V value ) {
+			return new MapList<V>( insert( new Entry<V>( key.toString(), value ) ) );
+		}
+
+		static final class Entry<V>
+				implements Map.Entry<V> {
+
+			final String key;
+			final V value;
+
+			Entry( String key, V value ) {
+				super();
+				this.key = key;
+				this.value = value;
+			}
+
+			@Override
+			public CharSequence key() {
+				return key;
+			}
+
+			@Override
+			public V value() {
+				return value;
+			}
+
+		}
+	}
 }

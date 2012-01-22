@@ -58,6 +58,11 @@ public final class Order {
 	public static final Ord<Calendar> calendrical = new CalendricalOrder();
 	public static final Ord<Object> hashCode = new HashCodeOrder();
 
+	@SuppressWarnings ( "unchecked" )
+	public static final Ord<Map.Entry> entriesBy( Ord<CharSequence> keyOrder ) {
+		return new EntryOrder( keyOrder );
+	}
+
 	public static boolean keepable( Sorted sorted, Ord<?> required ) {
 		if ( required == inherent ) {
 			return true;
@@ -174,6 +179,24 @@ public final class Order {
 			}
 		}
 		return - ( low + 1 ); // key not found.
+	}
+
+	@SuppressWarnings ( "unchecked" )
+	private static final class EntryOrder
+			implements Ord<Map.Entry> {
+
+		private final Ord<CharSequence> keyOrder;
+
+		EntryOrder( Ord<CharSequence> keyOrder ) {
+			super();
+			this.keyOrder = keyOrder;
+		}
+
+		@Override
+		public Ordering ord( Map.Entry left, Map.Entry right ) {
+			return keyOrder.ord( left.key(), right.key() );
+		}
+
 	}
 
 	private static final class StaticOrder
