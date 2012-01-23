@@ -37,7 +37,7 @@ public class TestElementList {
 			s = s.subsequent();
 			parts++;
 		}
-		assertTrue( parts <= 51 );
+		assertTrue( parts <= 51 ); //TODO reduce this number!
 	}
 
 	@Test

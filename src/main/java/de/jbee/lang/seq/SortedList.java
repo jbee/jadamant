@@ -5,11 +5,13 @@ import de.jbee.lang.IndexDeterminable;
 import de.jbee.lang.List;
 import de.jbee.lang.ListIndex;
 import de.jbee.lang.Map;
+import de.jbee.lang.Multimap;
 import de.jbee.lang.Ord;
 import de.jbee.lang.Order;
 import de.jbee.lang.Set;
 import de.jbee.lang.Sorted;
 import de.jbee.lang.Traversal;
+import de.jbee.lang.Map.Entry;
 
 abstract class SortedList<E, L extends Sorted & List<E>>
 		implements IndexDeterminable<E>, Sorted, List<E> {
@@ -30,6 +32,10 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 
 	static <E> Map<E> mapOf( Set<Map.Entry<E>> entries ) {
 		return new MapList<E>( entries );
+	}
+
+	static <E> Multimap<E> multimap( List<Map.Entry<E>> elements, Ord<Object> order ) {
+		return new MultimapList<E>( order, elements );
 	}
 
 	private final Ord<Object> order;
@@ -86,6 +92,13 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 		return inOrderIndex == index
 			? thisWith( inserted ) //FIXME might destroy Set through duplicate element!
 			: inserted;
+	}
+
+	final Bag<E> entryAt( int index ) {
+		if ( index < 0 || index >= length() ) {
+			return bagOf( List.with.<E> noElements(), order() );
+		}
+		return bagOf( List.with.element( at( index ) ), order() );
 	}
 
 	@Override
@@ -167,6 +180,10 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 		return index < elems.length() && order.ord( e, at( index ) ).isEq();
 	}
 
+	final L insert( E e, int index ) {
+		return thisWith( elems().insertAt( index, e ) );
+	}
+
 	private static class BagList<E>
 			extends SortedList<E, Bag<E>>
 			implements Bag<E> {
@@ -238,16 +255,9 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 			return bagOf( elems().insertAt( idx, e ), order() );
 		}
 
-		private Set<E> insert( E e, int index ) {
-			return thisWith( elems().insertAt( index, e ) );
-		}
-
 		@Override
 		public Bag<E> entriesAt( int index ) {
-			if ( index < 0 || index >= length() ) {
-				return bagOf( List.with.<E> noElements(), order() );
-			}
-			return bagOf( List.with.element( at( index ) ), order() );
+			return entryAt( index );
 		}
 
 		@Override
@@ -278,15 +288,19 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 	}
 
 	private static class MapList<V>
-			extends SetList<Map.Entry<V>>
+			extends SortedList<Map.Entry<V>, Map<V>>
 			implements Map<V> {
 
-		MapList( Set<Map.Entry<V>> entries ) {
-			super( ENTRY_ORDER, entries );
+		MapList( List<Map.Entry<V>> entries ) {
+			this( ENTRY_ORDER, entries );
+		}
+
+		MapList( Ord<Object> order, List<Map.Entry<V>> entries ) {
+			super( order, entries );
 		}
 
 		@Override
-		public V get( CharSequence key ) {
+		public V lookup( CharSequence key ) {
 			final int idx = indexFor( new Entry<V>( key.toString(), null ) );
 			return idx >= 0
 				? at( idx ).value()
@@ -294,8 +308,63 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 		}
 
 		@Override
-		public Map<V> put( CharSequence key, V value ) {
+		public List<V> lookupList( CharSequence key ) {
+			final V value = lookup( key );
+			return value == null
+				? List.with.<V> noElements()
+				: List.with.element( value );
+		}
+
+		@Override
+		public Map<V> insert( CharSequence key, V value ) {
 			return new MapList<V>( insert( new Entry<V>( key.toString(), value ) ) );
+		}
+
+		@Override
+		public Multimap<V> add( Map.Entry<V> e ) {
+			int idx = insertionIndexFor( e );
+			if ( !containsAt( idx, e ) ) {
+				return insert( e, idx );
+			}
+			return multimap( elems().insertAt( idx, e ), order() );
+		}
+
+		@Override
+		public Map<V> entriesAt( int index ) {
+			if ( index < 0 || index >= length() ) {
+				return thisWith( List.with.<Map.Entry<V>> noElements() );
+			}
+			return thisWith( List.with.element( at( index ) ) );
+		}
+
+		@Override
+		public Map<V> insert( Map.Entry<V> e ) {
+			int idx = insertionIndexFor( e );
+			if ( containsAt( idx, e ) ) {
+				return this;
+			}
+			return insert( e, idx );
+		}
+
+		@Override
+		Map<V> self() {
+			return this;
+		}
+
+		@Override
+		Map<V> selfWith( List<Map.Entry<V>> entries ) {
+			return new MapList<V>( order(), entries );
+		}
+
+		@Override
+		public Map<V> subsequent() {
+			return thisWith( elems().subsequent() );
+		}
+
+		@Override
+		public String toString() {
+			String list = super.toString();
+			return "{" + list.substring( 1, list.length() - 1 ) + "}";
 		}
 
 		static final class Entry<V>
@@ -320,6 +389,61 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 				return value;
 			}
 
+			@Override
+			public String toString() {
+				return key + "=>" + value;
+			}
+
 		}
+	}
+
+	private static class MultimapList<V>
+			extends SortedList<Map.Entry<V>, Multimap<V>>
+			implements Multimap<V> {
+
+		MultimapList( Ord<Object> order, List<Entry<V>> elements ) {
+			super( order, elements );
+		}
+
+		@Override
+		Multimap<V> self() {
+			return this;
+		}
+
+		@Override
+		Multimap<V> selfWith( List<Entry<V>> entries ) {
+			return new MultimapList<V>( order(), entries );
+		}
+
+		@Override
+		public Multimap<V> add( Entry<V> e ) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public List<V> lookupList( CharSequence key ) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public Multimap<V> insert( CharSequence key, V value ) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public Multimap<V> subsequent() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public Bag<Entry<V>> entriesAt( int index ) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
 	}
 }

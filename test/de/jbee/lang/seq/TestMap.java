@@ -13,23 +13,23 @@ public class TestMap {
 
 	@Test
 	public void testGet_NoEntriesCase() {
-		assertThat( emptyMap().get( "one" ), nullValue() );
+		assertThat( emptyMap().lookup( "one" ), nullValue() );
 	}
 
 	@Test
 	public void testPut_OneEntryCase() {
 		Map<Integer> m = emptyMap();
-		m = m.put( "one", 1 );
-		assertThat( m.get( "one" ), is( 1 ) );
+		m = m.insert( "one", 1 );
+		assertThat( m.lookup( "one" ), is( 1 ) );
 	}
 
 	@Test
 	public void testPut_TwoEntriesCase() {
 		Map<Integer> m = emptyMap();
-		m = m.put( "one", 1 );
-		m = m.put( "two", 2 );
-		assertThat( m.get( "one" ), is( 1 ) );
-		assertThat( m.get( "two" ), is( 2 ) );
+		m = m.insert( "one", 1 );
+		m = m.insert( "two", 2 );
+		assertThat( m.lookup( "one" ), is( 1 ) );
+		assertThat( m.lookup( "two" ), is( 2 ) );
 	}
 
 	@Test
@@ -37,9 +37,9 @@ public class TestMap {
 		Map<Integer> m = emptyMap();
 		for ( int i = 0; i < 10; i++ ) {
 			String key = "number " + i;
-			m = m.put( key, i );
+			m = m.insert( key, i );
 			for ( int j = 0; j <= i; j++ ) {
-				assertThat( m.get( key ), is( i ) );
+				assertThat( m.lookup( key ), is( i ) );
 			}
 		}
 	}
