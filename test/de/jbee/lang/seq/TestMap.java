@@ -13,14 +13,14 @@ public class TestMap {
 
 	@Test
 	public void testGet_NoEntriesCase() {
-		assertThat( emptyMap().lookup( "one" ), nullValue() );
+		assertThat( emptyMap().valueFor( "one" ), nullValue() );
 	}
 
 	@Test
 	public void testPut_OneEntryCase() {
 		Map<Integer> m = emptyMap();
 		m = m.insert( "one", 1 );
-		assertThat( m.lookup( "one" ), is( 1 ) );
+		assertThat( m.valueFor( "one" ), is( 1 ) );
 	}
 
 	@Test
@@ -28,8 +28,8 @@ public class TestMap {
 		Map<Integer> m = emptyMap();
 		m = m.insert( "one", 1 );
 		m = m.insert( "two", 2 );
-		assertThat( m.lookup( "one" ), is( 1 ) );
-		assertThat( m.lookup( "two" ), is( 2 ) );
+		assertThat( m.valueFor( "one" ), is( 1 ) );
+		assertThat( m.valueFor( "two" ), is( 2 ) );
 	}
 
 	@Test
@@ -39,7 +39,7 @@ public class TestMap {
 			String key = "number " + i;
 			m = m.insert( key, i );
 			for ( int j = 0; j <= i; j++ ) {
-				assertThat( m.lookup( key ), is( i ) );
+				assertThat( m.valueFor( key ), is( i ) );
 			}
 		}
 	}

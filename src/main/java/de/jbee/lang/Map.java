@@ -6,7 +6,7 @@ public interface Map<V>
 	Ord<Object> ENTRY_ORDER = Order.typeaware( Order.entriesBy( Order.alphabetical ),
 			Map.Entry.class );
 
-	V lookup( CharSequence key );
+	V valueFor( CharSequence key );
 
 	/*
 	 * Covariant return type overrides from List/Bag/Set/Multimap interface with Map return type

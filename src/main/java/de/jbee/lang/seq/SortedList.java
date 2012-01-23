@@ -300,7 +300,7 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 		}
 
 		@Override
-		public V lookup( CharSequence key ) {
+		public V valueFor( CharSequence key ) {
 			final int idx = indexFor( new Entry<V>( key.toString(), null ) );
 			return idx >= 0
 				? at( idx ).value()
@@ -308,8 +308,8 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 		}
 
 		@Override
-		public List<V> lookupList( CharSequence key ) {
-			final V value = lookup( key );
+		public List<V> valuesFor( CharSequence key ) {
+			final V value = valueFor( key );
 			return value == null
 				? List.with.<V> noElements()
 				: List.with.element( value );
@@ -422,7 +422,7 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 		}
 
 		@Override
-		public List<V> lookupList( CharSequence key ) {
+		public List<V> valuesFor( CharSequence key ) {
 			// TODO Auto-generated method stub
 			return null;
 		}

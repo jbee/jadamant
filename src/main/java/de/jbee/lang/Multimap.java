@@ -7,7 +7,7 @@ public interface Multimap<V>
 	 * The usual get/put
 	 */
 
-	List<V> lookupList( CharSequence key );
+	List<V> valuesFor( CharSequence key );
 
 	Multimap<V> insert( CharSequence key, V value );
 
