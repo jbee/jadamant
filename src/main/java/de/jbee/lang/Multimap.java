@@ -12,8 +12,10 @@ public interface Multimap<V>
 	Multimap<V> insert( CharSequence key, V value );
 
 	/*
-	 * Covariant return type overrides from List interface with Set return type
+	 * Covariant return type overrides from Set interface with Multimap return type
 	 */
+
+	Multimap<V> entriesAt( int index );
 
 	@Override
 	Multimap<V> add( Map.Entry<V> e );
