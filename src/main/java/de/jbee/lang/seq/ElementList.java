@@ -1,160 +1,138 @@
-/**
- * 
- */
 package de.jbee.lang.seq;
 
-import de.jbee.lang.Array;
+import de.jbee.lang.Element;
 import de.jbee.lang.List;
 import de.jbee.lang.Traversal;
-import de.jbee.lang.dev.Nonnull;
 
 /**
- * A list consists of a single element and another subsequent {@link List} as tail.
- * 
- * So a {@linkplain ElementList} will not have {@link #length()} of 1 as soon as the tail list isn't
- * empty.
+ * A list maps to the {@link Element}'s values of any kind of list consists of {@link Element}s.
  * 
  * @author Jan Bernitt (jan.bernitt@gmx.de)
  */
-final class ElementList<E>
+class ElementList<E>
 		implements List<E> {
 
-	static <E> List<E> with( E element ) {
-		return with( element, List.with.<E> noElements() );
-	}
+	private final List<? extends Element<E>> elems;
 
-	static <E> List<E> with( E element, List<E> tail ) {
-		Nonnull.element( element );
-		return new ElementList<E>( element, tail );
-	}
-
-	private final E element;
-	private final List<E> tail;
-
-	private ElementList( E element, List<E> tail ) {
+	private ElementList( List<? extends Element<E>> elems ) {
 		super();
-		this.element = element;
-		this.tail = tail;
+		this.elems = elems;
 	}
 
-	@Override
-	public void traverse( int start, Traversal<? super E> traversal ) {
-		if ( start > 0 ) {
-			tail.traverse( start - 1, traversal );
-		} else {
-			while ( start == 0 ) {
-				start += traversal.incrementOn( element );
-			}
-			tail.traverse( start, traversal );
+	static <E> List<E> elements( List<? extends Element<E>> elems ) {
+		return new ElementList<E>( elems );
+	}
+
+	private List<E> list( List<? extends Element<E>> elems ) {
+		return elems == this.elems
+			? this
+			: elements( elems );
+	}
+
+	private List<E> valuate() {
+		//TODO improve performance and structure
+		List<E> res = List.with.noElements();
+		for ( int i = length() - 1; i >= 0; i-- ) {
+			res = res.prepand( at( i ) );
 		}
-	}
-
-	@Override
-	public List<E> subsequent() {
-		return tail;
+		return res;
 	}
 
 	@Override
 	public List<E> append( E e ) {
-		Nonnull.element( e );
-		return tail.isEmpty()
-			// if tail is empty another single element list would be appended to this one.
-			? List.with.elements( Array.sequence( element, e ) )
-			: thisWithTail( tail.append( e ) );
-	}
-
-	@Override
-	public E at( int index ) {
-		return index == 0
-			? element
-			: tail.at( index - 1 );
+		return valuate().append( e );
 	}
 
 	@Override
 	public List<E> concat( List<E> other ) {
-		return thisWithTail( tail.concat( other ) );
+		return valuate().concat( other );
 	}
 
 	@Override
 	public List<E> deleteAt( int index ) {
-		return index == 0
-			? tail
-			: thisWithTail( tail.deleteAt( index - 1 ) );
+		return valuate().deleteAt( index );
 	}
 
 	@Override
 	public List<E> drop( int count ) {
-		return count <= 0
-			? this
-			: count == 1
-				? tail
-				: tail.drop( count - 1 );
-	}
-
-	@Override
-	public void fill( int offset, Object[] array, int start, int length ) {
-		if ( start == 0 ) {
-			array[offset] = element;
-			tail.fill( offset + 1, array, 0, length - 1 );
-		} else {
-			tail.fill( offset, array, start - 1, length );
-		}
+		return list( elems.drop( count ) );
 	}
 
 	@Override
 	public List<E> insertAt( int index, E e ) {
-		return index == 0
-			? prepand( e )
-			: thisWithTail( tail.insertAt( index - 1, e ) );
-	}
-
-	@Override
-	public boolean isEmpty() {
-		return false;
+		return valuate().insertAt( index, e );
 	}
 
 	@Override
 	public List<E> prepand( E e ) {
-		Nonnull.element( e );
-		//TODO not use StackList directly - Lister has to be extended to support tail list arguments in some way
-		return EvolutionList.dominant( length() + 1, Array.withLastElement( e, 2 ), this );
+		return valuate().prepand( e );
 	}
 
 	@Override
 	public List<E> replaceAt( int index, E e ) {
-		return index == 0
-			? with( e, tail )
-			: thisWithTail( tail.replaceAt( index - 1, e ) );
+		return valuate().replaceAt( index, e );
 	}
 
 	@Override
-	public int length() {
-		return tail.length() + 1;
+	public List<E> subsequent() {
+		return list( elems.subsequent() );
 	}
 
 	@Override
 	public List<E> take( int count ) {
-		return count > 0
-			? thisWithTail( tail.take( count - 1 ) )
-			: List.with.<E> noElements();
+		return list( elems.take( count ) );
 	}
 
 	@Override
 	public List<E> tidyUp() {
-		final List<E> tidyTail = tail.tidyUp();
-		return tidyTail == tail
-			? this
-			: thisWithTail( tidyTail );
+		return list( elems.tidyUp() ); // OPEN unwrap -> no Element indirection any longer ?
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return elems.isEmpty();
+	}
+
+	@Override
+	public int length() {
+		return elems.length();
+	}
+
+	@Override
+	public E at( int index ) {
+		return elems.at( index ).value();
+	}
+
+	@Override
+	public void fill( int offset, Object[] array, int start, int length ) {
+		int l = length();
+		for ( int i = start; i < Math.min( l, start + length ); i++ ) {
+			array[offset++] = at( i );
+		}
+	}
+
+	@Override
+	public void traverse( int start, Traversal<? super E> traversal ) {
+		if ( start < 0 ) {
+			return;
+		}
+		final int l = length();
+		int inc = 0;
+		while ( inc >= 0 && start < l ) {
+			inc = traversal.incrementOn( at( start ) );
+			start += inc;
+		}
 	}
 
 	@Override
 	public String toString() {
-		return "[" + String.valueOf( element ) + "]" + List.CONCAT_OPERATOR_SYMBOL
-				+ tail.toString();
+		StringBuilder b = new StringBuilder();
+		for ( int i = 0; i < length(); i++ ) {
+			b.append( ',' );
+			b.append( at( i ) );
+		}
+		return '[' + ( b.length() == 0
+			? ""
+			: b.substring( 1 ) ) + ']';
 	}
-
-	private List<E> thisWithTail( List<E> tail ) {
-		return new ElementList<E>( element, tail );
-	}
-
 }

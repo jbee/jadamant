@@ -30,7 +30,7 @@ public final class Sequences {
 	public static final EnumeratorFactory LISTER_ENUMERATOR_FACTORY = new ListerEnumeratorFactory();
 
 	/**
-	 * A {@link Lister} uses the default implementations {@link EmptyList}, {@link ElementList},
+	 * A {@link Lister} uses the default implementations {@link EmptyList}, {@link ElementaryList},
 	 * {@link EvolutionList} and {@link EnumList}.
 	 * 
 	 * @author Jan Bernitt (jan.bernitt@gmx.de)
@@ -47,7 +47,7 @@ public final class Sequences {
 			if ( e instanceof java.lang.Enum<?> ) {
 				return elementEnum( e );
 			}
-			return ElementList.with( e );
+			return ElementaryList.with( e );
 		}
 
 		@SuppressWarnings ( "unchecked" )

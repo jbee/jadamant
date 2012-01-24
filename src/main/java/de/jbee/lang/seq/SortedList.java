@@ -1,5 +1,6 @@
 package de.jbee.lang.seq;
 
+import static de.jbee.lang.seq.ElementList.elements;
 import de.jbee.lang.Bag;
 import de.jbee.lang.IndexDeterminable;
 import de.jbee.lang.List;
@@ -33,8 +34,10 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 		return new MapList<E>( entries );
 	}
 
-	static <E> Multimap<E> multimap( List<Map.Entry<E>> elements, Ord<Object> order ) {
-		return new MultimapList<E>( order, elements );
+	static <E> Multimap<E> multimapOf( List<Map.Entry<E>> entries, Ord<Object> keyOrder,
+			Ord<Object> valueOrder ) {
+		Ord<Object> order = Order.sub2( keyOrder, Order.nullsave( valueOrder ) );
+		return new MultimapList<E>( keyOrder, valueOrder, entries );
 	}
 
 	private final Ord<Object> order;
@@ -320,7 +323,7 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 			if ( !containsAt( idx, e ) ) {
 				return insert( e, idx );
 			}
-			return multimap( elems().insertAt( idx, e ), order() );
+			return multimapOf( elems().insertAt( idx, e ), order(), Order.keep );
 		}
 
 		@Override
@@ -400,8 +403,12 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 			extends SortedList<Map.Entry<V>, Multimap<V>>
 			implements Multimap<V> {
 
-		MultimapList( Ord<Object> order, List<Map.Entry<V>> elements ) {
-			super( order, elements );
+		private final Ord<? super V> valueOrder;
+
+		//FIXME use a extra Ord for the suborder of equal keys - the valuesFor than can return a Bag also
+		MultimapList( Ord<Object> keyOrder, Ord<? super V> valueOrder, List<Map.Entry<V>> entries ) {
+			super( keyOrder, entries );
+			this.valueOrder = valueOrder;
 		}
 
 		@Override
@@ -411,7 +418,7 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 
 		@Override
 		Multimap<V> selfWith( List<Map.Entry<V>> entries ) {
-			return new MultimapList<V>( order(), entries );
+			return new MultimapList<V>( order(), valueOrder, entries );
 		}
 
 		@Override
@@ -422,20 +429,20 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 		@Override
 		public List<V> valuesFor( CharSequence key ) {
 			Map.Entry<V> e = entry( key, (V) null );
-			final int first = indexFor( e );
+			int first = indexFor( e );
 			List<V> res = List.with.noElements();
 			if ( first == ListIndex.NOT_CONTAINED ) {
 				return res;
+			}
+			while ( first > 0 && order().ord( e, at( first - 1 ) ).isEq() ) {
+				first--;
 			}
 			final int l = length();
 			int idx = first + 1;
 			while ( idx < l && order().ord( e, at( idx ) ).isEq() ) {
 				idx++;
 			}
-			for ( int i = idx - 1; i >= first; i-- ) {
-				res = res.prepand( at( i ).value() );
-			}
-			return res;
+			return elements( List.that.slices( first, idx ).from( elems() ) );
 		}
 
 		@Override

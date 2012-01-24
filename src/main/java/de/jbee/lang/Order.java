@@ -126,6 +126,10 @@ public final class Order {
 		return new SubOrder<T>( primary, secondary );
 	}
 
+	public static Ord<Object> sub2( Ord<Object> primary, Ord<Object> secondary ) {
+		return new SubOrder<Object>( primary, secondary );
+	}
+
 	public static <T> Ord<Object> typeaware( Ord<? super T> order, Class<T> type ) {
 		return new TypeawareOrder<T>( type, order );
 	}

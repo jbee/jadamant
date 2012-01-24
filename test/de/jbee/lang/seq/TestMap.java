@@ -12,19 +12,19 @@ import de.jbee.lang.Map;
 public class TestMap {
 
 	@Test
-	public void testGet_NoEntriesCase() {
+	public void testValueFor_NoEntriesCase() {
 		assertThat( emptyMap().valueFor( "one" ), nullValue() );
 	}
 
 	@Test
-	public void testPut_OneEntryCase() {
+	public void testValueFor_OneEntryCase() {
 		Map<Integer> m = emptyMap();
 		m = m.insert( "one", 1 );
 		assertThat( m.valueFor( "one" ), is( 1 ) );
 	}
 
 	@Test
-	public void testPut_TwoEntriesCase() {
+	public void testValueFor_TwoEntriesCase() {
 		Map<Integer> m = emptyMap();
 		m = m.insert( "one", 1 );
 		m = m.insert( "two", 2 );
@@ -33,7 +33,7 @@ public class TestMap {
 	}
 
 	@Test
-	public void testPut_TenEntriesCase() {
+	public void testValueFor_TenEntriesCase() {
 		Map<Integer> m = emptyMap();
 		for ( int i = 0; i < 10; i++ ) {
 			String key = "number " + i;

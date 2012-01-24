@@ -97,6 +97,11 @@ public final class Array {
 		return new ArraySequence<E>( new Object[] { e1, e2, e3 } );
 	}
 
+	public static <E> Sequence<E> sequence( E[] elems ) {
+		//FIXME check for null elements
+		return new ArraySequence<E>( elems );
+	}
+
 	public static void shuffle( Object[] a ) {
 		if ( rnd == null ) {
 			rnd = new Random();

@@ -6,6 +6,11 @@ public interface Map<V>
 	Ord<Object> ENTRY_ORDER = Order.typeaware( Order.entriesBy( Order.alphabetical ),
 			Map.Entry.class );
 
+	/**
+	 * OPEN avoid possible null result ?
+	 * 
+	 * @return The value associated with the key given or null.
+	 */
 	V valueFor( CharSequence key );
 
 	/*
@@ -43,11 +48,10 @@ public interface Map<V>
 	@Override
 	Map<V> tidyUp();
 
-	interface Entry<V> {
+	interface Entry<V>
+			extends Element<V> {
 
 		CharSequence key();
-
-		V value();
 
 	}
 }
