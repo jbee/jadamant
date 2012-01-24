@@ -36,7 +36,6 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 
 	static <E> Multimap<E> multimapOf( List<Map.Entry<E>> entries, Ord<Object> keyOrder,
 			Ord<Object> valueOrder ) {
-		Ord<Object> order = Order.sub2( keyOrder, Order.nullsave( valueOrder ) );
 		return new MultimapList<E>( keyOrder, valueOrder, entries );
 	}
 
@@ -102,9 +101,8 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 
 	@Override
 	public final List<E> insertAt( int index, E e ) {
-		int inOrderIndex = List.indexFor.insertBy( e, order ).in( elems );
-		List<E> inserted = elems.insertAt( inOrderIndex, e );
-		return inOrderIndex == index
+		List<E> inserted = elems.insertAt( index, e );
+		return indexInOrder( index, inserted )
 			? thisWith( inserted ) //FIXME might destroy Set through duplicate element!
 			: inserted;
 	}
@@ -176,12 +174,17 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 
 	private boolean indexInOrder( int index, List<E> l ) {
 		final E e = l.at( index );
+		Ord<Object> order = overallOrder();
 		return ( index == 0 || order.ord( l.at( index - 1 ), e ).isLe() )
 				&& ( index == l.length() - 1 || order.ord( l.at( l.length() - 1 ), e ).isGe() );
 	}
 
-	final int insertionIndexFor( E e ) {
-		return List.indexFor.insertBy( e, order ).in( elems );
+	int insertionIndexFor( E e ) {
+		return List.indexFor.insertBy( e, overallOrder() ).in( elems );
+	}
+
+	Ord<Object> overallOrder() {
+		return order;
 	}
 
 	final boolean containsAt( int index, E e ) {
@@ -305,11 +308,12 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 		}
 
 		@Override
-		public List<V> valuesFor( CharSequence key ) {
+		public Bag<V> valuesFor( CharSequence key ) {
 			final V value = valueFor( key );
-			return value == null
+			List<V> elements = value == null
 				? List.with.<V> noElements()
 				: List.with.element( value );
+			return bagOf( elements, Order.keep );
 		}
 
 		@Override
@@ -403,10 +407,10 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 			extends SortedList<Map.Entry<V>, Multimap<V>>
 			implements Multimap<V> {
 
-		private final Ord<? super V> valueOrder;
+		private final Ord<Object> valueOrder;
 
 		//FIXME use a extra Ord for the suborder of equal keys - the valuesFor than can return a Bag also
-		MultimapList( Ord<Object> keyOrder, Ord<? super V> valueOrder, List<Map.Entry<V>> entries ) {
+		MultimapList( Ord<Object> keyOrder, Ord<Object> valueOrder, List<Map.Entry<V>> entries ) {
 			super( keyOrder, entries );
 			this.valueOrder = valueOrder;
 		}
@@ -422,17 +426,21 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 		}
 
 		@Override
+		Ord<Object> overallOrder() {
+			return Order.sub2( order(), Order.nullsave( valueOrder ) );
+		}
+
+		@Override
 		public Multimap<V> add( Map.Entry<V> e ) {
 			return thisWith( elems().insertAt( insertionIndexFor( e ), e ) ); //TODO same as bag impl. -> DRY
 		}
 
 		@Override
-		public List<V> valuesFor( CharSequence key ) {
+		public Bag<V> valuesFor( CharSequence key ) {
 			Map.Entry<V> e = entry( key, (V) null );
 			int first = indexFor( e );
-			List<V> res = List.with.noElements();
 			if ( first == ListIndex.NOT_CONTAINED ) {
-				return res;
+				return bagOf( List.with.<V> noElements(), valueOrder );
 			}
 			while ( first > 0 && order().ord( e, at( first - 1 ) ).isEq() ) {
 				first--;
@@ -442,7 +450,7 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 			while ( idx < l && order().ord( e, at( idx ) ).isEq() ) {
 				idx++;
 			}
-			return elements( List.that.slices( first, idx ).from( elems() ) );
+			return bagOf( elements( List.that.slices( first, idx ).from( elems() ) ), valueOrder );
 		}
 
 		@Override

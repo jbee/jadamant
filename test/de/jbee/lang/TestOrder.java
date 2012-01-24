@@ -9,21 +9,26 @@ public class TestOrder {
 
 	@Test
 	public void testBinarySearch_NoElementMatchesCase() {
-		assertThat( search( 0, new Integer[] { 1, 2, 3 } ), is( -1 ) );
+		assertThat( search( 'A', new Character[] { 'a', 'c', 'x' } ), is( -1 ) );
 	}
 
 	@Test
 	public void testBinarySearch_FirstElementMatchesCase() {
-		assertThat( search( 1, new Integer[] { 1, 2, 3 } ), is( 0 ) );
+		assertThat( search( 'a', new Character[] { 'a', 'c', 'x' } ), is( 0 ) );
 	}
 
 	@Test
 	public void testBinarySearch_SecondElementMatchesCase() {
-		assertThat( search( 1, new Integer[] { 0, 1, 2, 3 } ), is( 1 ) );
+		assertThat( search( 'c', new Character[] { 'a', 'c', 'x' } ), is( 1 ) );
 	}
 
-	private int search( Integer value, Integer[] values ) {
+	@Test
+	public void testBinarySearch_LastElementMatchesCase() {
+		assertThat( search( 'x', new Character[] { 'a', 'c', 'x' } ), is( 2 ) );
+	}
+
+	private <T> int search( T value, T[] values ) {
 		return Order.binarySearch( Array.sequence( values ), 0, values.length, value,
-				Order.typeaware( Order.numerical, Integer.class ) );
+				Order.inherent );
 	}
 }

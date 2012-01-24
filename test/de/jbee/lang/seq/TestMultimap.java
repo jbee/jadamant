@@ -52,7 +52,18 @@ public class TestMultimap {
 		m = m.insert( "one", 1 );
 		m = m.insert( "one", 2 );
 		m = m.insert( "one", 3 );
-		assertThat( m.valuesFor( "one" ), hasEqualElementsAsIn( 3, 2, 1 ) );
+		assertThat( m.valuesFor( "one" ), hasEqualElementsAsIn( 1, 2, 3 ) );
+	}
+
+	@Test
+	public void testValuesFor_MultipleEntriesAndOthersCase() {
+		Multimap<Integer> m = emptyMap();
+		m = m.insert( "zero", 0 );
+		m = m.insert( "one", 1 );
+		m = m.insert( "one", 2 );
+		m = m.insert( "one", 3 );
+		m = m.insert( "two", 4 );
+		assertThat( m.valuesFor( "one" ), hasEqualElementsAsIn( 1, 2, 3 ) );
 	}
 
 	private Multimap<Integer> emptyMap() {

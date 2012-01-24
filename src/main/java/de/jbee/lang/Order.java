@@ -168,6 +168,19 @@ public final class Order {
 	//TODO find a place for such utils like binarySearch and sort
 	public static <E> int binarySearch( Sequence<E> list, int startInclusive, int endExcluisve,
 			Object key, Ord<Object> order ) {
+		int index = normalBinarySearch( list, startInclusive, endExcluisve, key, order );
+		while ( index > 0 && order.ord( list.at( index ), list.at( index - 1 ) ).isEq() ) {
+			index--;
+		}
+		return index;
+	}
+
+	/**
+	 * Doesn't consider possibility of duplicates (in a block) for the searched key and therefore
+	 * the index of one of them might be the result but we cannot tell which one it will be.
+	 */
+	private static <E> int normalBinarySearch( Sequence<E> list, int startInclusive,
+			int endExcluisve, Object key, Ord<Object> order ) {
 		int low = startInclusive;
 		int high = endExcluisve - 1;
 		while ( low <= high ) {

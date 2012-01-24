@@ -13,7 +13,7 @@ public interface Multimap<V>
 	 * @return All values associated with the given key. Their sequence is the same as in the
 	 *         multimap-part. In case no value is associated with the key a empty list is returned.
 	 */
-	List<V> valuesFor( CharSequence key );
+	Bag<V> valuesFor( CharSequence key );
 
 	Multimap<V> insert( CharSequence key, V value );
 

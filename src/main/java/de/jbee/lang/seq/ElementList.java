@@ -29,8 +29,8 @@ class ElementList<E>
 			: elements( elems );
 	}
 
-	private List<E> valuate() {
-		//TODO improve performance and structure
+	private List<E> values() {
+		//TODO improve performance and structure by using fill and evo-list
 		List<E> res = List.with.noElements();
 		for ( int i = length() - 1; i >= 0; i-- ) {
 			res = res.prepand( at( i ) );
@@ -40,17 +40,17 @@ class ElementList<E>
 
 	@Override
 	public List<E> append( E e ) {
-		return valuate().append( e );
+		return values().append( e );
 	}
 
 	@Override
 	public List<E> concat( List<E> other ) {
-		return valuate().concat( other );
+		return values().concat( other );
 	}
 
 	@Override
 	public List<E> deleteAt( int index ) {
-		return valuate().deleteAt( index );
+		return values().deleteAt( index );
 	}
 
 	@Override
@@ -60,17 +60,17 @@ class ElementList<E>
 
 	@Override
 	public List<E> insertAt( int index, E e ) {
-		return valuate().insertAt( index, e );
+		return values().insertAt( index, e );
 	}
 
 	@Override
 	public List<E> prepand( E e ) {
-		return valuate().prepand( e );
+		return values().prepand( e );
 	}
 
 	@Override
 	public List<E> replaceAt( int index, E e ) {
-		return valuate().replaceAt( index, e );
+		return values().replaceAt( index, e );
 	}
 
 	@Override
