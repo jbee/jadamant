@@ -125,6 +125,16 @@ public class TestMultimap {
 		assertThat( m.entriesAt( 2 ).values(), hasEqualElementsAsIn( 8 ) );
 	}
 
+	@Test
+	public void testIndexFor() {
+		Multimap<Integer> m = emptyMap();
+		m = m.insert( "a", 5 );
+		m = m.insert( "b", 8 );
+		m = m.insert( "a", 7 );
+		assertThat( m.indexFor( SortedList.entry( "a", 7 ) ), is( 1 ) );
+		assertThat( m.indexFor( "a" ), is( 0 ) );
+	}
+
 	private Multimap<Integer> emptyMap() {
 		return emptyMap( Order.typeaware( Order.numerical, Integer.class ) );
 	}

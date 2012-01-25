@@ -113,7 +113,11 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 
 	@Override
 	public int indexFor( E e ) {
-		int pos = Order.binarySearch( elems(), 0, length(), e, order() );
+		return indexFor( e, entryOrder() );
+	}
+
+	protected final int indexFor( E e, Ord<Object> order ) {
+		int pos = Order.binarySearch( elems(), 0, length(), e, order );
 		return pos < 0
 			? ListIndex.NOT_CONTAINED
 			: pos;
@@ -303,6 +307,11 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 		}
 
 		@Override
+		public int indexFor( CharSequence key ) {
+			return indexFor( entry( key, (V) null ) );
+		}
+
+		@Override
 		public V valueFor( CharSequence key ) {
 			final int idx = indexFor( entry( key, (V) null ) );
 			return idx >= 0
@@ -415,12 +424,19 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 			extends SortedList<Map.Entry<V>, Multimap<V>>
 			implements Multimap<V> {
 
+		/**
+		 * The 'plain' order of values used to sort all values having the same key.
+		 */
 		private final Ord<Object> valueOrder;
 
-		//FIXME use a extra Ord for the suborder of equal keys - the valuesFor than can return a Bag also
 		MultimapList( Ord<Object> keyOrder, Ord<Object> valueOrder, List<Map.Entry<V>> entries ) {
 			super( keyOrder, entries );
 			this.valueOrder = valueOrder;
+		}
+
+		@Override
+		public int indexFor( CharSequence key ) {
+			return indexFor( entry( key, (V) null ), order() );
 		}
 
 		@Override
@@ -455,17 +471,18 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 
 		@Override
 		public Bag<V> valuesFor( CharSequence key ) {
-			Map.Entry<V> e = entry( key, (V) null );
-			int first = indexFor( e );
+			final Map.Entry<V> e = entry( key, (V) null );
+			final Ord<Object> keyOrder = order();
+			int first = indexFor( e, keyOrder );
 			if ( first == ListIndex.NOT_CONTAINED ) {
 				return bagOf( List.with.<V> noElements(), valueOrder );
 			}
-			while ( first > 0 && order().ord( e, at( first - 1 ) ).isEq() ) {
+			while ( first > 0 && keyOrder.ord( e, at( first - 1 ) ).isEq() ) {
 				first--;
 			}
 			final int l = length();
 			int idx = first + 1;
-			while ( idx < l && order().ord( e, at( idx ) ).isEq() ) {
+			while ( idx < l && keyOrder.ord( e, at( idx ) ).isEq() ) {
 				idx++;
 			}
 			return bagOf( elements( List.that.slices( first, idx ).from( elems() ) ), valueOrder );

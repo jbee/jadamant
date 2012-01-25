@@ -17,8 +17,9 @@ public interface IndexDeterminable<E> {
 	 * 
 	 * This algorithm has (very likely) a O(log(n)) runtime complexity instead of the usual O(n).
 	 * 
-	 * In case of a {@link Bag} the index of the first equal element is returned.
+	 * In case duplicates are allowed the index of the first equal element is returned. All
+	 * duplicates will directly follow this index.
 	 */
-	public abstract int indexFor( E e );
+	int indexFor( E e );
 
 }

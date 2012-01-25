@@ -32,6 +32,8 @@ public interface Multimap<V>
 	 */
 	Bag<V> valuesFor( CharSequence key );
 
+	int indexFor( CharSequence key );
+
 	Multimap<V> insert( CharSequence key, V value );
 
 	/*

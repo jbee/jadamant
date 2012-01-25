@@ -19,8 +19,8 @@ public interface Bag<E>
 	BagLister with = Sequences.BAG_LISTER;
 
 	/**
-	 * Adds e at the correct index in this bag. If this bag contains a element equal to e this will
-	 * be added ahead of it.
+	 * Adds e at the correct index in this bag. The exact position a duplicate is inserted depends
+	 * on the {@link Ord}er used by this sorted list.
 	 */
 	Bag<E> add( E e );
 
