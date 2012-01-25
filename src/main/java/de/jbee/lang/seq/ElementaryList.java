@@ -19,10 +19,16 @@ import de.jbee.lang.dev.Nonnull;
 final class ElementaryList<E>
 		implements List<E> {
 
+	/**
+	 * @return A single element list with an empty tail.
+	 */
 	static <E> List<E> element( E element ) {
 		return element( element, List.with.<E> noElements() );
 	}
 
+	/**
+	 * @return A single element list with the <code>tail</code> given.
+	 */
 	static <E> List<E> element( E element, List<E> tail ) {
 		Nonnull.element( element );
 		return new ElementaryList<E>( element, tail );
