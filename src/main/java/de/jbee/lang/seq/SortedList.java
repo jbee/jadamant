@@ -71,8 +71,11 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 			return thisWith( List.with.<E> noElements() );
 		}
 		E e = at( index );
+		while ( index > 0 && containsAt( index - 1, e ) ) { // search back for duplicates
+			index--;
+		}
 		int end = index + 1;
-		while ( end < l && containsAt( end, e ) ) {
+		while ( end < l && containsAt( end, e ) ) { // search forward for duplicates
 			end++;
 		}
 		return thisWith( List.that.slices( index, end ).from( elems() ) );
@@ -189,7 +192,7 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 	}
 
 	final boolean containsAt( int index, E e ) {
-		return index < elems.length() && entryOrder().ord( e, at( index ) ).isEq();
+		return index < elems.length() && order.ord( e, at( index ) ).isEq();
 	}
 
 	final L insert( E e, int index ) {

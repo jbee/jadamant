@@ -2,6 +2,8 @@ package de.jbee.lang.seq;
 
 import static de.jbee.lang.seq.ListMatcher.hasEqualElementsAsIn;
 import static de.jbee.lang.seq.ListMatcher.hasNoElements;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
@@ -9,6 +11,7 @@ import org.junit.Test;
 import de.jbee.lang.List;
 import de.jbee.lang.Map;
 import de.jbee.lang.Multimap;
+import de.jbee.lang.Ord;
 import de.jbee.lang.Order;
 
 public class TestMultimap {
@@ -87,8 +90,47 @@ public class TestMultimap {
 		assertThat( m.values(), hasEqualElementsAsIn( 1, 2 ) );
 	}
 
+	@Test
+	public void testValues_InsertionSequenceKept() {
+		Multimap<Integer> m = emptyMap( Order.keep );
+		m = m.insert( "a", 5 );
+		m = m.insert( "b", 8 );
+		m = m.insert( "a", 3 );
+		assertThat( m.values(), hasEqualElementsAsIn( 5, 3, 8 ) );
+		assertThat( m.values().order(), sameInstance( Order.keep ) );
+	}
+
+	@Test
+	public void testEntriesAt_NoEntries() {
+		assertThat( emptyMap().entriesAt( 0 ).length(), is( 0 ) );
+	}
+
+	@Test
+	public void testEntriesAt_OneEntry() {
+		Multimap<Integer> m = emptyMap( Order.keep );
+		m = m.insert( "a", 5 );
+		m = m.insert( "b", 8 );
+		assertThat( m.entriesAt( 0 ).values(), hasEqualElementsAsIn( 5 ) );
+		assertThat( m.entriesAt( 1 ).values(), hasEqualElementsAsIn( 8 ) );
+	}
+
+	@Test
+	public void testEntriesAt_TwoEntries() {
+		Multimap<Integer> m = emptyMap( Order.keep );
+		m = m.insert( "a", 5 );
+		m = m.insert( "b", 8 );
+		m = m.insert( "a", 7 );
+		assertThat( m.entriesAt( 0 ).values(), hasEqualElementsAsIn( 5, 7 ) );
+		assertThat( m.entriesAt( 1 ).values(), hasEqualElementsAsIn( 5, 7 ) );
+		assertThat( m.entriesAt( 2 ).values(), hasEqualElementsAsIn( 8 ) );
+	}
+
 	private Multimap<Integer> emptyMap() {
+		return emptyMap( Order.typeaware( Order.numerical, Integer.class ) );
+	}
+
+	private Multimap<Integer> emptyMap( Ord<Object> valueOrder ) {
 		return SortedList.multimapOf( List.with.<Map.Entry<Integer>> noElements(), Map.ENTRY_ORDER,
-				Order.typeaware( Order.numerical, Integer.class ) );
+				valueOrder );
 	}
 }

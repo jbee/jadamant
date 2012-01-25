@@ -1,10 +1,22 @@
 package de.jbee.lang;
 
+import static de.jbee.lang.Order.entriesBy;
+import static de.jbee.lang.Order.typeaware;
+
+/**
+ * A {@linkplain Map} is a special case of {@link Multimap} where each key may just refer to one
+ * value or in other words its a {@link Set} or {@link Entry}s where equality is given by equal
+ * keys.
+ * 
+ * @author Jan Bernitt (jan.bernitt@gmx.de)
+ */
 public interface Map<V>
 		extends Set<Map.Entry<V>>, Multimap<V> {
 
-	Ord<Object> ENTRY_ORDER = Order.typeaware( Order.entriesBy( Order.alphabetical ),
-			Map.Entry.class );
+	/**
+	 * Default order used for all {@link Map}s. The keys are sorted alphabetical.
+	 */
+	Ord<Object> ENTRY_ORDER = typeaware( entriesBy( Order.alphabetical ), Map.Entry.class );
 
 	/**
 	 * OPEN avoid possible null result ?
