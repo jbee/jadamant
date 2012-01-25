@@ -313,7 +313,7 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 
 		@Override
 		public V valueFor( CharSequence key ) {
-			final int idx = indexFor( entry( key, (V) null ) );
+			final int idx = indexFor( key );
 			return idx >= 0
 				? at( idx ).value()
 				: null;
@@ -325,12 +325,8 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 		}
 
 		@Override
-		public Bag<V> valuesFor( CharSequence key ) {
-			final V value = valueFor( key );
-			List<V> elements = value == null
-				? List.with.<V> noElements()
-				: List.with.element( value );
-			return bagOf( elements, Order.keep );
+		public Bag<V> valuesAt( int index ) {
+			return bagOf( List.with.element( at( index ).value() ), Order.keep );
 		}
 
 		@Override
@@ -470,10 +466,10 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 		}
 
 		@Override
-		public Bag<V> valuesFor( CharSequence key ) {
-			final Map.Entry<V> e = entry( key, (V) null );
+		public Bag<V> valuesAt( int index ) {
+			final Map.Entry<V> e = at( index );
 			final Ord<Object> keyOrder = order();
-			int first = indexFor( e, keyOrder );
+			int first = index;
 			if ( first == ListIndex.NOT_CONTAINED ) {
 				return bagOf( List.with.<V> noElements(), valueOrder );
 			}

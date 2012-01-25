@@ -9,6 +9,7 @@ import static org.junit.Assert.assertThat;
 import org.junit.Test;
 
 import de.jbee.lang.List;
+import de.jbee.lang.ListIndex;
 import de.jbee.lang.Map;
 import de.jbee.lang.Multimap;
 import de.jbee.lang.Ord;
@@ -17,49 +18,55 @@ import de.jbee.lang.Order;
 public class TestMultimap {
 
 	@Test
-	public void testValuesFor_NoEntriesCase() {
-		assertThat( emptyMap().valuesFor( "one" ), hasNoElements( Integer.class ) );
+	public void testIndexFor_NoEntriesCase() {
+		Multimap<Integer> m = emptyMap();
+		assertThat( m.indexFor( "one" ), is( ListIndex.NOT_CONTAINED ) );
+	}
+
+	@Test ( expected = IndexOutOfBoundsException.class )
+	public void testValuesAt_NoEntriesCase() {
+		emptyMap().valuesAt( 0 );
 	}
 
 	@Test
-	public void testValuesFor_OneEntryCase() {
+	public void testValuesAt_OneEntryCase() {
 		Multimap<Integer> m = emptyMap();
 		m = m.insert( "one", 1 );
-		assertThat( m.valuesFor( "one" ), hasEqualElementsAsIn( 1 ) );
+		assertThat( m.valuesAt( m.indexFor( "one" ) ), hasEqualElementsAsIn( 1 ) );
 	}
 
 	@Test
-	public void testValuesFor_TwoEntriesCase() {
+	public void testValuesAt_TwoEntriesCase() {
 		Multimap<Integer> m = emptyMap();
 		m = m.insert( "one", 1 );
 		m = m.insert( "two", 2 );
-		assertThat( m.valuesFor( "one" ), hasEqualElementsAsIn( 1 ) );
-		assertThat( m.valuesFor( "two" ), hasEqualElementsAsIn( 2 ) );
+		assertThat( m.valuesAt( m.indexFor( "one" ) ), hasEqualElementsAsIn( 1 ) );
+		assertThat( m.valuesAt( m.indexFor( "two" ) ), hasEqualElementsAsIn( 2 ) );
 	}
 
 	@Test
-	public void testValuesFor_TenEntriesCase() {
+	public void testValuesAt_TenEntriesCase() {
 		Multimap<Integer> m = emptyMap();
 		for ( int i = 0; i < 10; i++ ) {
 			String key = "number " + i;
 			m = m.insert( key, i );
 			for ( int j = 0; j <= i; j++ ) {
-				assertThat( m.valuesFor( key ), hasEqualElementsAsIn( i ) );
+				assertThat( m.valuesAt( m.indexFor( key ) ), hasEqualElementsAsIn( i ) );
 			}
 		}
 	}
 
 	@Test
-	public void testValuesFor_MultipleEntriesOnlyCase() {
+	public void testValuesAt_MultipleEntriesOnlyCase() {
 		Multimap<Integer> m = emptyMap();
 		m = m.insert( "one", 2 );
 		m = m.insert( "one", 1 );
 		m = m.insert( "one", 3 );
-		assertThat( m.valuesFor( "one" ), hasEqualElementsAsIn( 1, 2, 3 ) );
+		assertThat( m.valuesAt( m.indexFor( "one" ) ), hasEqualElementsAsIn( 1, 2, 3 ) );
 	}
 
 	@Test
-	public void testValuesFor_MultipleEntriesAndOthersCase() {
+	public void testValuesAt_MultipleEntriesAndOthersCase() {
 		Multimap<Integer> m = emptyMap();
 		m = m.insert( "zero", 0 );
 		m = m.insert( "one", 3 );
@@ -67,9 +74,9 @@ public class TestMultimap {
 		m = m.insert( "two", 5 );
 		m = m.insert( "one", 2 );
 		m = m.insert( "two", 4 );
-		assertThat( m.valuesFor( "one" ), hasEqualElementsAsIn( 1, 2, 3 ) );
-		assertThat( m.valuesFor( "zero" ), hasEqualElementsAsIn( 0 ) );
-		assertThat( m.valuesFor( "two" ), hasEqualElementsAsIn( 4, 5 ) );
+		assertThat( m.valuesAt( m.indexFor( "one" ) ), hasEqualElementsAsIn( 1, 2, 3 ) );
+		assertThat( m.valuesAt( m.indexFor( "zero" ) ), hasEqualElementsAsIn( 0 ) );
+		assertThat( m.valuesAt( m.indexFor( "two" ) ), hasEqualElementsAsIn( 4, 5 ) );
 	}
 
 	@Test
@@ -132,6 +139,7 @@ public class TestMultimap {
 		m = m.insert( "b", 8 );
 		m = m.insert( "a", 7 );
 		assertThat( m.indexFor( SortedList.entry( "a", 7 ) ), is( 1 ) );
+		assertThat( m.indexFor( SortedList.entry( "a", 5 ) ), is( 0 ) );
 		assertThat( m.indexFor( "a" ), is( 0 ) );
 	}
 
