@@ -71,11 +71,11 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 			return thisWith( List.with.<E> noElements() );
 		}
 		E e = at( index );
-		while ( index > 0 && containsAt( index - 1, e ) ) { // search back for duplicates
+		while ( index > 0 && containsAt( index - 1, e ) ) { // search backwards for duplicates
 			index--;
 		}
 		int end = index + 1;
-		while ( end < l && containsAt( end, e ) ) { // search forward for duplicates
+		while ( end < l && containsAt( end, e ) ) { // search forwards for duplicates
 			end++;
 		}
 		return thisWith( List.that.slices( index, end ).from( elems() ) );
@@ -158,6 +158,11 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 	}
 
 	@Override
+	public L subsequent() {
+		return thisWith( elems().subsequent() );
+	}
+
+	@Override
 	public final void traverse( int start, Traversal<? super E> traversal ) {
 		elems.traverse( start, traversal );
 	}
@@ -208,11 +213,6 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 		}
 
 		@Override
-		public Bag<E> subsequent() {
-			return bagOf( elems().subsequent(), order() );
-		}
-
-		@Override
 		public Bag<E> add( E e ) {
 			return thisWith( elems().insertAt( insertionIndexFor( e ), e ) );
 		}
@@ -242,11 +242,6 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 
 		SetList( Ord<Object> ord, List<E> elements ) {
 			super( ord, elements );
-		}
-
-		@Override
-		public Set<E> subsequent() {
-			return setOf( elems().subsequent(), order() );
 		}
 
 		@Override
@@ -377,11 +372,6 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 		}
 
 		@Override
-		public Map<V> subsequent() {
-			return thisWith( elems().subsequent() );
-		}
-
-		@Override
 		public String toString() {
 			return "{" + super.toString() + "}";
 		}
@@ -484,11 +474,6 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 		@Override
 		public Multimap<V> insert( CharSequence key, V value ) {
 			return add( entry( key, value ) );
-		}
-
-		@Override
-		public Multimap<V> subsequent() {
-			return thisWith( elems().subsequent() );
 		}
 
 	}
