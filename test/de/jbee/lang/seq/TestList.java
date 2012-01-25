@@ -2,6 +2,7 @@ package de.jbee.lang.seq;
 
 import static de.jbee.lang.Lang.noInts;
 import static de.jbee.lang.seq.ListMatcher.hasEqualElementsAsIn;
+import static de.jbee.lang.seq.ListMatcher.hasNoElements;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.sameInstance;
@@ -40,7 +41,7 @@ public class TestList {
 	}
 
 	@Test
-	public void testDelete() {
+	public void testDeleteAt_Loop() {
 		List<Integer> l = List.with.noElements();
 		final int size = 14;
 		for ( int i = 1; i <= size; i++ ) {
@@ -57,6 +58,44 @@ public class TestList {
 				}
 			}
 		}
+	}
+
+	@Test ( expected = IndexOutOfBoundsException.class )
+	public void testDeteleAt_OnEmptyList() {
+		List.with.noElements().deleteAt( 0 );
+	}
+
+	@Test
+	public void testDeleteAt_OnlyElement() {
+		assertThat( List.with.element( 'a' ).deleteAt( 0 ), hasNoElements( Character.class ) );
+	}
+
+	@Test
+	public void testDeleteAt_FirstOfTwo() {
+		assertThat( List.with.elements( 'a', 'g' ).deleteAt( 0 ), hasEqualElementsAsIn( 'g' ) );
+	}
+
+	@Test
+	public void testDeleteAt_LastOfTwo() {
+		assertThat( List.with.elements( 'a', 'g' ).deleteAt( 1 ), hasEqualElementsAsIn( 'a' ) );
+	}
+
+	@Test
+	public void testDeleteAt_FirstOfThree() {
+		assertThat( List.with.elements( 'a', 'g', 'k' ).deleteAt( 0 ), hasEqualElementsAsIn( 'g',
+				'k' ) );
+	}
+
+	@Test
+	public void testDeleteAt_SecondOfThree() {
+		assertThat( List.with.elements( 'a', 'g', 'k' ).deleteAt( 1 ), hasEqualElementsAsIn( 'a',
+				'k' ) );
+	}
+
+	@Test
+	public void testDeleteAt_ThirdOfThree() {
+		assertThat( List.with.elements( 'a', 'g', 'k' ).deleteAt( 2 ), hasEqualElementsAsIn( 'a',
+				'g' ) );
 	}
 
 	@Test
@@ -135,6 +174,16 @@ public class TestList {
 		verifyTraverseIterative( List.with.elements( 42, 20 ) );
 		verifyTraverseIterative( List.with.elements( 42 ) );
 		verifyTraverseIterative( List.with.<Integer> noElements() );
+	}
+
+	@Test ( expected = IndexOutOfBoundsException.class )
+	public void testInsertAt_NegativeIndex() {
+		List.with.noElements().insertAt( -1, 'a' );
+	}
+
+	@Test ( expected = IndexOutOfBoundsException.class )
+	public void testInsertAt_ToHighIndex() {
+		List.with.elements( 'a', 'b' ).insertAt( 4, 'c' );
 	}
 
 	@Test
