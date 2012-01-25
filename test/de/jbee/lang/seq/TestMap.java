@@ -1,5 +1,6 @@
 package de.jbee.lang.seq;
 
+import static de.jbee.lang.seq.ListMatcher.hasEqualElementsAsIn;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
@@ -42,6 +43,26 @@ public class TestMap {
 				assertThat( m.valueFor( key ), is( i ) );
 			}
 		}
+	}
+
+	@Test
+	public void testValues_EntryOverridenCase() {
+		Map<Integer> m = emptyMap();
+		m = m.insert( "a", 1 );
+		m = m.insert( "a", 2 );
+		assertThat( m.length(), is( 1 ) );
+		assertThat( m.values(), hasEqualElementsAsIn( 2 ) );
+	}
+
+	@Test
+	public void testValues_EntryOverridenAndOthersCase() {
+		Map<Integer> m = emptyMap();
+		m = m.insert( "a", 1 );
+		m = m.insert( "b", 3 );
+		m = m.insert( "a", 2 );
+		m = m.insert( "A", 0 );
+		assertThat( m.length(), is( 3 ) );
+		assertThat( m.values(), hasEqualElementsAsIn( 0, 2, 3 ) );
 	}
 
 	private Map<Integer> emptyMap() {

@@ -175,21 +175,21 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 
 	private boolean indexInOrder( int index, List<E> l ) {
 		final E e = l.at( index );
-		Ord<Object> order = overallOrder();
+		final Ord<Object> order = entryOrder();
 		return ( index == 0 || order.ord( l.at( index - 1 ), e ).isLe() )
 				&& ( index == l.length() - 1 || order.ord( l.at( l.length() - 1 ), e ).isGe() );
 	}
 
 	int insertionIndexFor( E e ) {
-		return List.indexFor.insertBy( e, overallOrder() ).in( elems );
+		return List.indexFor.insertBy( e, entryOrder() ).in( elems );
 	}
 
-	Ord<Object> overallOrder() {
+	Ord<Object> entryOrder() {
 		return order;
 	}
 
 	final boolean containsAt( int index, E e ) {
-		return index < elems.length() && order.ord( e, at( index ) ).isEq();
+		return index < elems.length() && entryOrder().ord( e, at( index ) ).isEq();
 	}
 
 	final L insert( E e, int index ) {
@@ -221,13 +221,15 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 
 		@Override
 		Bag<E> selfWith( List<E> elements ) {
+			if ( elements instanceof BagList<?> ) {
+				return (Bag<E>) elements;
+			}
 			return new BagList<E>( order(), elements );
 		}
 
 		@Override
 		public String toString() {
-			String list = super.toString();
-			return "(" + list.substring( 1, list.length() - 1 ) + ")";
+			return "(" + super.toString() + ")";
 		}
 	}
 
@@ -277,13 +279,15 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 
 		@Override
 		Set<E> selfWith( List<E> elements ) {
+			if ( elements instanceof SetList<?> ) {
+				return (Set<E>) elements;
+			}
 			return new SetList<E>( order(), elements );
 		}
 
 		@Override
 		public String toString() {
-			String list = super.toString();
-			return "(" + list.substring( 1, list.length() - 1 ) + ")";
+			return "(" + super.toString() + ")";
 		}
 
 	}
@@ -324,7 +328,7 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 
 		@Override
 		public Map<V> insert( CharSequence key, V value ) {
-			return new MapList<V>( insert( entry( key, value ) ) );
+			return insert( entry( key, value ) );
 		}
 
 		@Override
@@ -347,8 +351,10 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 		@Override
 		public Map<V> insert( Map.Entry<V> e ) {
 			int idx = insertionIndexFor( e );
-			if ( containsAt( idx, e ) ) {
-				return this;
+			if ( idx < length() ) {
+				if ( order().ord( at( idx ), e ).isEq() ) {
+					return thisWith( replaceAt( idx, e ) );
+				}
 			}
 			return insert( e, idx );
 		}
@@ -359,7 +365,11 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 		}
 
 		@Override
+		@SuppressWarnings ( "unchecked" )
 		Map<V> selfWith( List<Map.Entry<V>> entries ) {
+			if ( entries instanceof MapList ) {
+				return (Map<V>) entries;
+			}
 			return new MapList<V>( order(), entries );
 		}
 
@@ -370,8 +380,7 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 
 		@Override
 		public String toString() {
-			String list = super.toString();
-			return "{" + list.substring( 1, list.length() - 1 ) + "}";
+			return "{" + super.toString() + "}";
 		}
 
 	}
@@ -432,12 +441,16 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 		}
 
 		@Override
+		@SuppressWarnings ( "unchecked" )
 		Multimap<V> selfWith( List<Map.Entry<V>> entries ) {
+			if ( entries instanceof MultimapList ) {
+				return (Multimap<V>) entries;
+			}
 			return new MultimapList<V>( order(), valueOrder, entries );
 		}
 
 		@Override
-		Ord<Object> overallOrder() {
+		Ord<Object> entryOrder() {
 			return Order.sub2( order(), Order.typeaware( Order.elementsBy( valueOrder ),
 					Element.class ) );
 		}
