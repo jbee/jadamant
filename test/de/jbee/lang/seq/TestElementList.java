@@ -20,14 +20,14 @@ public class TestElementList {
 
 	@Test
 	public void testAppend_NoCreationOfLinkedListOnSecondElement() {
-		List<Integer> l = ElementaryList.with( 1 );
+		List<Integer> l = ElementaryList.element( 1 );
 		assertThat( l.append( 2 ), not( instanceOf( ElementaryList.class ) ) );
 	}
 
 	@Test
 	public void testAppend_NoCreationOfLinkedList() {
 		Random rnd = new Random();
-		List<Integer> l = ElementaryList.with( 1 );
+		List<Integer> l = ElementaryList.element( 1 );
 		for ( int i = 0; i < 100; i++ ) {
 			l = l.append( rnd.nextInt( 100 ) );
 		}
@@ -42,14 +42,14 @@ public class TestElementList {
 
 	@Test
 	public void testPrepand_NoCreationOfLinkedListOnSecondElement() {
-		List<Integer> l = ElementaryList.with( 1 );
+		List<Integer> l = ElementaryList.element( 1 );
 		assertThat( l.prepand( 2 ), not( instanceOf( ElementaryList.class ) ) );
 	}
 
 	@Test
 	public void testPrepand_NoCreationOfLinkedList() {
 		Random rnd = new Random();
-		List<Integer> l = ElementaryList.with( 1 );
+		List<Integer> l = ElementaryList.element( 1 );
 		for ( int i = 0; i < 100; i++ ) {
 			l = l.prepand( rnd.nextInt( 100 ) );
 		}

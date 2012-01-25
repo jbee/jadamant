@@ -154,6 +154,10 @@ abstract class EvolutionList<E>
 			return prepand( e );
 		}
 		final int l = elemsLength();
+		if ( index == 1 ) { // avoid 'views' just using a single element (as first)
+			return List.with.element( e ).prepand( at( 0 ) ).concat( drop( index ) );
+		}
+		//TODO try to avoid inappropriate reuse of this stack -> especially for the recessive list
 		if ( index >= l ) {
 			return thisWith( length + 1, tail.insertAt( index - l, e ) );
 		}
@@ -162,7 +166,7 @@ abstract class EvolutionList<E>
 
 	@Override
 	public final boolean isEmpty() {
-		return false; // otherwise you would have another class 
+		return false; // otherwise it would be another class 
 	}
 
 	@Override

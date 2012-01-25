@@ -11,19 +11,19 @@ import de.jbee.lang.dev.Nonnull;
 /**
  * A list consists of a single element and another subsequent {@link List} as tail.
  * 
- * So a {@linkplain ElementaryList} will not have {@link #length()} of 1 as soon as the tail list isn't
- * empty.
+ * So a {@linkplain ElementaryList} will not have {@link #length()} of 1 as soon as the tail list
+ * isn't empty.
  * 
  * @author Jan Bernitt (jan.bernitt@gmx.de)
  */
 final class ElementaryList<E>
 		implements List<E> {
 
-	static <E> List<E> with( E element ) {
-		return with( element, List.with.<E> noElements() );
+	static <E> List<E> element( E element ) {
+		return element( element, List.with.<E> noElements() );
 	}
 
-	static <E> List<E> with( E element, List<E> tail ) {
+	static <E> List<E> element( E element, List<E> tail ) {
 		Nonnull.element( element );
 		return new ElementaryList<E>( element, tail );
 	}
@@ -105,7 +105,9 @@ final class ElementaryList<E>
 	public List<E> insertAt( int index, E e ) {
 		return index == 0
 			? prepand( e )
-			: thisWithTail( tail.insertAt( index - 1, e ) );
+			: index == 1
+				? EvolutionList.dominant( length() + 1, new Object[] { element, e }, tail )
+				: thisWithTail( tail.insertAt( index - 1, e ) );
 	}
 
 	@Override
@@ -117,13 +119,13 @@ final class ElementaryList<E>
 	public List<E> prepand( E e ) {
 		Nonnull.element( e );
 		//TODO not use StackList directly - Lister has to be extended to support tail list arguments in some way
-		return EvolutionList.dominant( length() + 1, Array.withLastElement( e, 2 ), this );
+		return EvolutionList.dominant( length() + 1, new Object[] { e, element }, tail );
 	}
 
 	@Override
 	public List<E> replaceAt( int index, E e ) {
 		return index == 0
-			? with( e, tail )
+			? element( e, tail )
 			: thisWithTail( tail.replaceAt( index - 1, e ) );
 	}
 

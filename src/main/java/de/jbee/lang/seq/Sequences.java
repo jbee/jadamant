@@ -47,7 +47,7 @@ public final class Sequences {
 			if ( e instanceof java.lang.Enum<?> ) {
 				return elementEnum( e );
 			}
-			return ElementaryList.with( e );
+			return ElementaryList.element( e );
 		}
 
 		@SuppressWarnings ( "unchecked" )

@@ -75,10 +75,10 @@ final class EnumList<E>
 		if ( length == 1 ) { // check for a desc sequence
 			return firstMinus( 1 ) == eOrdinal
 				? list( firstOrdinal, eOrdinal )
-				: ElementaryList.with( at( 0 ) ).append( e );
+				: ElementaryList.element( at( 0 ) ).append( e );
 		}
 		if ( len() == 1 ) {
-			return ElementaryList.with( at( 0 ), tail ).append( e );
+			return ElementaryList.element( at( 0 ), tail ).append( e );
 		}
 		return thisWithTail( tail.append( e ) );
 	}
@@ -179,14 +179,14 @@ final class EnumList<E>
 			if ( eOrdinal == ordinalMinus( firstOrdinal, 1 ) ) {
 				return list( eOrdinal, lastOrdinal );
 			}
-			return ElementaryList.with( e, this );
+			return ElementaryList.element( e, this );
 		}
 		final int l = len();
 		if ( index >= l ) {
 			return thisWithTail( tail.insertAt( index - l, e ) );
 		}
 		// somewhere in between this enumeration
-		return list( firstOrdinal, firstPlus( index - 1 ), ElementaryList.with( e, list(
+		return list( firstOrdinal, firstPlus( index - 1 ), ElementaryList.element( e, list(
 				firstPlus( index ), lastOrdinal, tail ) ) );
 	}
 
@@ -207,10 +207,10 @@ final class EnumList<E>
 		if ( length == 1 ) { // check a descending sequence
 			return firstPlus( 1 ) == eOrdinal
 				? list( eOrdinal, lastOrdinal )
-				: ElementaryList.with( at( 0 ) ).prepand( e );
+				: ElementaryList.element( at( 0 ) ).prepand( e );
 		}
 		if ( len() == 1 ) {
-			return ElementaryList.with( at( 0 ), tail ).prepand( e );
+			return ElementaryList.element( at( 0 ), tail ).prepand( e );
 		}
 		return list( eOrdinal, eOrdinal, this );
 	}
@@ -228,7 +228,7 @@ final class EnumList<E>
 		if ( index == 0 ) {
 			return drop( 1 ).prepand( e );
 		}
-		return take( index ).concat( ElementaryList.with( e, drop( index + 1 ) ) );
+		return take( index ).concat( ElementaryList.element( e, drop( index + 1 ) ) );
 	}
 
 	@Override

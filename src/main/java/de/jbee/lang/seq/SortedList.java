@@ -181,8 +181,7 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 	}
 
 	int insertionIndexFor( E e ) {
-		Ord<Object> o = overallOrder();
-		return List.indexFor.insertBy( e, o ).in( elems );
+		return List.indexFor.insertBy( e, overallOrder() ).in( elems );
 	}
 
 	Ord<Object> overallOrder() {
