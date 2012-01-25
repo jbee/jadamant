@@ -1,5 +1,7 @@
 package de.jbee.lang.seq;
 
+import static de.jbee.lang.Lang.noInts;
+import static de.jbee.lang.seq.ListMatcher.hasEqualElementsAsIn;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.sameInstance;
@@ -133,6 +135,36 @@ public class TestList {
 		verifyTraverseIterative( List.with.elements( 42, 20 ) );
 		verifyTraverseIterative( List.with.elements( 42 ) );
 		verifyTraverseIterative( List.with.<Integer> noElements() );
+	}
+
+	@Test
+	public void testInsertAt_FirstElementIntoAnEmptyList() {
+		assertThat( noInts().insertAt( 0, 1 ), hasEqualElementsAsIn( 1 ) );
+	}
+
+	@Test
+	public void testInsertAt_StartOfSingleElementList() {
+		assertThat( List.with.element( 1 ).insertAt( 0, 2 ), hasEqualElementsAsIn( 2, 1 ) );
+	}
+
+	@Test
+	public void testInsertAt_EndOfSingleElementList() {
+		assertThat( List.with.element( 1 ).insertAt( 1, 2 ), hasEqualElementsAsIn( 1, 2 ) );
+	}
+
+	@Test
+	public void testInsertAt_EndOfTwoElementsList() {
+		assertThat( List.with.elements( 1, 2 ).insertAt( 2, 3 ), hasEqualElementsAsIn( 1, 2, 3 ) );
+	}
+
+	@Test
+	public void testInsertAt_StartOfTwoElementsList() {
+		assertThat( List.with.elements( 1, 2 ).insertAt( 0, 3 ), hasEqualElementsAsIn( 3, 1, 2 ) );
+	}
+
+	@Test
+	public void testInsertAt_MiddleOfTwoElementsList() {
+		assertThat( List.with.elements( 1, 2 ).insertAt( 1, 3 ), hasEqualElementsAsIn( 1, 3, 2 ) );
 	}
 
 	private List<Integer> descendingTo1From( final int start ) {
