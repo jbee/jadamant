@@ -157,10 +157,7 @@ abstract class EvolutionList<E>
 		if ( index >= l ) {
 			return thisWith( length + 1, tail.insertAt( index - l, e ) );
 		}
-		if ( index == l - 1 ) {
-			return thisWith( length + 1, tail.prepand( e ) );
-		}
-		return take( index - 1 ).concat( drop( index + 1 ).prepand( e ) );
+		return take( index ).concat( drop( index ).prepand( e ) );
 	}
 
 	@Override

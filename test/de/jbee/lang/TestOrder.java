@@ -27,6 +27,11 @@ public class TestOrder {
 		assertThat( search( 'x', new Character[] { 'a', 'c', 'x' } ), is( 2 ) );
 	}
 
+	@Test
+	public void testInherentOrder_AscendingNumbersCase() {
+		assertThat( Order.inherent.ord( 1, 2 ), is( Ordering.LT ) );
+	}
+
 	private <T> int search( T value, T[] values ) {
 		return Order.binarySearch( Array.sequence( values ), 0, values.length, value,
 				Order.inherent );

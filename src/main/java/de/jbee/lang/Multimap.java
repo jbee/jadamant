@@ -5,6 +5,8 @@ import de.jbee.lang.Map.Entry;
 public interface Multimap<V>
 		extends Bag<Map.Entry<V>> {
 
+	Bag<V> values();
+
 	/*
 	 * The usual methods commonly known as get/put in the java-field.
 	 */
@@ -16,8 +18,6 @@ public interface Multimap<V>
 	Bag<V> valuesFor( CharSequence key );
 
 	Multimap<V> insert( CharSequence key, V value );
-
-	//OPEN List<V> values();
 
 	/*
 	 * Covariant return type overrides from Set interface with Multimap return type

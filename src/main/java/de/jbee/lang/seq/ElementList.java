@@ -29,13 +29,11 @@ class ElementList<E>
 			: elements( elems );
 	}
 
+	/**
+	 * maps to the values of the {@link Element}s in this list.
+	 */
 	private List<E> values() {
-		//TODO improve performance and structure by using fill and evo-list
-		List<E> res = List.with.noElements();
-		for ( int i = length() - 1; i >= 0; i-- ) {
-			res = res.prepand( at( i ) );
-		}
-		return res;
+		return List.with.elements( this );
 	}
 
 	@Override
@@ -85,7 +83,7 @@ class ElementList<E>
 
 	@Override
 	public List<E> tidyUp() {
-		return list( elems.tidyUp() ); // OPEN unwrap -> no Element indirection any longer ?
+		return values(); // we create values so we know its tidied up.
 	}
 
 	@Override

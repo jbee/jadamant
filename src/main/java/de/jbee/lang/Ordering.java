@@ -35,6 +35,14 @@ public enum Ordering
 				: 1;
 	}
 
+	public Ordering inverse() {
+		return this == LT
+			? GT
+			: this == GT
+				? LT
+				: EQ;
+	}
+
 	//OPEN transform below methods to functions ?
 	//TODO more clear naming
 

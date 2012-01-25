@@ -63,6 +63,10 @@ public final class Order {
 		return new EntryOrder( keyOrder );
 	}
 
+	public static <V> Ord<Element> elementsBy( Ord<? super V> valueOrder ) {
+		return new ElementOrder( valueOrder );
+	}
+
 	public static boolean keepable( Sorted sorted, Ord<?> required ) {
 		if ( required == inherent ) {
 			return true;
@@ -198,6 +202,27 @@ public final class Order {
 		return - ( low + 1 ); // key not found.
 	}
 
+	private static final class ElementOrder<V>
+			implements Ord<Element<V>> {
+
+		private final Ord<? super V> valueOrder;
+
+		ElementOrder( Ord<? super V> valueOrder ) {
+			super();
+			this.valueOrder = valueOrder;
+		}
+
+		@Override
+		public Ordering ord( Element<V> left, Element<V> right ) {
+			return valueOrder.ord( left.value(), right.value() );
+		}
+
+		@Override
+		public String toString() {
+			return "^" + valueOrder;
+		}
+	}
+
 	@SuppressWarnings ( "unchecked" )
 	private static final class EntryOrder
 			implements Ord<Map.Entry> {
@@ -214,6 +239,10 @@ public final class Order {
 			return keyOrder.ord( left.key(), right.key() );
 		}
 
+		@Override
+		public String toString() {
+			return "§" + keyOrder.toString();
+		}
 	}
 
 	private static final class StaticOrder
@@ -231,6 +260,10 @@ public final class Order {
 			return ordering;
 		}
 
+		@Override
+		public String toString() {
+			return ordering.name();
+		}
 	}
 
 	/**
@@ -307,6 +340,10 @@ public final class Order {
 			return fromComparison( left.compareTo( right ) );
 		}
 
+		@Override
+		public String toString() {
+			return "'a'..'z'";
+		}
 	}
 
 	private static final class AlphabeticalOrder
@@ -328,6 +365,10 @@ public final class Order {
 			return numerical.ord( left.length(), right.length() );
 		}
 
+		@Override
+		public String toString() {
+			return "\"a\"..\"z\"";
+		}
 	}
 
 	private static final class CalendricalOrder
@@ -340,6 +381,11 @@ public final class Order {
 		@Override
 		public Ordering ord( Calendar left, Calendar right ) {
 			return fromComparison( left.compareTo( right ) );
+		}
+
+		@Override
+		public String toString() {
+			return "(ddmmyyyy)";
 		}
 
 	}
@@ -356,6 +402,10 @@ public final class Order {
 			return fromComparison( left.compareTo( right ) );
 		}
 
+		@Override
+		public String toString() {
+			return "(ddmmyyyy)";
+		}
 	}
 
 	private static final class ComparatorOrder<T>
@@ -373,6 +423,11 @@ public final class Order {
 			return fromComparison( comparator.compare( left, right ) );
 		}
 
+		@Override
+		public String toString() {
+			return "compare()";
+		}
+
 	}
 
 	private static final class CompareableOrder<T extends Comparable<T>>
@@ -385,6 +440,11 @@ public final class Order {
 		@Override
 		public Ordering ord( T left, T right ) {
 			return fromComparison( left.compareTo( right ) );
+		}
+
+		@Override
+		public String toString() {
+			return "compareTo()";
 		}
 	}
 
@@ -404,6 +464,10 @@ public final class Order {
 					right.getClass().getCanonicalName() );
 		}
 
+		@Override
+		public String toString() {
+			return "(ordinal 0..9)";
+		}
 	}
 
 	private static final class HashCodeOrder
@@ -418,6 +482,10 @@ public final class Order {
 			return fromComparison( left.hashCode() - right.hashCode() );
 		}
 
+		@Override
+		public String toString() {
+			return "hashCode()";
+		}
 	}
 
 	private static final class IdentityOrder
@@ -433,6 +501,10 @@ public final class Order {
 					- System.identityHashCode( right ) );
 		}
 
+		@Override
+		public String toString() {
+			return "(identity)";
+		}
 	}
 
 	private static final class InherentOrder
@@ -471,6 +543,11 @@ public final class Order {
 			}
 			return identity.ord( left, right );
 		}
+
+		@Override
+		public String toString() {
+			return "(inherent)";
+		}
 	}
 
 	private static final class InverseOrder<T>
@@ -491,6 +568,11 @@ public final class Order {
 		@Override
 		public Ordering ord( T left, T right ) {
 			return ord( right, left );
+		}
+
+		@Override
+		public String toString() {
+			return "-" + order;
 		}
 	}
 
@@ -515,6 +597,10 @@ public final class Order {
 			return order.ord( left, right );
 		}
 
+		@Override
+		public String toString() {
+			return "]" + order + "[";
+		}
 	}
 
 	private static final class NumericalOrder
@@ -551,6 +637,10 @@ public final class Order {
 			return fromComparison( Double.compare( left.doubleValue(), right.doubleValue() ) );
 		}
 
+		@Override
+		public String toString() {
+			return "1..9";
+		}
 	}
 
 	private static final class OrderAdapterComparator<T>
@@ -568,6 +658,10 @@ public final class Order {
 			return order.ord( one, other ).intValue();
 		}
 
+		@Override
+		public String toString() {
+			return order.toString();
+		}
 	}
 
 	private static final class QuantifiableOrder
@@ -582,6 +676,10 @@ public final class Order {
 			return fromComparison( left.ordinal() - right.ordinal() );
 		}
 
+		@Override
+		public String toString() {
+			return "ord(1..9)";
+		}
 	}
 
 	private static final class SubOrder<T>
@@ -604,6 +702,10 @@ public final class Order {
 				: res;
 		}
 
+		@Override
+		public String toString() {
+			return primary + " => " + secondary;
+		}
 	}
 
 	/**
@@ -639,6 +741,10 @@ public final class Order {
 			return Ordering.fromComparison( leftIndex - rightIndex );
 		}
 
+		@Override
+		public String toString() {
+			return seq.toString();
+		}
 	}
 
 	private static final class TypeawareOrder<T>
@@ -670,5 +776,9 @@ public final class Order {
 			return Ordering.EQ;
 		}
 
+		@Override
+		public String toString() {
+			return "[" + type.getSimpleName() + ":" + order + "]";
+		}
 	}
 }

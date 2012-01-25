@@ -2,6 +2,7 @@ package de.jbee.lang.seq;
 
 import static de.jbee.lang.seq.ElementList.elements;
 import de.jbee.lang.Bag;
+import de.jbee.lang.Element;
 import de.jbee.lang.IndexDeterminable;
 import de.jbee.lang.List;
 import de.jbee.lang.ListIndex;
@@ -180,7 +181,8 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 	}
 
 	int insertionIndexFor( E e ) {
-		return List.indexFor.insertBy( e, overallOrder() ).in( elems );
+		Ord<Object> o = overallOrder();
+		return List.indexFor.insertBy( e, o ).in( elems );
 	}
 
 	Ord<Object> overallOrder() {
@@ -226,7 +228,7 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 		@Override
 		public String toString() {
 			String list = super.toString();
-			return "#(" + list.substring( 1, list.length() - 1 ) + ")";
+			return "(" + list.substring( 1, list.length() - 1 ) + ")";
 		}
 	}
 
@@ -305,6 +307,11 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 			return idx >= 0
 				? at( idx ).value()
 				: null;
+		}
+
+		@Override
+		public Bag<V> values() {
+			return bagOf( elements( elems() ), Order.keep );
 		}
 
 		@Override
@@ -416,6 +423,11 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 		}
 
 		@Override
+		public Bag<V> values() {
+			return bagOf( elements( elems() ), valueOrder );
+		}
+
+		@Override
 		Multimap<V> self() {
 			return this;
 		}
@@ -427,7 +439,8 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 
 		@Override
 		Ord<Object> overallOrder() {
-			return Order.sub2( order(), Order.nullsave( valueOrder ) );
+			return Order.sub2( order(), Order.typeaware( Order.elementsBy( valueOrder ),
+					Element.class ) );
 		}
 
 		@Override
