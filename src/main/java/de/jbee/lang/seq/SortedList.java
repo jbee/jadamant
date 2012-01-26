@@ -313,14 +313,6 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 		}
 
 		@Override
-		public V valueFor( Key key ) {
-			final int idx = indexFor( key );
-			return idx >= 0
-				? at( idx ).value()
-				: null;
-		}
-
-		@Override
 		public Bag<V> values() {
 			return bagOf( elements( elems() ), Order.keep );
 		}

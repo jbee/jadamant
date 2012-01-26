@@ -1,9 +1,9 @@
 package de.jbee.lang.seq;
 
+import static de.jbee.lang.ListIndex.NOT_CONTAINED;
 import static de.jbee.lang.seq.ListMatcher.hasEqualElementsAsIn;
 import static de.jbee.lang.seq.Sequences.key;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
@@ -22,14 +22,14 @@ public class TestMap {
 
 	@Test
 	public void testValueFor_NoEntriesCase() {
-		assertThat( emptyMap().valueFor( ONE ), nullValue() );
+		assertThat( emptyMap().indexFor( ONE ), is( NOT_CONTAINED ) );
 	}
 
 	@Test
 	public void testValueFor_OneEntryCase() {
 		Map<Integer> m = emptyMap();
 		m = m.insert( ONE, 1 );
-		assertThat( m.valueFor( ONE ), is( 1 ) );
+		assertThat( m.at( m.indexFor( ONE ) ).value(), is( 1 ) );
 	}
 
 	@Test
@@ -37,8 +37,8 @@ public class TestMap {
 		Map<Integer> m = emptyMap();
 		m = m.insert( ONE, 1 );
 		m = m.insert( TWO, 2 );
-		assertThat( m.valueFor( ONE ), is( 1 ) );
-		assertThat( m.valueFor( TWO ), is( 2 ) );
+		assertThat( m.at( m.indexFor( ONE ) ).value(), is( 1 ) );
+		assertThat( m.at( m.indexFor( TWO ) ).value(), is( 2 ) );
 	}
 
 	@Test
@@ -48,7 +48,7 @@ public class TestMap {
 			Map.Key key = key( "number " + i );
 			m = m.insert( key, i );
 			for ( int j = 0; j <= i; j++ ) {
-				assertThat( m.valueFor( key ), is( i ) );
+				assertThat( m.at( m.indexFor( key ) ).value(), is( i ) );
 			}
 		}
 	}

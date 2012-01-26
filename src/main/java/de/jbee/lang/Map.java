@@ -18,13 +18,6 @@ public interface Map<V>
 	 */
 	Ord<Object> ENTRY_ORDER = typeaware( entriesBy( Order.alphabetical ), Map.Entry.class );
 
-	/**
-	 * OPEN avoid possible null result ?
-	 * 
-	 * @return The value associated with the key given or null.
-	 */
-	V valueFor( Key key );
-
 	/*
 	 * Covariant return type overrides from List/Bag/Set/Multimap interface with Map return type
 	 */
