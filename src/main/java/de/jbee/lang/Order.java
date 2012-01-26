@@ -236,7 +236,7 @@ public final class Order {
 
 		@Override
 		public Ordering ord( Map.Entry left, Map.Entry right ) {
-			return keyOrder.ord( left.key(), right.key() );
+			return keyOrder.ord( left.key().pattern(), right.key().pattern() );
 		}
 
 		@Override

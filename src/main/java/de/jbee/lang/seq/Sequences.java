@@ -8,6 +8,7 @@ import de.jbee.lang.EnumeratorFactory;
 import de.jbee.lang.Lang;
 import de.jbee.lang.List;
 import de.jbee.lang.Lister;
+import de.jbee.lang.Map;
 import de.jbee.lang.Sequence;
 import de.jbee.lang.seq.EvolutionList.DominantEvolutionList;
 
@@ -154,6 +155,60 @@ public final class Sequences {
 		@Override
 		public <E> Enumerator<E> enumerates( Enum<E> type ) {
 			return new ListerEnumerator<E>( type );
+		}
+
+	}
+
+	private static final class Entry<V>
+			implements Map.Entry<V> {
+
+		final Map.Key key;
+		final V value;
+
+		Entry( Map.Key key, V value ) {
+			super();
+			this.key = key;
+			this.value = value;
+		}
+
+		@Override
+		public Map.Key key() {
+			return key;
+		}
+
+		@Override
+		public V value() {
+			return value;
+		}
+
+		@Override
+		public String toString() {
+			return key + "=>" + value;
+		}
+
+	}
+
+	static <V> Map.Entry<V> entry( Map.Key key, V value ) {
+		return new Sequences.Entry<V>( key, value );
+	}
+
+	static <V> Map.Key key( CharSequence key ) {
+		return new Sequences.Key( key.toString() );
+	}
+
+	private static final class Key
+			implements Map.Key {
+
+		private final String pattern;
+
+		Key( String pattern ) {
+			super();
+			this.pattern = pattern;
+		}
+
+		@Override
+		public String pattern() {
+			return pattern;
 		}
 
 	}

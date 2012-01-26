@@ -1,6 +1,7 @@
 package de.jbee.lang.seq;
 
 import static de.jbee.lang.seq.ElementList.elements;
+import static de.jbee.lang.seq.Sequences.entry;
 import de.jbee.lang.Bag;
 import de.jbee.lang.Element;
 import de.jbee.lang.IndexDeterminable;
@@ -307,12 +308,12 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 		}
 
 		@Override
-		public int indexFor( CharSequence key ) {
+		public int indexFor( Key key ) {
 			return indexFor( entry( key, (V) null ) );
 		}
 
 		@Override
-		public V valueFor( CharSequence key ) {
+		public V valueFor( Key key ) {
 			final int idx = indexFor( key );
 			return idx >= 0
 				? at( idx ).value()
@@ -330,7 +331,7 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 		}
 
 		@Override
-		public Map<V> insert( CharSequence key, V value ) {
+		public Map<V> insert( Key key, V value ) {
 			return insert( entry( key, value ) );
 		}
 
@@ -383,39 +384,6 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 
 	}
 
-	private static final class Entry<V>
-			implements Map.Entry<V> {
-
-		final String key;
-		final V value;
-
-		Entry( String key, V value ) {
-			super();
-			this.key = key;
-			this.value = value;
-		}
-
-		@Override
-		public CharSequence key() {
-			return key;
-		}
-
-		@Override
-		public V value() {
-			return value;
-		}
-
-		@Override
-		public String toString() {
-			return key + "=>" + value;
-		}
-
-	}
-
-	static <V> Map.Entry<V> entry( CharSequence key, V value ) {
-		return new SortedList.Entry<V>( key.toString(), value );
-	}
-
 	private static class MultimapList<V>
 			extends SortedList<Map.Entry<V>, Multimap<V>>
 			implements Multimap<V> {
@@ -431,7 +399,7 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 		}
 
 		@Override
-		public int indexFor( CharSequence key ) {
+		public int indexFor( Map.Key key ) {
 			return indexFor( entry( key, (V) null ), order() );
 		}
 
@@ -485,7 +453,7 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 		}
 
 		@Override
-		public Multimap<V> insert( CharSequence key, V value ) {
+		public Multimap<V> insert( Map.Key key, V value ) {
 			return add( entry( key, value ) );
 		}
 

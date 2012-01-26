@@ -23,7 +23,7 @@ public interface Map<V>
 	 * 
 	 * @return The value associated with the key given or null.
 	 */
-	V valueFor( CharSequence key );
+	V valueFor( Key key );
 
 	/*
 	 * Covariant return type overrides from List/Bag/Set/Multimap interface with Map return type
@@ -46,7 +46,7 @@ public interface Map<V>
 	 * <code>value</code> given (and only that value) is associated with the key from now on.
 	 */
 	@Override
-	Map<V> insert( CharSequence key, V value );
+	Map<V> insert( Key key, V value );
 
 	@Override
 	Map<V> insert( Map.Entry<V> e );
@@ -60,10 +60,15 @@ public interface Map<V>
 	@Override
 	Map<V> tidyUp();
 
+	interface Key {
+
+		String pattern();
+	}
+
 	interface Entry<V>
 			extends Element<V> {
 
-		CharSequence key();
+		Key key();
 
 	}
 }

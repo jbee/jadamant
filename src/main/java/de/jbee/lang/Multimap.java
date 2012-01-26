@@ -1,6 +1,7 @@
 package de.jbee.lang;
 
 import de.jbee.lang.Map.Entry;
+import de.jbee.lang.Map.Key;
 
 /**
  * A {@linkplain Multimap} may contain multiple values for each key. Therefore it is a {@link Bag}
@@ -20,12 +21,9 @@ public interface Multimap<V>
 	 */
 	Bag<V> values();
 
-	/*
-	 * The usual methods commonly known as get/put in the java-field.
-	 */
-
 	/**
 	 * @see #entriesAt(int)
+	 * @see #indexFor(CharSequence)
 	 * 
 	 * @return All values having the same key as the entry at the given <code>index</code>. Their
 	 *         sequence is corresponding to the sequence of the values entries.
@@ -33,9 +31,9 @@ public interface Multimap<V>
 	Bag<V> valuesAt( int index )
 			throws IndexOutOfBoundsException;
 
-	int indexFor( CharSequence key );
+	int indexFor( Key key );
 
-	Multimap<V> insert( CharSequence key, V value );
+	Multimap<V> insert( Key key, V value );
 
 	/*
 	 * Override to add appropiate javadoc
