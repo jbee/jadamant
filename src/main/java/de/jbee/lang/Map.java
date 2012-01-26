@@ -55,6 +55,13 @@ public interface Map<V>
 
 	interface Key {
 
+		/**
+		 * The terminator is the highest unicode character existing. It is appended to the searched
+		 * prefix to find the position between the last key having the prefix and the first one that
+		 * does not.
+		 */
+		String PREFIX_TERMINATOR = "\ufffd";
+
 		String pattern();
 	}
 

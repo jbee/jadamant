@@ -2,6 +2,7 @@ package de.jbee.lang.seq;
 
 import static de.jbee.lang.ListIndex.NOT_CONTAINED;
 import static de.jbee.lang.seq.ListMatcher.hasEqualElementsAsIn;
+import static de.jbee.lang.seq.Sequences.entry;
 import static de.jbee.lang.seq.Sequences.key;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -71,6 +72,30 @@ public class TestMap {
 		m = m.insert( A, 0 );
 		assertThat( m.length(), is( 3 ) );
 		assertThat( m.values(), hasEqualElementsAsIn( 0, 2, 3 ) );
+	}
+
+	/**
+	 * This small example shows how to find the first key/entry *not* having a specific prefix as
+	 * key value. Together with a 2nd index lookup you can determine the index range of the entries
+	 * having the prefix. You can even slice out all keys between 'a' and 'c' or something similar.
+	 */
+	@Test
+	public void testScenario_PrefixSearch() {
+		Key aaa = key( "aabcd" );
+		Key aa = key( "aacde" );
+		Key az = key( "aza" );
+		Key ba = key( "ba" );
+		Map<Integer> m = emptyMap();
+		m = m.insert( aaa, 0 );
+		m = m.insert( aa, 1 );
+		m = m.insert( az, 3 );
+		m = m.insert( ba, 2 );
+		int endExclusive = List.indexFor.insertBy(
+				entry( key( "a" + Map.Key.PREFIX_TERMINATOR ), 0 ), m.order() ).in( m );
+		assertThat( endExclusive, is( 3 ) );
+		endExclusive = List.indexFor.insertBy( entry( key( "aa" + Map.Key.PREFIX_TERMINATOR ), 0 ),
+				m.order() ).in( m );
+		assertThat( endExclusive, is( 2 ) );
 	}
 
 	private Map<Integer> emptyMap() {
