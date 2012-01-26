@@ -20,7 +20,21 @@ The core ideas are:
 'jadamant' is a made-up word conbined out of 'Java' and 'Adamant'. Inspired by the Master of Orion II Adamantium plating. Adamant symbolises the immutable solid character and thereby the philosophy of this project.
 
 ### Status
-The 0.1 beta is planed to be released late 2011. Until then there might be major changes to the API. Feal free to contact me and get to know more about the current state.
+The 0.1 beta is planed to be released somewhen 2012. Until then there might be major changes to the API. Feal free to contact me and get to know more about the current state.
+
+### Notable facts about collections
+
+* All collections are __immutable__ (read-only; changes create new objects, the originating one kept unchanged)
+* All collections are __not__ `Iterable` ~ this concept got replaced too
+* The API is index based or orientated (see the examples to get the difference)
+* `List`s are the basic collection (there is no `Collection`-type)
+* Often `List`s consists of a chain of partial `List`s
+* A `Bag` is literally a `Sorted``List` 
+* A `Set` is literally a special `Bag` (and therefore a `List` too) with a unique constraint 
+* A `Map` __is literally__ a `Set` of `Entry`s, so it's a `Bag` too... and a `List`... and...
+* a `Multimap` (a `Bag` of `Entry`s) or a map with a list of values for each key
+
+This migth sound unfamiliar for a moment. Hopefully there will be a lot of examples soon to show why this is the better approch. 
 
 ### Working with Lists
 ``` java
