@@ -90,12 +90,15 @@ public class TestMap {
 		m = m.insert( aa, 1 );
 		m = m.insert( az, 3 );
 		m = m.insert( ba, 2 );
-		int endExclusive = List.indexFor.insertBy(
-				entry( key( "a" + Map.Key.PREFIX_TERMINATOR ), 0 ), m.order() ).in( m );
+		int endExclusive = insertionIndexForPrefix( "a", m );
 		assertThat( endExclusive, is( 3 ) );
-		endExclusive = List.indexFor.insertBy( entry( key( "aa" + Map.Key.PREFIX_TERMINATOR ), 0 ),
-				m.order() ).in( m );
+		endExclusive = insertionIndexForPrefix( "aa", m );
 		assertThat( endExclusive, is( 2 ) );
+	}
+
+	private int insertionIndexForPrefix( String prefix, Map<Integer> m ) {
+		return List.indexFor.insertBy( entry( key( prefix + Map.Key.PREFIX_TERMINATOR ), 0 ),
+				m.order() ).in( m );
 	}
 
 	private Map<Integer> emptyMap() {

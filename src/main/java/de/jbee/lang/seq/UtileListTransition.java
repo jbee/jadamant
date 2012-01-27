@@ -265,8 +265,12 @@ public class UtileListTransition
 
 	//TODO filter(Predicate)
 
-	static final class EmptyingTransition
+	private static final class EmptyingTransition
 			implements ListTransition {
+
+		EmptyingTransition() {
+			// make visible
+		}
 
 		@Override
 		public <E> List<E> from( List<E> list ) {
@@ -288,8 +292,12 @@ public class UtileListTransition
 		protected abstract <E> void rearrange( Object[] list, int start );
 	}
 
-	static final class NoneTranstion
+	private static final class NoneTranstion
 			implements ListTransition {
+
+		NoneTranstion() {
+			// make visible
+		}
 
 		@Override
 		public <E> List<E> from( List<E> list ) {
@@ -297,8 +305,12 @@ public class UtileListTransition
 		}
 	}
 
-	static final class ShuffleTransition
+	private static final class ShuffleTransition
 			extends FillAndArrangeTranstion {
+
+		ShuffleTransition() {
+			// make visible
+		}
 
 		@Override
 		public <E> List<E> from( List<E> list ) {
@@ -319,7 +331,14 @@ public class UtileListTransition
 
 	}
 
-	static final class SortingTransition
+	/**
+	 * @deprecated Just create a bag from that list using the order - thereby the list will be
+	 *             sorted anyway
+	 * 
+	 * @author Jan Bernitt (jan.bernitt@gmx.de)
+	 */
+	@Deprecated
+	private static final class SortingTransition
 			extends FillAndArrangeTranstion
 			implements BagTransition {
 
@@ -344,7 +363,7 @@ public class UtileListTransition
 		}
 	}
 
-	static final class SwapTransition
+	private static final class SwapTransition
 			implements ListTransition {
 
 		private final ListIndex index1;
@@ -375,8 +394,12 @@ public class UtileListTransition
 		}
 	}
 
-	static final class TidyUpTransition
+	private static final class TidyUpTransition
 			implements ListTransition {
+
+		TidyUpTransition() {
+			// make visible
+		}
 
 		@Override
 		public <E> List<E> from( List<E> list ) {
@@ -385,32 +408,21 @@ public class UtileListTransition
 
 	}
 
-	static final class TimesTranstion
-			implements ListTransition {
-
-		@Override
-		public <E> List<E> from( List<E> list ) {
-			//TODO
-			return null;
-		}
-
-	}
-
 	private static final class ConcatTransition
 			implements ListTransition {
 
-		private final ListTransition head;
-		private final ListTransition tail;
+		private final ListTransition one;
+		private final ListTransition other;
 
-		ConcatTransition( ListTransition head, ListTransition tail ) {
+		ConcatTransition( ListTransition one, ListTransition other ) {
 			super();
-			this.head = head;
-			this.tail = tail;
+			this.one = one;
+			this.other = other;
 		}
 
 		@Override
 		public <E> List<E> from( List<E> list ) {
-			return head.from( list ).concat( tail.from( list ) );
+			return one.from( list ).concat( other.from( list ) );
 		}
 
 	}
@@ -521,7 +533,7 @@ public class UtileListTransition
 		public <E> List<E> from( List<E> list ) {
 			final int index = List.indexFor.firstFalse( predicate ).in( list );
 			return index == NOT_CONTAINED
-				? list.take( 0 ) // drop all by take nothing -> empty list
+				? empty.from( list )
 				: list.drop( index );
 		}
 	}
@@ -704,7 +716,7 @@ public class UtileListTransition
 			}
 			int size = list.length();
 			if ( start >= size ) {
-				return list.take( 0 ); // will lead to empty list but impl. depends on argument
+				return empty.from( list );
 			}
 			if ( start + length > size ) {
 				return list.drop( start );
