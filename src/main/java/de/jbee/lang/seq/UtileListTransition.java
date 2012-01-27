@@ -153,8 +153,12 @@ public class UtileListTransition
 		return nubsBy( Equal.equals );
 	}
 
+	public UtileListTransition nubsBy( Ord<Object> order ) {
+		return followedBy( new NubTransition( order ) );
+	}
+
 	public UtileListTransition nubsBy( Eq<Object> equality ) {
-		return followedBy( new NubTransition( Order.by( equality ) ) );
+		return nubsBy( Order.by( equality ) );
 	}
 
 	public ListTransition pure() {
@@ -550,21 +554,18 @@ public class UtileListTransition
 
 		@Override
 		public <E> List<E> from( List<E> list ) {
-			//TODO in case list is order by an order equal to order required there is a faster way to nub
-			if ( list instanceof Bag<?> ) {
-				//TODO result should be a Set since we can be sure there are no duplicates any longer
-			}
-			Set<E> uniqe = Set.with.noElements( order );
-			List<E> res = List.with.noElements();
-			for ( int i = list.length(); i >= 0; i-- ) {
+			Object[] elements = new Object[Lang.nextHighestPowerOf2( list.length() )];
+			int j = elements.length - 1;
+			E previous = list.at( List.indexFor.elemOn( -1 ).in( list ) );
+			elements[j--] = previous;
+			for ( int i = list.length() - 2; i >= 0; i-- ) {
 				E e = list.at( i );
-				Set<E> withE = uniqe.insert( e );
-				if ( withE.length() > uniqe.length() ) {
-					uniqe = withE;
-					res.append( e );
+				if ( order.ord( e, previous ).isLt() ) {
+					previous = e;
+					elements[j--] = e;
 				}
 			}
-			return res;
+			return EvolutionList.dominant( elements.length - j - 1, elements );
 		}
 	}
 

@@ -1,8 +1,6 @@
 package de.jbee.lang.seq;
 
-import de.jbee.lang.Array;
 import de.jbee.lang.Bag;
-import de.jbee.lang.Lang;
 import de.jbee.lang.List;
 import de.jbee.lang.Lister;
 import de.jbee.lang.Ord;
@@ -65,32 +63,14 @@ public class UtileSetLister
 			}
 			if ( elems instanceof Bag<?> ) {
 				if ( inheritOrder || order == seqOrder ) {
-					return withoutDuplicates( elems, order );
+					return List.that.nubsBy( order ).from( elems );
 				}
 			}
 			if ( inheritOrder ) {
 				order = seqOrder;
 			}
 		}
-		Object[] elements = new Object[elems.length()];
-		elems.fill( 0, elements, 0, elems.length() );
-		Order.sort( elements, order );
-		return withoutDuplicates( (Sequence<E>) Array.sequence( elements ), order );
-	}
-
-	private static <E> List<E> withoutDuplicates( Sequence<E> elems, Ord<Object> order ) {
-		Object[] elements = new Object[Lang.nextHighestPowerOf2( elems.length() )];
-		int j = elements.length - 1;
-		E previous = elems.at( List.indexFor.elemOn( -1 ).in( elems ) );
-		elements[j--] = previous;
-		for ( int i = elems.length() - 2; i >= 0; i-- ) {
-			E e = elems.at( i );
-			if ( order.ord( e, previous ).isLt() ) {
-				previous = e;
-				elements[j--] = e;
-			}
-		}
-		return EvolutionList.dominant( elements.length - j - 1, elements );
+		return List.that.nubsBy( order ).from( List.that.sortsBy( order ).from( elems ) );
 	}
 
 }
