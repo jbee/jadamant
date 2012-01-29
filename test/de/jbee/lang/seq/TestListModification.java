@@ -12,13 +12,13 @@ public class TestListModification {
 
 	@Test
 	public void testInsertList() {
-		List<Character> mitnatt = List.with.charactersIn( "midnatt" );
-		List<Character> mat = List.with.charactersIn( "mat" );
+		List<Character> mid = List.with.charactersIn( "mid" );
 		List<Character> natt = List.with.charactersIn( "natt" );
+		List<Character> midnatt = mid.concat( natt );
 		ListModification<Character> insertSommarAtN = List.a.insertAt(
 				List.with.charactersIn( "sommar" ), List.indexFor.elem( 'n' ) );
-		assertThat( insertSommarAtN.in( mitnatt ), hasEqualCharactersAsIn( "midsommarnatt" ) );
-		assertThat( insertSommarAtN.in( mat ), hasEqualCharactersAsIn( "mat" ) );
+		assertThat( insertSommarAtN.in( midnatt ), hasEqualCharactersAsIn( "midsommarnatt" ) );
+		assertThat( insertSommarAtN.in( mid ), hasEqualCharactersAsIn( "mid" ) );
 		assertThat( insertSommarAtN.in( natt ), hasEqualCharactersAsIn( "sommarnatt" ) );
 	}
 }
