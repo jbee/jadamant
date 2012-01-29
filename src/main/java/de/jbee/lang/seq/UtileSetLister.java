@@ -18,7 +18,7 @@ public class UtileSetLister
 
 	@Override
 	public <E> Set<E> elements( Ord<Object> order, List<E> elems ) {
-		return SortedList.setOf( sort( elems, order ), order );
+		return SortedList.setOf( refinedToSetConstraints( elems, order ), order );
 	}
 
 	@Override
@@ -49,7 +49,7 @@ public class UtileSetLister
 		return elements( order, List.with.<E> noElements() );
 	}
 
-	private <E> List<E> sort( List<E> elems, Ord<Object> order ) {
+	private <E> List<E> refinedToSetConstraints( List<E> elems, Ord<Object> order ) {
 		if ( elems.length() <= 1 ) {
 			return elems;
 		}
