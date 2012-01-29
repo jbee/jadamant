@@ -554,6 +554,7 @@ public class UtileListTransition
 
 		@Override
 		public <E> List<E> from( List<E> list ) {
+			//OPEN use FillAndArrangeTranstion 
 			Object[] elements = new Object[Lang.nextHighestPowerOf2( list.length() )];
 			int j = elements.length - 1;
 			E previous = list.at( List.indexFor.elemOn( -1 ).in( list ) );
