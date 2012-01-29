@@ -12,7 +12,7 @@ import de.jbee.lang.List;
 import de.jbee.lang.Predicate;
 import de.jbee.lang.Set;
 
-public class TestUtileListTranstion {
+public class TestListTranstion {
 
 	@Test
 	public void testInit() {
@@ -85,8 +85,7 @@ public class TestUtileListTranstion {
 	@Test
 	public void testTakeFirstDropLast() {
 		List<Integer> l = List.with.elements( 1, 2, 3, 4, 5 );
-		assertThat( List.that.takesFirst( 3 ).dropsLast( 1 ).from( l ),
-				hasEqualElementsAsIn( 1, 2 ) );
+		assertThat( List.that.takesFirst( 3 ).dropsLast( 1 ).from( l ), hasEqualElementsAsIn( 1, 2 ) );
 	}
 
 	@Test

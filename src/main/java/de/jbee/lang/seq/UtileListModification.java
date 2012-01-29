@@ -11,24 +11,24 @@ public class UtileListModification {
 	private static final ListModification NONE = new NoModification<Object>();
 
 	@SuppressWarnings ( "unchecked" )
-	public static <E> ListModification<E> none() {
+	public <E> ListModification<E> none() {
 		return NONE;
 	}
 
-	public static <E> ListModification<E> insert( E element, ListIndex index ) {
+	public <E> ListModification<E> insertAt( E element, ListIndex index ) {
 		Nonnull.element( element );
 		return new InsertElementModification<E>( index, element );
 	}
 
-	public static <E> ListModification<E> insert( List<E> list, int index ) {
-		return insert( list, List.indexFor.elemAt( index ) );
+	public <E> ListModification<E> insertAt( List<E> list, int index ) {
+		return insertAt( list, List.indexFor.elemAt( index ) );
 	}
 
-	public static <E> ListModification<E> insert( List<E> list, ListIndex index ) {
+	public <E> ListModification<E> insertAt( List<E> list, ListIndex index ) {
 		return list.isEmpty()
-			? UtileListModification.<E> none()
+			? this.<E> none()
 			: list.length() == 1
-				? insert( list.at( 0 ), index )
+				? insertAt( list.at( 0 ), index )
 				: new InsertListModification<E>( index, list );
 	}
 
@@ -40,7 +40,7 @@ public class UtileListModification {
 		}
 
 		@Override
-		public List<E> from( List<E> list ) {
+		public List<E> in( List<E> list ) {
 			return list;
 		}
 
@@ -62,7 +62,7 @@ public class UtileListModification {
 		}
 
 		@Override
-		public List<E> from( List<E> list ) {
+		public List<E> in( List<E> list ) {
 			int index = insertAt.in( list );
 			if ( index < 0 ) {
 				return list;
@@ -93,7 +93,7 @@ public class UtileListModification {
 		}
 
 		@Override
-		public List<E> from( List<E> list ) {
+		public List<E> in( List<E> list ) {
 			final int index = insertAt.in( list );
 			if ( index < 0 ) { // insertion index not defined -> do not insert
 				return list;

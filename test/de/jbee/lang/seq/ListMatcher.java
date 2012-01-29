@@ -11,6 +11,14 @@ import de.jbee.lang.List;
 
 public class ListMatcher {
 
+	public static Matcher<List<Character>> hasEqualCharactersAsIn( CharSequence expected ) {
+		Character[] characters = new Character[expected.length()];
+		for ( int i = 0; i < characters.length; i++ ) {
+			characters[i] = expected.charAt( i );
+		}
+		return new EqualElementsMatcher<Character>( characters );
+	}
+
 	public static <E> Matcher<List<E>> hasEqualElementsAsIn( E... expected ) {
 		return new EqualElementsMatcher<E>( expected );
 	}
@@ -39,7 +47,7 @@ public class ListMatcher {
 			if ( expected == null || expected.length == 0 ) {
 				return length == 0;
 			}
-			if ( length < expected.length ) {
+			if ( length != expected.length ) {
 				return false;
 			}
 			for ( int i = 0; i < expected.length; i++ ) {

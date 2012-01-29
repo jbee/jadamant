@@ -7,6 +7,7 @@ import de.jbee.lang.seq.Iterate;
 import de.jbee.lang.seq.UtileEnumerator;
 import de.jbee.lang.seq.UtileEnumeratorFactory;
 import de.jbee.lang.seq.UtileListIndex;
+import de.jbee.lang.seq.UtileListModification;
 import de.jbee.lang.seq.UtileListTransition;
 import de.jbee.lang.seq.UtileLister;
 
@@ -56,6 +57,7 @@ public interface List<E>
 	UtileEnumeratorFactory does = Lang.enumerator;
 	//TODO proxy from Lang.
 	UtileListTransition that = UtileListTransition.instance;
+	UtileListModification a = new UtileListModification();
 
 	UtileEnumerator<Integer> numbers = Lang.numbers;
 	UtileEnumerator<Character> letters = Lang.letters;

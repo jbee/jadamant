@@ -10,7 +10,7 @@ import de.jbee.lang.List;
 import de.jbee.lang.Ord;
 import de.jbee.lang.Order;
 
-public class TestUtileListIndex {
+public class TestListIndex {
 
 	@Test
 	public void testAtIndexListIndex() {

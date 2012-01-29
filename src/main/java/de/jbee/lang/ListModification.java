@@ -5,7 +5,7 @@ package de.jbee.lang;
  * type is a special type used as the generic of this interface. A modification is bound to specific
  * type of elements.
  * 
- * A common example is to insert a whole list into the argument list of the {@link #from(List)}
+ * A common example is to insert a whole list into the argument list of the {@link #in(List)}
  * method. This can just work fine as long as both lists consist of the same type of elements.
  * 
  * @author Jan Bernitt (jan.bernitt@gmx.de)
@@ -15,5 +15,5 @@ package de.jbee.lang;
  */
 public interface ListModification<E> {
 
-	List<E> from( List<E> list );
+	List<E> in( List<E> list );
 }
