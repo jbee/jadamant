@@ -23,7 +23,7 @@ public class UtileListTransition
 	public static final ListTransition reverse = new ReversingTransition();
 	public static final ListTransition shuffle = new ShuffleTransition();
 	public static final ListTransition tidyUp = new TidyUpTransition();
-	public static final ListTransition init = new TakeTillIndexTransition( List.indexFor.last(), 1 );
+	public static final ListTransition init = new TakeTillIndexTransition( List.indexFor.last(), 0 );
 	public static final ListTransition tail = new DropTillIndexTransition( List.indexFor.head(), 1 );
 
 	public static final UtileListTransition instance = new UtileListTransition( none );
@@ -555,6 +555,8 @@ public class UtileListTransition
 		@Override
 		public <E> List<E> from( List<E> list ) {
 			//OPEN use FillAndArrangeTranstion 
+
+			//FIXME this is a special case nubing just works in case the list already sorted by the same order as we want to apply
 			Object[] elements = new Object[Lang.nextHighestPowerOf2( list.length() )];
 			int j = elements.length - 1;
 			E previous = list.at( List.indexFor.elemOn( -1 ).in( list ) );
