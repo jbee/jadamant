@@ -11,6 +11,7 @@ import de.jbee.lang.ListIndex;
 import de.jbee.lang.ListTransition;
 import de.jbee.lang.Ord;
 import de.jbee.lang.Order;
+import de.jbee.lang.Ordered;
 import de.jbee.lang.Predicate;
 import de.jbee.lang.Set;
 import de.jbee.lang.Traversal;
@@ -357,8 +358,8 @@ public class UtileListTransition
 		public <E> Bag<E> from( List<E> list ) {
 			int size = list.length();
 			return size < 2
-				? SortedList.bagOf( list, order )
-				: SortedList.bagOf( arrangedStackList( list ), order );
+				? OrderedList.bagOf( list, order )
+				: OrderedList.bagOf( arrangedStackList( list ), order );
 		}
 
 		@Override
@@ -555,21 +556,51 @@ public class UtileListTransition
 
 		@Override
 		public <E> List<E> from( List<E> list ) {
+			if ( list.isEmpty() ) {
+				return list;
+			}
 			//OPEN use FillAndArrangeTranstion 
+			if ( list instanceof Ordered && ( (Ordered) list ).order() == order ) {
+				return alreadySortedNub( list );
+			}
+			return unsortedNub( list );
+		}
 
-			//FIXME this is a special case nubing just works in case the list already sorted by the same order as we want to apply
-			Object[] elements = new Object[Lang.nextHighestPowerOf2( list.length() )];
-			int j = elements.length - 1;
-			E previous = list.at( List.indexFor.elemOn( -1 ).in( list ) );
-			elements[j--] = previous;
-			for ( int i = list.length() - 2; i >= 0; i-- ) {
+		private <E> List<E> unsortedNub( List<E> list ) {
+			final int l = list.length();
+			Object[] elements = new Object[Lang.nextHighestPowerOf2( l )];
+			int j = 0;
+			for ( int i = 0; i < l; i++ ) {
 				E e = list.at( i );
-				if ( order.ord( e, previous ).isLt() ) {
-					previous = e;
-					elements[j--] = e;
+				if ( List.indexFor.nthElemBy( 1, e, order ).in( Array.sequence( elements ) ) == ListIndex.NOT_CONTAINED ) {
+					elements[j++] = e;
 				}
 			}
-			return EvolutionList.dominant( elements.length - j - 1, elements );
+			if ( j < elements.length ) {
+				System.arraycopy( elements, 0, elements, elements.length - j, j );
+				EvolutionList.dominant( j, elements );
+			}
+			return EvolutionList.dominant( j, elements );
+		}
+
+		private <E> List<E> alreadySortedNub( List<E> list ) {
+			final int l = list.length();
+			Object[] elements = new Object[Lang.nextHighestPowerOf2( l )];
+			int j = 0;
+			E previous = list.at( 0 );
+			elements[j++] = previous;
+			for ( int i = 1; i < l; i++ ) {
+				E e = list.at( i );
+				if ( order.ord( previous, e ).isLt() ) {
+					previous = e;
+					elements[j++] = e;
+				}
+			}
+			if ( j < elements.length ) {
+				System.arraycopy( elements, 0, elements, elements.length - j, j );
+				EvolutionList.dominant( j, elements );
+			}
+			return EvolutionList.dominant( j, elements );
 		}
 	}
 

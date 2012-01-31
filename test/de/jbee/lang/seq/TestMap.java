@@ -102,7 +102,7 @@ public class TestMap {
 	}
 
 	private Map<Integer> emptyMap() {
-		return SortedList.mapOf( SortedList.setOf( List.with.<Map.Entry<Integer>> noElements(),
+		return OrderedList.mapOf( OrderedList.setOf( List.with.<Map.Entry<Integer>> noElements(),
 				Map.ENTRY_ORDER ) );
 	}
 }

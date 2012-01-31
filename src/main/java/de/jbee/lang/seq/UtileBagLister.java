@@ -7,14 +7,14 @@ import de.jbee.lang.Lister;
 import de.jbee.lang.Ord;
 import de.jbee.lang.Order;
 import de.jbee.lang.Sequence;
-import de.jbee.lang.Sorted;
+import de.jbee.lang.Ordered;
 
 class UtileBagLister
 		implements Lister.BagLister {
 
 	@Override
 	public <E> Bag<E> element( E e ) {
-		return SortedList.bagOf( List.with.element( e ), Order.inherent );
+		return OrderedList.bagOf( List.with.element( e ), Order.inherent );
 	}
 
 	@Override
@@ -24,8 +24,8 @@ class UtileBagLister
 
 	@Override
 	public <E> Bag<E> elements( Sequence<E> elems ) {
-		Ord<Object> order = elems instanceof Sorted
-			? ( (Sorted) elems ).order()
+		Ord<Object> order = elems instanceof Ordered
+			? ( (Ordered) elems ).order()
 			: Order.inherent;
 		return elements( order, List.with.elements( elems ) );
 	}
@@ -37,21 +37,21 @@ class UtileBagLister
 
 	@Override
 	public <E> Bag<E> noElements( Ord<Object> order ) {
-		return SortedList.bagOf( List.with.<E> noElements(), order );
+		return OrderedList.bagOf( List.with.<E> noElements(), order );
 	}
 
 	@Override
 	public <E> Bag<E> elements( Ord<Object> order, List<E> elems ) {
-		return SortedList.bagOf( refinedToBagConstraints( elems, order ), order );
+		return OrderedList.bagOf( refinedToBagConstraints( elems, order ), order );
 	}
 
 	private <E> List<E> refinedToBagConstraints( List<E> elems, Ord<Object> order ) {
 		if ( elems.length() <= 1 ) {
 			return elems;
 		}
-		if ( elems instanceof Sorted ) {
+		if ( elems instanceof Ordered ) {
 			final boolean inheritOrder = order == Order.inherent;
-			final Ord<Object> seqOrder = ( (Sorted) elems ).order();
+			final Ord<Object> seqOrder = ( (Ordered) elems ).order();
 			if ( inheritOrder || order == seqOrder ) {
 				return elems;
 			}

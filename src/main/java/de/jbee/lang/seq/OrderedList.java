@@ -12,11 +12,11 @@ import de.jbee.lang.Multimap;
 import de.jbee.lang.Ord;
 import de.jbee.lang.Order;
 import de.jbee.lang.Set;
-import de.jbee.lang.Sorted;
+import de.jbee.lang.Ordered;
 import de.jbee.lang.Traversal;
 
-abstract class SortedList<E, L extends Sorted & List<E>>
-		implements IndexDeterminable<E>, Sorted, List<E> {
+abstract class OrderedList<E, L extends Ordered & List<E>>
+		implements IndexDeterminable<E>, Ordered, List<E> {
 
 	/**
 	 * The elements are considered to be ordered by given order.
@@ -44,7 +44,7 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 	private final Ord<Object> order;
 	private final List<E> elems;
 
-	SortedList( Ord<Object> order, List<E> elements ) {
+	OrderedList( Ord<Object> order, List<E> elements ) {
 		super();
 		this.order = order;
 		this.elems = elements;
@@ -210,7 +210,7 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 	}
 
 	private static class BagList<E>
-			extends SortedList<E, Bag<E>>
+			extends OrderedList<E, Bag<E>>
 			implements Bag<E> {
 
 		BagList( Ord<Object> ord, List<E> elements ) {
@@ -242,7 +242,7 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 	}
 
 	private static class SetList<E>
-			extends SortedList<E, Set<E>>
+			extends OrderedList<E, Set<E>>
 			implements Set<E> {
 
 		SetList( Ord<Object> ord, List<E> elements ) {
@@ -296,7 +296,7 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 	}
 
 	private static class MapList<V>
-			extends SortedList<Map.Entry<V>, Map<V>>
+			extends OrderedList<Map.Entry<V>, Map<V>>
 			implements Map<V> {
 
 		MapList( List<Map.Entry<V>> entries ) {
@@ -377,7 +377,7 @@ abstract class SortedList<E, L extends Sorted & List<E>>
 	}
 
 	private static class MultimapList<V>
-			extends SortedList<Map.Entry<V>, Multimap<V>>
+			extends OrderedList<Map.Entry<V>, Multimap<V>>
 			implements Multimap<V> {
 
 		/**

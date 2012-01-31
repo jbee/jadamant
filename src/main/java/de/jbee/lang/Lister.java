@@ -29,7 +29,7 @@ public interface Lister {
 
 		/**
 		 * @return a bag or set created from the <code>elems</code> given. In case they are (an
-		 *         instance of) {@link Sorted} the order is kept. Otherwise the lister will apply a
+		 *         instance of) {@link Ordered} the order is kept. Otherwise the lister will apply a
 		 *         default order chosen by the lister itself.
 		 */
 		@Override

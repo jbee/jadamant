@@ -5,7 +5,7 @@ import de.jbee.lang.Lister.SetLister;
 import de.jbee.lang.seq.Sequences;
 
 /**
- * Sets are always {@link Sorted} and therefore a {@link List} that doesn't allow duplicates.
+ * Sets are always {@link Ordered} and therefore a {@link List} that doesn't allow duplicates.
  * 
  * @author Jan Bernitt (jan.bernitt@gmx.de)
  * 

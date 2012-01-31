@@ -14,16 +14,16 @@ public final class Operator {
 		throw new UnsupportedOperationException( "util" );
 	}
 
-	public static <T> Op<T> maximumBy( Ord<T> ord ) {
-		return ord == Order.inherent
+	public static <T> Op<T> maximumBy( Ord<T> order ) {
+		return order == Order.inherent
 			? Cast.<T> genericDowncast( maximim )
-			: new MaximumOp<T>( ord );
+			: new MaximumOp<T>( order );
 	}
 
-	public static <T> Op<T> minimumBy( Ord<T> ord ) {
-		return ord == Order.inherent
+	public static <T> Op<T> minimumBy( Ord<T> order ) {
+		return order == Order.inherent
 			? Cast.<T> genericDowncast( minimum )
-			: new MinimumOp<T>( ord );
+			: new MinimumOp<T>( order );
 	}
 
 	public static <T> RelationalOp<T> not( RelationalOp<T> op ) {
@@ -32,28 +32,28 @@ public final class Operator {
 			: new NegateRelationalOp<T>( op );
 	}
 
-	public static <T> RelationalOp<T> ltBy( Ord<? super T> ord ) {
-		return new OrderRelationalOp<T>( ord, Ordering.GT );
+	public static <T> RelationalOp<T> ltBy( Ord<? super T> order ) {
+		return new OrderRelationalOp<T>( order, Ordering.GT );
 	}
 
-	public static <T> RelationalOp<T> gtBy( Ord<? super T> ord ) {
-		return new OrderRelationalOp<T>( ord, Ordering.LT );
+	public static <T> RelationalOp<T> gtBy( Ord<? super T> order ) {
+		return new OrderRelationalOp<T>( order, Ordering.LT );
 	}
 
-	public static <T> RelationalOp<T> eqBy( Ord<? super T> ord ) {
-		return new OrderRelationalOp<T>( ord, Ordering.EQ );
+	public static <T> RelationalOp<T> eqBy( Ord<? super T> order ) {
+		return new OrderRelationalOp<T>( order, Ordering.EQ );
 	}
 
-	public static <T> RelationalOp<T> notEqBy( Ord<? super T> ord ) {
-		return not( eqBy( ord ) );
+	public static <T> RelationalOp<T> notEqBy( Ord<? super T> order ) {
+		return not( eqBy( order ) );
 	}
 
-	public static <T> RelationalOp<T> geBy( Ord<? super T> ord ) {
-		return not( ltBy( ord ) );
+	public static <T> RelationalOp<T> geBy( Ord<? super T> order ) {
+		return not( ltBy( order ) );
 	}
 
-	public static <T> RelationalOp<T> leBy( Ord<? super T> ord ) {
-		return not( gtBy( ord ) );
+	public static <T> RelationalOp<T> leBy( Ord<? super T> order ) {
+		return not( gtBy( order ) );
 	}
 
 	static final class ElvisOp<T>

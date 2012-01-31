@@ -157,7 +157,7 @@ public class TestMultimap {
 	}
 
 	private Multimap<Integer> emptyMap( Ord<Object> valueOrder ) {
-		return SortedList.multimapOf( List.with.<Map.Entry<Integer>> noElements(), Map.ENTRY_ORDER,
+		return OrderedList.multimapOf( List.with.<Map.Entry<Integer>> noElements(), Map.ENTRY_ORDER,
 				valueOrder );
 	}
 }

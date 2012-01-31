@@ -67,7 +67,7 @@ public final class Order {
 		return new ElementOrder( valueOrder );
 	}
 
-	public static boolean keepable( Sorted sorted, Ord<?> required ) {
+	public static boolean keepable( Ordered sorted, Ord<?> required ) {
 		if ( required == inherent ) {
 			return true;
 		}

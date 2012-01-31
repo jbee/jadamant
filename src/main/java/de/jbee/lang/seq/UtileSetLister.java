@@ -7,7 +7,7 @@ import de.jbee.lang.Ord;
 import de.jbee.lang.Order;
 import de.jbee.lang.Sequence;
 import de.jbee.lang.Set;
-import de.jbee.lang.Sorted;
+import de.jbee.lang.Ordered;
 
 public class UtileSetLister
 		implements Lister.SetLister {
@@ -18,7 +18,7 @@ public class UtileSetLister
 
 	@Override
 	public <E> Set<E> elements( Ord<Object> order, List<E> elems ) {
-		return SortedList.setOf( refinedToSetConstraints( elems, order ), order );
+		return OrderedList.setOf( refinedToSetConstraints( elems, order ), order );
 	}
 
 	@Override
@@ -28,7 +28,7 @@ public class UtileSetLister
 
 	@Override
 	public <E> Set<E> element( E e ) {
-		return SortedList.setOf( List.with.element( e ), Order.inherent );
+		return OrderedList.setOf( List.with.element( e ), Order.inherent );
 	}
 
 	@Override
@@ -38,8 +38,8 @@ public class UtileSetLister
 
 	@Override
 	public <E> Set<E> elements( Sequence<E> elems ) {
-		Ord<Object> order = elems instanceof Sorted
-			? ( (Sorted) elems ).order()
+		Ord<Object> order = elems instanceof Ordered
+			? ( (Ordered) elems ).order()
 			: Order.inherent;
 		return elements( order, List.with.elements( elems ) );
 	}
@@ -53,9 +53,9 @@ public class UtileSetLister
 		if ( elems.length() <= 1 ) {
 			return elems;
 		}
-		if ( elems instanceof Sorted ) {
+		if ( elems instanceof Ordered ) {
 			final boolean inheritOrder = order == Order.inherent;
-			final Ord<Object> seqOrder = ( (Sorted) elems ).order();
+			final Ord<Object> seqOrder = ( (Ordered) elems ).order();
 			if ( elems instanceof Set<?> ) {
 				if ( inheritOrder || order == seqOrder ) {
 					return elems;

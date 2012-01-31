@@ -5,6 +5,7 @@ import de.jbee.lang.Equal;
 import de.jbee.lang.Is;
 import de.jbee.lang.List;
 import de.jbee.lang.ListIndex;
+import de.jbee.lang.Operator;
 import de.jbee.lang.Ord;
 import de.jbee.lang.Order;
 import de.jbee.lang.Ordering;
@@ -115,9 +116,17 @@ public class UtileListIndex {
 	}
 
 	public ListIndex nthElemBy( int n, Object e, Eq<Object> eq ) {
+		return nthElemBy( n, Is.eqBy( e, eq ) );
+	}
+
+	public ListIndex nthElemBy( int n, Predicate<Object> predicate ) {
 		return n == 0
 			? NONE
-			: new NthFulfilledListIndex( n, Is.eqBy( e, eq ), 1 );
+			: new NthFulfilledListIndex( n, predicate, 1 );
+	}
+
+	public ListIndex nthElemBy( int n, Object e, Ord<Object> order ) {
+		return nthElemBy( n, Is.fulfilledBy( Operator.eqBy( order ), e ) );
 	}
 
 	public ListIndex duplicate() {

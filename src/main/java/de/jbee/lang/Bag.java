@@ -5,7 +5,7 @@ import de.jbee.lang.Lister.BagLister;
 import de.jbee.lang.seq.Sequences;
 
 /**
- * {@linkplain Bag}s are {@link Sorted} {@link List}s as well as {@link Set}s are. In contrast to
+ * {@linkplain Bag}s are {@link Ordered} {@link List}s as well as {@link Set}s are. In contrast to
  * sets they allow multiple equal elements.
  * 
  * All equal elements will be positioned at successive indexes.
@@ -13,7 +13,7 @@ import de.jbee.lang.seq.Sequences;
  * @author Jan Bernitt (jan.bernitt@gmx.de)
  */
 public interface Bag<E>
-		extends IndexDeterminable<E>, Sorted, List<E> {
+		extends IndexDeterminable<E>, Ordered, List<E> {
 
 	BagTransition refine = List.that.refinesToBag();
 	BagLister with = Sequences.BAG_LISTER;
