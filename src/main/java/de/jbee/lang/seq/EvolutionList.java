@@ -107,16 +107,17 @@ abstract class EvolutionList<E>
 		if ( index == 0 ) { // first of this elems
 			return l == 1
 				? tail
-				: recessive( length - 1, elems, tail );
+				: recessive( length - 1, offset(), elems, tail );
 		}
 		if ( index >= l ) { // not in this elems
 			return thisWith( length - 1, tail.deleteAt( index - l ) );
 		}
 		if ( index == l - 1 ) { // last of this elems
-			return recessive( length - 1, 1, elems, tail );
+			return recessive( length - 1, offset() + 1, elems, tail );
 		}
 		// somewhere in between our elems ;(
-		return recessive( length - 1, l - index, elems, recessive( length - 1 - index, elems, tail ) );
+		return recessive( length - 1, l - index, elems, recessive( length - 1 - index, offset(),
+				elems, tail ) );
 	}
 
 	@Override
@@ -130,7 +131,7 @@ abstract class EvolutionList<E>
 		final int l = elemsLength();
 		return count >= l
 			? tail.drop( count - l )
-			: recessive( length - count, elems, tail );
+			: recessive( length - count, offset(), elems, tail );
 	}
 
 	@Override
@@ -182,7 +183,7 @@ abstract class EvolutionList<E>
 		if ( index == l - 1 ) {
 			return take( l - 1 ).concat( tail.prepand( e ) );
 		}
-		return take( index - 1 ).concat( drop( index + 1 ).prepand( e ) );
+		return take( index ).concat( drop( index + 1 ).prepand( e ) );
 	}
 
 	@Override
@@ -361,7 +362,7 @@ abstract class EvolutionList<E>
 
 		@Override
 		public List<E> prepand( E e ) {
-			return dominant( length + 1, Array.withLastElement( e, elems.length * 2 ), this );
+			return dominant( length + 1, Array.withLastElement( e, elems.length ), this );
 		}
 
 		@Override

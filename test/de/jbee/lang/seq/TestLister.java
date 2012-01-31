@@ -3,6 +3,7 @@ package de.jbee.lang.seq;
 import static de.jbee.lang.Enumerate.INTEGERS;
 import static de.jbee.lang.Enumerate.numbers;
 import static de.jbee.lang.Enumerate.stepwise;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -57,6 +58,11 @@ public class TestLister {
 		assertThat( l.at( 7 ), is( "-" ) );
 		assertThat( l.at( 8 ), is( "the" ) );
 		assertThat( l.at( 9 ), is( "end" ) );
+	}
+
+	@Test
+	public void testEnumListIsUsedForIntegers() {
+		assertThat( List.with.elements( 1, 2, 3, 4 ), instanceOf( EnumList.class ) );
 	}
 
 	@Test

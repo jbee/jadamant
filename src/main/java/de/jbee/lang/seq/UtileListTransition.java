@@ -393,8 +393,9 @@ public class UtileListTransition
 		}
 
 		private <E> List<E> swap( int idx1, int idx2, List<E> list ) {
-			final E e1 = list.at( idx2 );
-			return list.replaceAt( idx2, list.at( idx1 ) ).replaceAt( idx1, e1 );
+			final E e2 = list.at( idx2 );
+			List<E> replaceAt = list.replaceAt( idx2, list.at( idx1 ) );
+			return replaceAt.replaceAt( idx1, e2 );
 		}
 	}
 
