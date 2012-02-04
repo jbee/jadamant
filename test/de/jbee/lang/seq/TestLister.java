@@ -62,7 +62,7 @@ public class TestLister {
 
 	@Test
 	public void testEnumListIsUsedForIntegers() {
-		assertThat( List.with.elements( 1, 2, 3, 4 ), instanceOf( EnumList.class ) );
+		assertThat( List.numbers.fromThenTo( 1, 2, 4 ), instanceOf( EnumList.class ) );
 	}
 
 	@Test

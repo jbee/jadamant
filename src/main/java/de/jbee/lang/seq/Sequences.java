@@ -62,6 +62,9 @@ public final class Sequences {
 			if ( size == 0 ) {
 				return noElements();
 			}
+			if ( elems.getClass() == Object[].class && ( elems.length % 2 ) == 0 ) {
+				return EvolutionList.dominant( elems.length, elems );
+			}
 			Object[] stack = new Object[Lang.nextHighestPowerOf2( size )];
 			System.arraycopy( elems, 0, stack, stack.length - size, size );
 			return EvolutionList.dominant( size, stack );
