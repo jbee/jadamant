@@ -21,6 +21,9 @@ public interface Multimap<V>
 	 */
 	Bag<V> values();
 
+	//OPEN how to get a set of K->Bag<V>?
+	//OPEN how to insert the same element for all existing keys ? 
+
 	/**
 	 * @see #entriesAt(int)
 	 * @see #indexFor(CharSequence)
