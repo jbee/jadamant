@@ -15,20 +15,20 @@ public class UtileListModification {
 		return NONE;
 	}
 
-	public <E> ListModification<E> insertAt( E element, ListIndex index ) {
+	public <E> ListModification<E> insertAt( ListIndex index, E element ) {
 		Nonnull.element( element );
 		return new InsertElementModification<E>( index, element );
 	}
 
-	public <E> ListModification<E> insertAt( List<E> list, int index ) {
-		return insertAt( list, List.indexFor.elemAt( index ) );
+	public <E> ListModification<E> insertAt( int index, List<E> list ) {
+		return insertAt( List.indexFor.elemAt( index ), list );
 	}
 
-	public <E> ListModification<E> insertAt( List<E> list, ListIndex index ) {
+	public <E> ListModification<E> insertAt( ListIndex index, List<E> list ) {
 		return list.isEmpty()
 			? this.<E> none()
 			: list.length() == 1
-				? insertAt( list.at( 0 ), index )
+				? insertAt( index, list.at( 0 ) )
 				: new InsertListModification<E>( index, list );
 	}
 

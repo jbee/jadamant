@@ -57,7 +57,7 @@ public interface List<E>
 	UtileEnumeratorFactory does = Lang.enumerator;
 	//TODO proxy from Lang.
 	UtileListTransition that = UtileListTransition.instance;
-	UtileListModification a = new UtileListModification();
+	UtileListModification modify = new UtileListModification();
 
 	UtileEnumerator<Integer> numbers = Lang.numbers;
 	UtileEnumerator<Character> letters = Lang.letters;
@@ -68,10 +68,6 @@ public interface List<E>
 	Iterate iterate = Iterate.instance;
 
 	Traverse traverse = Traverse.instance;
-
-	ListTransition reverse = UtileListTransition.reverse;
-
-	ListTransition tail = UtileListTransition.tail;
 
 	/*
 	 * Covariant return type overrides for inherited methods from Tailed
