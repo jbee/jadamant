@@ -11,7 +11,7 @@ public class TestEnumLister
 	@BeforeClass
 	public static void setUp() {
 		Lang.setUp( EnumList.ENUMERATOR_FACTORY );
-		Lang.setUpCharacters( Lang.enumerator.enumerates( Enumerate.CHARACTERS ) );
-		Lang.setUpLetters( Lang.enumerator.enumerates( Enumerate.LETTERS ) );
+		Lang.setUpCharacters( Lang.enumerator.enumerate( Enumerate.CHARACTERS ) );
+		Lang.setUpLetters( Lang.enumerator.enumerate( Enumerate.LETTERS ) );
 	}
 }

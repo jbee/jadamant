@@ -4,9 +4,8 @@ import static de.jbee.lang.Enumerate.CHARACTERS;
 import static de.jbee.lang.Enumerate.DIGITS;
 import static de.jbee.lang.Enumerate.INTEGERS;
 import static de.jbee.lang.Enumerate.LETTERS;
+import de.jbee.lang.seq.Range;
 import de.jbee.lang.seq.Sequences;
-import de.jbee.lang.seq.UtileEnumerator;
-import de.jbee.lang.seq.UtileEnumeratorFactory;
 import de.jbee.lang.seq.UtileLister;
 
 /**
@@ -18,6 +17,9 @@ import de.jbee.lang.seq.UtileLister;
  * </p>
  * 
  * @author Jan Bernitt (jan.bernitt@gmx.de)
+ * 
+ *         OPEN move seqence related methods to {@link Sequences} and use that as public API of the
+ *         seq package ? that would remove the circular dependencies a bit ?
  * 
  */
 public final class Lang {
@@ -31,25 +33,24 @@ public final class Lang {
 
 	private static final ProxyEnumeratorFactory enumeratorProxy = new ProxyEnumeratorFactory(
 			Sequences.ENUMERATOR_FACTORY );
-	public static final UtileEnumeratorFactory enumerator = new UtileEnumeratorFactory(
-			enumeratorProxy );
+	public static final Range.RangeTo enumerator = Range.factory( enumeratorProxy );
 
 	private static final ProxyEnumerator<Integer> numbersProxy = proxy( INTEGERS );
 	private static final ProxyEnumerator<Integer> digitsProxy = proxy( DIGITS );
 	private static final ProxyEnumerator<Character> charactersProxy = proxy( CHARACTERS );
 	private static final ProxyEnumerator<Character> lettersProxy = proxy( LETTERS );
 
-	public static final UtileEnumerator<Integer> numbers = utile( numbersProxy, INTEGERS );
-	public static final UtileEnumerator<Integer> digits = utile( digitsProxy, DIGITS );
-	public static final UtileEnumerator<Character> characters = utile( charactersProxy, CHARACTERS );
-	public static final UtileEnumerator<Character> letters = utile( lettersProxy, LETTERS );
+	public static final Range<Integer> numbers = utile( numbersProxy, INTEGERS );
+	public static final Range<Integer> digits = utile( digitsProxy, DIGITS );
+	public static final Range<Character> characters = utile( charactersProxy, CHARACTERS );
+	public static final Range<Character> letters = utile( lettersProxy, LETTERS );
 
 	private static <T> ProxyEnumerator<T> proxy( Enum<T> type ) {
-		return new ProxyEnumerator<T>( enumerator.enumerates( type ) );
+		return new ProxyEnumerator<T>( enumerator.enumerate( type ) );
 	}
 
-	private static <T> UtileEnumerator<T> utile( Enumerator<T> e, Enum<T> type ) {
-		return new UtileEnumerator<T>( e, type );
+	private static <T> Range<T> utile( Enumerator<T> e, Enum<T> type ) {
+		return new Range<T>( e, type );
 	}
 
 	/**
@@ -200,8 +201,8 @@ public final class Lang {
 		}
 
 		@Override
-		public <E> Enumerator<E> enumerates( Enum<E> type ) {
-			return proxied.enumerates( type );
+		public <E> Enumerator<E> enumerate( Enum<E> type ) {
+			return proxied.enumerate( type );
 		}
 	}
 

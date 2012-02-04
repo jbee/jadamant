@@ -13,7 +13,7 @@ import de.jbee.lang.Predicate;
 import de.jbee.lang.Sequence;
 import de.jbee.lang.dev.Null;
 
-public class UtileListIndex {
+public class IndexFor {
 
 	static final ListIndex NONE = new NotContainedListIndex();
 	static final ListIndex FIRST = new OnPositionListIndex( 0 );

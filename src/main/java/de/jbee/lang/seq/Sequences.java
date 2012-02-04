@@ -156,7 +156,7 @@ public final class Sequences {
 		}
 
 		@Override
-		public <E> Enumerator<E> enumerates( Enum<E> type ) {
+		public <E> Enumerator<E> enumerate( Enum<E> type ) {
 			return new ListerEnumerator<E>( type );
 		}
 

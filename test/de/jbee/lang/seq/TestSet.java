@@ -16,13 +16,13 @@ public class TestSet {
 
 	@Test
 	public void testToSet() {
-		Set<Integer> s = Set.refine.from( List.with.elements( 1, 1, 2, 5, 3, 4, 2, 5 ) );
+		Set<Integer> s = Set.refine.in( List.with.elements( 1, 1, 2, 5, 3, 4, 2, 5 ) );
 		assertThat( s, hasEqualElementsAsIn( 1, 2, 3, 4, 5 ) );
 	}
 
 	@Test
 	public void testInsert_DuplicateCase() {
-		Set<Integer> s = Set.refine.from( List.with.elements( 1, 2, 3, 4, 5 ) );
+		Set<Integer> s = Set.refine.in( List.with.elements( 1, 2, 3, 4, 5 ) );
 		Set<Integer> s2 = s.insert( 2 );
 		assertThat( s2, hasEqualElementsAsIn( 1, 2, 3, 4, 5 ) );
 		assertThat( s2, sameInstance( s ) );
@@ -30,13 +30,13 @@ public class TestSet {
 
 	@Test
 	public void testInsert_HeadCornerCase() {
-		Set<Integer> s = Set.refine.from( List.with.elements( 1, 2, 3, 4, 5 ) );
+		Set<Integer> s = Set.refine.in( List.with.elements( 1, 2, 3, 4, 5 ) );
 		assertThat( s.insert( 0 ), hasEqualElementsAsIn( 0, 1, 2, 3, 4, 5 ) );
 	}
 
 	@Test
 	public void testIndexFor_ExistingElementCase() {
-		Set<Integer> s = Set.refine.from( List.with.elements( 5, 4, 3, 2, 1 ) );
+		Set<Integer> s = Set.refine.in( List.with.elements( 5, 4, 3, 2, 1 ) );
 		for ( int i = 1; i <= 5; i++ ) {
 			assertThat( s.indexFor( i ), is( i - 1 ) );
 		}
@@ -44,7 +44,7 @@ public class TestSet {
 
 	@Test
 	public void testIndexFor_MissingElementCase() {
-		Set<Integer> s = Set.refine.from( List.with.elements( 5, 4, 3, 2, 1 ) );
+		Set<Integer> s = Set.refine.in( List.with.elements( 5, 4, 3, 2, 1 ) );
 		assertThat( s.indexFor( 0 ), is( NOT_CONTAINED ) );
 		assertThat( s.indexFor( 6 ), is( NOT_CONTAINED ) );
 		assertThat( s.indexFor( -1 ), is( NOT_CONTAINED ) );
@@ -70,7 +70,7 @@ public class TestSet {
 
 	@Test
 	public void testEntriesAt_ExistingElementCase() {
-		Set<Integer> s = Set.refine.from( List.with.elements( 5, 4, 3, 2, 1 ) );
+		Set<Integer> s = Set.refine.in( List.with.elements( 5, 4, 3, 2, 1 ) );
 		assertThat( s.entriesAt( 0 ), hasEqualElementsAsIn( 1 ) );
 	}
 }

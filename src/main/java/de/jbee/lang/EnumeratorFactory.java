@@ -3,5 +3,5 @@ package de.jbee.lang;
 
 public interface EnumeratorFactory {
 
-	<E> Enumerator<E> enumerates( Enum<E> type );
+	<E> Enumerator<E> enumerate( Enum<E> type );
 }

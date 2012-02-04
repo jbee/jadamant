@@ -1,6 +1,6 @@
 package de.jbee.lang;
 
-import de.jbee.lang.ListTransition.BagTransition;
+import de.jbee.lang.ListAlteration.BagAlteration;
 import de.jbee.lang.Lister.BagLister;
 import de.jbee.lang.seq.Sequences;
 
@@ -15,7 +15,7 @@ import de.jbee.lang.seq.Sequences;
 public interface Bag<E>
 		extends IndexDeterminable<E>, Ordered, List<E> {
 
-	BagTransition refine = List.that.refinesToBag();
+	BagAlteration refine = List.alterBy.refineToBag();
 	BagLister with = Sequences.BAG_LISTER;
 
 	/**

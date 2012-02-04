@@ -7,7 +7,7 @@ import org.junit.runners.Suite.SuiteClasses;
 import de.jbee.lang.seq.TestElementList;
 import de.jbee.lang.seq.TestList;
 import de.jbee.lang.seq.TestListModification;
-import de.jbee.lang.seq.TestListTranstion;
+import de.jbee.lang.seq.TestListAlteration;
 import de.jbee.lang.seq.TestLister;
 import de.jbee.lang.seq.TestMap;
 import de.jbee.lang.seq.TestMultimap;
@@ -15,7 +15,7 @@ import de.jbee.lang.seq.TestSet;
 
 @RunWith ( Suite.class )
 @SuiteClasses ( { TestList.class, TestSet.class, TestMap.class, TestMultimap.class,
-		TestElementList.class, TestLister.class, TestListTranstion.class,
+		TestElementList.class, TestLister.class, TestListAlteration.class,
 		TestListModification.class } )
 public class LanguageTests {
 	// all language level tests

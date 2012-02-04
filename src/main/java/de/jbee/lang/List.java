@@ -3,13 +3,13 @@ package de.jbee.lang;
 import java.io.Serializable;
 import java.util.RandomAccess;
 
+import de.jbee.lang.seq.AlterBy;
+import de.jbee.lang.seq.IndexFor;
 import de.jbee.lang.seq.Iterate;
-import de.jbee.lang.seq.UtileEnumerator;
-import de.jbee.lang.seq.UtileEnumeratorFactory;
-import de.jbee.lang.seq.UtileListIndex;
-import de.jbee.lang.seq.UtileListModification;
-import de.jbee.lang.seq.UtileListTransition;
+import de.jbee.lang.seq.ModifyBy;
+import de.jbee.lang.seq.Range;
 import de.jbee.lang.seq.UtileLister;
+import de.jbee.lang.seq.Range.RangeTo;
 
 /**
  * <p>
@@ -52,22 +52,20 @@ public interface List<E>
 	 */
 	char CONCAT_OPERATOR_SYMBOL = '+';
 
-	UtileLister with = Lang.list;
-	UtileListIndex indexFor = new UtileListIndex();
-	UtileEnumeratorFactory does = Lang.enumerator;
 	//TODO proxy from Lang.
-	UtileListTransition that = UtileListTransition.instance;
-	UtileListModification modify = new UtileListModification();
+	UtileLister with = Lang.list;
+	IndexFor indexFor = new IndexFor();
+	RangeTo rangeTo = Lang.enumerator;
+	AlterBy alterBy = AlterBy.instance;
+	ModifyBy modifyBy = new ModifyBy();
+	Iterate iterate = Iterate.instance;
+	Traverse traverse = Traverse.instance;
 
-	UtileEnumerator<Integer> numbers = Lang.numbers;
-	UtileEnumerator<Character> letters = Lang.letters;
-	UtileEnumerator<Character> characters = Lang.characters;
+	Range<Integer> numbers = Lang.numbers;
+	Range<Character> letters = Lang.letters;
+	Range<Character> characters = Lang.characters;
 
 	//TODO a util for string handling strings as list of characters
-
-	Iterate iterate = Iterate.instance;
-
-	Traverse traverse = Traverse.instance;
 
 	/*
 	 * Covariant return type overrides for inherited methods from Tailed

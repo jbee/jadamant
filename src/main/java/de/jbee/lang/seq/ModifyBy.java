@@ -5,7 +5,7 @@ import de.jbee.lang.ListIndex;
 import de.jbee.lang.ListModification;
 import de.jbee.lang.dev.Nonnull;
 
-public class UtileListModification {
+public class ModifyBy {
 
 	@SuppressWarnings ( "unchecked" )
 	private static final ListModification NONE = new NoModification<Object>();

@@ -1,16 +1,22 @@
 package de.jbee.lang.seq;
 
 import de.jbee.lang.Enum;
+import de.jbee.lang.Enumerate;
 import de.jbee.lang.Enumerator;
+import de.jbee.lang.EnumeratorFactory;
 import de.jbee.lang.List;
 
-public class UtileEnumerator<E>
+public class Range<E>
 		implements Enumerator<E> {
+
+	public static final RangeTo factory( EnumeratorFactory factory ) {
+		return new RangeTo( factory );
+	}
 
 	private final Enumerator<E> utilised;
 	private final Enum<E> type;
 
-	public UtileEnumerator( Enumerator<E> utilised, Enum<E> type ) {
+	public Range( Enumerator<E> utilised, Enum<E> type ) {
 		super();
 		this.utilised = utilised;
 		this.type = type;
@@ -57,4 +63,24 @@ public class UtileEnumerator<E>
 		return utilised.stepwiseFromTo( first, last, increment );
 	}
 
+	public static final class RangeTo
+			implements EnumeratorFactory {
+
+		private final EnumeratorFactory factory;
+
+		RangeTo( EnumeratorFactory factory ) {
+			super();
+			this.factory = factory;
+		}
+
+		@Override
+		public <E> Range<E> enumerate( Enum<E> type ) {
+			return new Range<E>( factory.enumerate( type ), type );
+		}
+
+		public <E extends java.lang.Enum<E>> Range<E> enumerate( Class<E> type ) {
+			return enumerate( Enumerate.type( type ) );
+		}
+
+	}
 }

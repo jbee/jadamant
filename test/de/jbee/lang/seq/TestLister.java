@@ -72,7 +72,7 @@ public class TestLister {
 		List<Integer> l2 = List.numbers.fromTo( 12, 3 );
 		System.out.println( l2 );
 
-		UtileEnumerator<Integer> every3 = List.does.enumerates( stepwise( INTEGERS, 3, 3 ) );
+		Range<Integer> every3 = List.rangeTo.enumerate( stepwise( INTEGERS, 3, 3 ) );
 		System.out.println( every3.fromTo( 3, 12 ) );
 
 		System.out.println( List.numbers.stepwiseFromTo( 3, 12, 4 ) );
@@ -80,7 +80,7 @@ public class TestLister {
 		System.out.println( List.numbers.fromThenTo( 12, 9, 3 ) );
 		System.out.println( List.numbers.fromThenTo( 11, 9, 2 ) );
 
-		UtileEnumerator<Integer> zeroToTen = List.does.enumerates( numbers( 0, 10 ) );
+		Range<Integer> zeroToTen = List.rangeTo.enumerate( numbers( 0, 10 ) );
 		System.out.println( zeroToTen.from( 3 ) );
 		System.out.println( zeroToTen.fromThen( 2, 4 ) );
 		System.out.println( zeroToTen.stepwisefrom( 1, 3 ) );
@@ -92,7 +92,7 @@ public class TestLister {
 
 		System.out.println( List.characters.fromTo( 'C', '0' ) );
 
-		UtileEnumerator<Weekday> weekdays = List.does.enumerates( Weekday.class );
+		Range<Weekday> weekdays = List.rangeTo.enumerate( Weekday.class );
 		List<Weekday> l3 = weekdays.fromTo( Weekday.Monday, Weekday.Friday );
 		System.out.println( l3 );
 		List<Weekday> l4 = weekdays.fromTo( Weekday.Friday, Weekday.Tuesday );

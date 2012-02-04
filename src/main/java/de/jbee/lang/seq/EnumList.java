@@ -336,7 +336,7 @@ final class EnumList<E>
 			implements EnumeratorFactory {
 
 		@Override
-		public <E> Enumerator<E> enumerates( Enum<E> type ) {
+		public <E> Enumerator<E> enumerate( Enum<E> type ) {
 			return new EnumList.EnumListEnumerator<E>( type );
 		}
 

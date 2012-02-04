@@ -1,7 +1,7 @@
 package de.jbee.lang;
 
 /**
- * A {@linkplain ListModification} is a {@link ListTransition} just working for lists whose element
+ * A {@linkplain ListModification} is a {@link ListAlteration} just working for lists whose element
  * type is a special type used as the generic of this interface. A modification is bound to specific
  * type of elements.
  * 
@@ -15,5 +15,9 @@ package de.jbee.lang;
  */
 public interface ListModification<E> {
 
+	/**
+	 * @return the list results from applying the this modifications to the argument
+	 *         <code>list</code>.
+	 */
 	List<E> in( List<E> list );
 }

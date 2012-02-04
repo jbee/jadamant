@@ -81,7 +81,7 @@ abstract class OrderedList<E, L extends Ordered & List<E>>
 		while ( end < l && containsAt( end, e ) ) { // search forwards for duplicates
 			end++;
 		}
-		return thisWith( List.that.slices( index, end ).from( elems() ) );
+		return thisWith( List.alterBy.slice( index, end ).in( elems() ) );
 	}
 
 	@Override
@@ -443,7 +443,7 @@ abstract class OrderedList<E, L extends Ordered & List<E>>
 			while ( idx < l && keyOrder.ord( e, at( idx ) ).isEq() ) {
 				idx++;
 			}
-			return bagOf( elements( List.that.slices( first, idx ).from( elems() ) ), valueOrder );
+			return bagOf( elements( List.alterBy.slice( first, idx ).in( elems() ) ), valueOrder );
 		}
 
 		@Override
