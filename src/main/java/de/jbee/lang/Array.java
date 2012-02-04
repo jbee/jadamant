@@ -70,6 +70,12 @@ public final class Array {
 		}
 	}
 
+	public static void push( int indices, Object[] a ) {
+		if ( indices > 0 ) {
+			System.arraycopy( a, 0, a, indices, a.length - indices );
+		}
+	}
+
 	public static boolean isEmpty( Object[] a ) {
 		return a == null || a.length == 0;
 	}
@@ -133,7 +139,7 @@ public final class Array {
 	 * @author Jan Bernitt (jan.bernitt@gmx.de)
 	 */
 	private static final class ArraySequence<E>
-			implements Sequence<E>, Arrayable {
+			implements Arrayable, Sequence<E> {
 
 		private final Object[] elems;
 

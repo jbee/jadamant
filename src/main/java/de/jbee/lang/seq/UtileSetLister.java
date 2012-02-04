@@ -5,9 +5,9 @@ import de.jbee.lang.List;
 import de.jbee.lang.Lister;
 import de.jbee.lang.Ord;
 import de.jbee.lang.Order;
+import de.jbee.lang.Ordered;
 import de.jbee.lang.Sequence;
 import de.jbee.lang.Set;
-import de.jbee.lang.Ordered;
 
 public class UtileSetLister
 		implements Lister.SetLister {
@@ -38,10 +38,7 @@ public class UtileSetLister
 
 	@Override
 	public <E> Set<E> elements( Sequence<E> elems ) {
-		Ord<Object> order = elems instanceof Ordered
-			? ( (Ordered) elems ).order()
-			: Order.inherent;
-		return elements( order, List.with.elements( elems ) );
+		return elements( Order.inheritFrom( elems ), List.with.elements( elems ) );
 	}
 
 	@Override

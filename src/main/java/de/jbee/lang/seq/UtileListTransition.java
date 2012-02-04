@@ -9,9 +9,9 @@ import de.jbee.lang.Lang;
 import de.jbee.lang.List;
 import de.jbee.lang.ListIndex;
 import de.jbee.lang.ListTransition;
+import de.jbee.lang.Lister;
 import de.jbee.lang.Ord;
 import de.jbee.lang.Order;
-import de.jbee.lang.Ordered;
 import de.jbee.lang.Predicate;
 import de.jbee.lang.Set;
 import de.jbee.lang.Traversal;
@@ -337,12 +337,9 @@ public class UtileListTransition
 	}
 
 	/**
-	 * @deprecated Just create a bag from that list using the order - thereby the list will be
-	 *             sorted anyway
-	 * 
-	 * @author Jan Bernitt (jan.bernitt@gmx.de)
+	 * We cannot just create a {@link Bag} using the {@link Lister.BagLister} since the
+	 * implementation might use this transition to ensure bag ordering constraint.
 	 */
-	@Deprecated
 	private static final class SortingTransition
 			extends FillAndArrangeTranstion
 			implements BagTransition {
@@ -559,14 +556,14 @@ public class UtileListTransition
 			if ( list.isEmpty() ) {
 				return list;
 			}
-			//OPEN use FillAndArrangeTranstion 
-			if ( list instanceof Ordered && ( (Ordered) list ).order() == order ) {
-				return alreadySortedNub( list );
+			//OPEN use FillAndArrangeTranstion
+			if ( Order.used( order, list ) ) {
+				return preOrderedNub( list );
 			}
-			return unsortedNub( list );
+			return unorderedNub( list );
 		}
 
-		private <E> List<E> unsortedNub( List<E> list ) {
+		private <E> List<E> unorderedNub( List<E> list ) {
 			final int l = list.length();
 			Object[] elements = new Object[Lang.nextHighestPowerOf2( l )];
 			int j = 0;
@@ -576,14 +573,15 @@ public class UtileListTransition
 					elements[j++] = e;
 				}
 			}
-			if ( j < elements.length ) {
-				System.arraycopy( elements, 0, elements, elements.length - j, j );
-				EvolutionList.dominant( j, elements );
-			}
-			return EvolutionList.dominant( j, elements );
+			return evoList( j, elements );
 		}
 
-		private <E> List<E> alreadySortedNub( List<E> list ) {
+		private <E> List<E> evoList( int occupied, Object[] elems ) {
+			Array.push( elems.length - occupied, elems );
+			return EvolutionList.dominant( occupied, elems );
+		}
+
+		private <E> List<E> preOrderedNub( List<E> list ) {
 			final int l = list.length();
 			Object[] elements = new Object[Lang.nextHighestPowerOf2( l )];
 			int j = 0;
@@ -596,11 +594,7 @@ public class UtileListTransition
 					elements[j++] = e;
 				}
 			}
-			if ( j < elements.length ) {
-				System.arraycopy( elements, 0, elements, elements.length - j, j );
-				EvolutionList.dominant( j, elements );
-			}
-			return EvolutionList.dominant( j, elements );
+			return evoList( j, elements );
 		}
 	}
 

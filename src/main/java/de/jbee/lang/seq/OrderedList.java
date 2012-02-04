@@ -11,8 +11,8 @@ import de.jbee.lang.Map;
 import de.jbee.lang.Multimap;
 import de.jbee.lang.Ord;
 import de.jbee.lang.Order;
-import de.jbee.lang.Set;
 import de.jbee.lang.Ordered;
+import de.jbee.lang.Set;
 import de.jbee.lang.Traversal;
 
 abstract class OrderedList<E, L extends Ordered & List<E>>
@@ -22,6 +22,7 @@ abstract class OrderedList<E, L extends Ordered & List<E>>
 	 * The elements are considered to be ordered by given order.
 	 */
 	static <E> Bag<E> bagOf( List<E> elements, Ord<Object> order ) {
+		//TODO maybe elements is already a bag having the order ?
 		return new BagList<E>( order, elements );
 	}
 
@@ -29,6 +30,7 @@ abstract class OrderedList<E, L extends Ordered & List<E>>
 	 * The elements are considered to be ordered by given order and containing no duplicates.
 	 */
 	static <E> Set<E> setOf( List<E> elements, Ord<Object> order ) {
+		//TODO maybe elements is already a set having the order ?
 		return new SetList<E>( order, elements );
 	}
 

@@ -79,6 +79,12 @@ public final class Order {
 		return inherent;
 	}
 
+	public static Ord<Object> inheritFrom( Object obj ) {
+		return obj instanceof Ordered
+			? ( (Ordered) obj ).order()
+			: Order.inherent;
+	}
+
 	public static <T> Ord<T> asc( Ord<T> order ) {
 		if ( order instanceof InverseOrder<?> ) {
 			return asc( ( (InverseOrder<T>) order ).order );
@@ -200,6 +206,10 @@ public final class Order {
 			}
 		}
 		return - ( low + 1 ); // key not found.
+	}
+
+	public static boolean used( Ord<Object> order, Object obj ) {
+		return obj instanceof Ordered && ( (Ordered) obj ).order() == order;
 	}
 
 	private static final class ElementOrder<V>
