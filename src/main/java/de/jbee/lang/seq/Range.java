@@ -6,6 +6,11 @@ import de.jbee.lang.Enumerator;
 import de.jbee.lang.EnumeratorFactory;
 import de.jbee.lang.List;
 
+/**
+ * Utility class to use {@link Enumerator}s.
+ * 
+ * @author Jan Bernitt (jan.bernitt@gmx.de)
+ */
 public class Range<E>
 		implements Enumerator<E> {
 
@@ -63,6 +68,11 @@ public class Range<E>
 		return utilised.stepwiseFromTo( first, last, increment );
 	}
 
+	/**
+	 * Utility class to create {@link Enumerator}s.
+	 * 
+	 * @author Jan Bernitt (jan.bernitt@gmx.de)
+	 */
 	public static final class RangeTo
 			implements EnumeratorFactory {
 

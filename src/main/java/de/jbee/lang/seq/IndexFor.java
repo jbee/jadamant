@@ -83,10 +83,12 @@ public class IndexFor {
 				: new OnPositionListIndex( pos );
 	}
 
+	//TODO better naming
 	public ListIndex firstFalse( Predicate<Object> predicate ) {
 		return nthTrue( 1, Is.not( predicate ) );
 	}
 
+	//TODO better naming
 	public ListIndex firstTrue( Predicate<Object> predicate ) {
 		return nthTrue( 1, predicate );
 	}

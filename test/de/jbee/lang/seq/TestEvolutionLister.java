@@ -4,7 +4,7 @@ import org.junit.BeforeClass;
 
 import de.jbee.lang.Lang;
 
-public class TestStackLister
+public class TestEvolutionLister
 		extends TestLister {
 
 	@BeforeClass

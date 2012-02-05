@@ -33,59 +33,59 @@ public class TestListAlteration {
 	@Test
 	public void testDropsLast() {
 		List<Integer> l = List.with.elements( 7, 9, 3, 1, 5 );
-		assertThat( List.alterBy.dropLast( -1 ).in( l ), hasEqualElementsAsIn( 7, 9, 3, 1, 5 ) );
-		assertThat( List.alterBy.dropLast( 0 ).in( l ), hasEqualElementsAsIn( 7, 9, 3, 1, 5 ) );
-		assertThat( List.alterBy.dropLast( 1 ).in( l ), hasEqualElementsAsIn( 7, 9, 3, 1 ) );
-		assertThat( List.alterBy.dropLast( 2 ).in( l ), hasEqualElementsAsIn( 7, 9, 3 ) );
-		assertThat( List.alterBy.dropLast( 3 ).in( l ), hasEqualElementsAsIn( 7, 9 ) );
-		assertThat( List.alterBy.dropLast( 4 ).in( l ), hasEqualElementsAsIn( 7 ) );
-		assertThat( List.alterBy.dropLast( 5 ).in( l ), hasNoElements( Integer.class ) );
-		assertThat( List.alterBy.dropLast( 6 ).in( l ), hasNoElements( Integer.class ) );
+		assertThat( List.alterBy.dropRight( -1 ).in( l ), hasEqualElementsAsIn( 7, 9, 3, 1, 5 ) );
+		assertThat( List.alterBy.dropRight( 0 ).in( l ), hasEqualElementsAsIn( 7, 9, 3, 1, 5 ) );
+		assertThat( List.alterBy.dropRight( 1 ).in( l ), hasEqualElementsAsIn( 7, 9, 3, 1 ) );
+		assertThat( List.alterBy.dropRight( 2 ).in( l ), hasEqualElementsAsIn( 7, 9, 3 ) );
+		assertThat( List.alterBy.dropRight( 3 ).in( l ), hasEqualElementsAsIn( 7, 9 ) );
+		assertThat( List.alterBy.dropRight( 4 ).in( l ), hasEqualElementsAsIn( 7 ) );
+		assertThat( List.alterBy.dropRight( 5 ).in( l ), hasNoElements( Integer.class ) );
+		assertThat( List.alterBy.dropRight( 6 ).in( l ), hasNoElements( Integer.class ) );
 	}
 
 	@Test
 	public void testTakesFirst() {
 		List<Integer> l = List.with.elements( 7, 9, 3, 1, 5 );
-		assertThat( List.alterBy.takeFirst( -1 ).in( l ), hasNoElements( Integer.class ) );
-		assertThat( List.alterBy.takeFirst( 0 ).in( l ), hasNoElements( Integer.class ) );
-		assertThat( List.alterBy.takeFirst( 1 ).in( l ), hasEqualElementsAsIn( 7 ) );
-		assertThat( List.alterBy.takeFirst( 2 ).in( l ), hasEqualElementsAsIn( 7, 9 ) );
-		assertThat( List.alterBy.takeFirst( 3 ).in( l ), hasEqualElementsAsIn( 7, 9, 3 ) );
-		assertThat( List.alterBy.takeFirst( 4 ).in( l ), hasEqualElementsAsIn( 7, 9, 3, 1 ) );
-		assertThat( List.alterBy.takeFirst( 5 ).in( l ), hasEqualElementsAsIn( 7, 9, 3, 1, 5 ) );
-		assertThat( List.alterBy.takeFirst( 6 ).in( l ), hasEqualElementsAsIn( 7, 9, 3, 1, 5 ) );
+		assertThat( List.alterBy.take( -1 ).in( l ), hasNoElements( Integer.class ) );
+		assertThat( List.alterBy.take( 0 ).in( l ), hasNoElements( Integer.class ) );
+		assertThat( List.alterBy.take( 1 ).in( l ), hasEqualElementsAsIn( 7 ) );
+		assertThat( List.alterBy.take( 2 ).in( l ), hasEqualElementsAsIn( 7, 9 ) );
+		assertThat( List.alterBy.take( 3 ).in( l ), hasEqualElementsAsIn( 7, 9, 3 ) );
+		assertThat( List.alterBy.take( 4 ).in( l ), hasEqualElementsAsIn( 7, 9, 3, 1 ) );
+		assertThat( List.alterBy.take( 5 ).in( l ), hasEqualElementsAsIn( 7, 9, 3, 1, 5 ) );
+		assertThat( List.alterBy.take( 6 ).in( l ), hasEqualElementsAsIn( 7, 9, 3, 1, 5 ) );
 	}
 
 	@Test
 	public void testDropsFirst() {
 		List<Integer> l = List.with.elements( 7, 9, 3, 1, 5 );
-		assertThat( List.alterBy.dropFirst( -1 ).in( l ), hasEqualElementsAsIn( 7, 9, 3, 1, 5 ) );
-		assertThat( List.alterBy.dropFirst( 0 ).in( l ), hasEqualElementsAsIn( 7, 9, 3, 1, 5 ) );
-		assertThat( List.alterBy.dropFirst( 1 ).in( l ), hasEqualElementsAsIn( 9, 3, 1, 5 ) );
-		assertThat( List.alterBy.dropFirst( 2 ).in( l ), hasEqualElementsAsIn( 3, 1, 5 ) );
-		assertThat( List.alterBy.dropFirst( 3 ).in( l ), hasEqualElementsAsIn( 1, 5 ) );
-		assertThat( List.alterBy.dropFirst( 4 ).in( l ), hasEqualElementsAsIn( 5 ) );
-		assertThat( List.alterBy.dropFirst( 5 ).in( l ), hasNoElements( Integer.class ) );
-		assertThat( List.alterBy.dropFirst( 6 ).in( l ), hasNoElements( Integer.class ) );
+		assertThat( List.alterBy.drop( -1 ).in( l ), hasEqualElementsAsIn( 7, 9, 3, 1, 5 ) );
+		assertThat( List.alterBy.drop( 0 ).in( l ), hasEqualElementsAsIn( 7, 9, 3, 1, 5 ) );
+		assertThat( List.alterBy.drop( 1 ).in( l ), hasEqualElementsAsIn( 9, 3, 1, 5 ) );
+		assertThat( List.alterBy.drop( 2 ).in( l ), hasEqualElementsAsIn( 3, 1, 5 ) );
+		assertThat( List.alterBy.drop( 3 ).in( l ), hasEqualElementsAsIn( 1, 5 ) );
+		assertThat( List.alterBy.drop( 4 ).in( l ), hasEqualElementsAsIn( 5 ) );
+		assertThat( List.alterBy.drop( 5 ).in( l ), hasNoElements( Integer.class ) );
+		assertThat( List.alterBy.drop( 6 ).in( l ), hasNoElements( Integer.class ) );
 	}
 
 	@Test
 	public void testTakesLast() {
 		List<Integer> l = List.with.elements( 7, 9, 3, 1, 5 );
-		assertThat( List.alterBy.takeLast( -1 ).in( l ), hasNoElements( Integer.class ) );
-		assertThat( List.alterBy.takeLast( 0 ).in( l ), hasNoElements( Integer.class ) );
-		assertThat( List.alterBy.takeLast( 1 ).in( l ), hasEqualElementsAsIn( 5 ) );
-		assertThat( List.alterBy.takeLast( 2 ).in( l ), hasEqualElementsAsIn( 1, 5 ) );
-		assertThat( List.alterBy.takeLast( 3 ).in( l ), hasEqualElementsAsIn( 3, 1, 5 ) );
-		assertThat( List.alterBy.takeLast( 4 ).in( l ), hasEqualElementsAsIn( 9, 3, 1, 5 ) );
-		assertThat( List.alterBy.takeLast( 5 ).in( l ), hasEqualElementsAsIn( 7, 9, 3, 1, 5 ) );
-		assertThat( List.alterBy.takeLast( 6 ).in( l ), hasEqualElementsAsIn( 7, 9, 3, 1, 5 ) );
+		assertThat( List.alterBy.takeRight( -1 ).in( l ), hasNoElements( Integer.class ) );
+		assertThat( List.alterBy.takeRight( 0 ).in( l ), hasNoElements( Integer.class ) );
+		assertThat( List.alterBy.takeRight( 1 ).in( l ), hasEqualElementsAsIn( 5 ) );
+		assertThat( List.alterBy.takeRight( 2 ).in( l ), hasEqualElementsAsIn( 1, 5 ) );
+		assertThat( List.alterBy.takeRight( 3 ).in( l ), hasEqualElementsAsIn( 3, 1, 5 ) );
+		assertThat( List.alterBy.takeRight( 4 ).in( l ), hasEqualElementsAsIn( 9, 3, 1, 5 ) );
+		assertThat( List.alterBy.takeRight( 5 ).in( l ), hasEqualElementsAsIn( 7, 9, 3, 1, 5 ) );
+		assertThat( List.alterBy.takeRight( 6 ).in( l ), hasEqualElementsAsIn( 7, 9, 3, 1, 5 ) );
 	}
 
 	@Test
 	public void testTakeFirstDropLast() {
 		List<Integer> l = List.with.elements( 1, 2, 3, 4, 5 );
-		assertThat( List.alterBy.takeFirst( 3 ).dropLast( 1 ).in( l ), hasEqualElementsAsIn( 1, 2 ) );
+		assertThat( List.alterBy.take( 3 ).dropRight( 1 ).in( l ), hasEqualElementsAsIn( 1, 2 ) );
 	}
 
 	@Test

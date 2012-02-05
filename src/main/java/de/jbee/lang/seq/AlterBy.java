@@ -36,14 +36,14 @@ public class AlterBy
 
 	private static ListAlteration pure( ListAlteration t ) {
 		return t instanceof AlterBy
-			? ( (AlterBy) t ).utilised
+			? ( (AlterBy) t ).alteration
 			: t;
 	}
 
-	private final ListAlteration utilised;
+	private final ListAlteration alteration;
 
 	private AlterBy( ListAlteration utilised ) {
-		this.utilised = utilised;
+		this.alteration = utilised;
 	}
 
 	public AlterBy chop( int start, int end ) {
@@ -106,7 +106,7 @@ public class AlterBy
 		return delete( List.indexFor.elemBy( elem, eq ) );
 	}
 
-	public AlterBy dropFirst( int count ) {
+	public AlterBy drop( int count ) {
 		return count < 0
 			? this
 			: count == 1
@@ -115,14 +115,14 @@ public class AlterBy
 	}
 
 	public AlterBy dropFrom( int index ) {
-		return takeFirst( index );
+		return take( index );
 	}
 
 	public AlterBy dropFromTo( int start, int end ) {
 		return cutOut( start, end );
 	}
 
-	public AlterBy dropLast( int count ) {
+	public AlterBy dropRight( int count ) {
 		return count <= 0
 			? this
 			: takeTill( List.indexFor.elemOn( -count ) );
@@ -137,7 +137,7 @@ public class AlterBy
 	}
 
 	public AlterBy dropUpTo( int index ) {
-		return dropFirst( index );
+		return drop( index );
 	}
 
 	//TODO some kind of dropWhile working with a something like Predicate<List<E>> -> other interface
@@ -147,7 +147,7 @@ public class AlterBy
 
 	@Override
 	public <E> List<E> in( List<E> list ) {
-		return utilised.in( list );
+		return alteration.in( list );
 	}
 
 	public AlterBy nub() {
@@ -163,7 +163,7 @@ public class AlterBy
 	}
 
 	public ListAlteration pure() {
-		return utilised;
+		return alteration;
 	}
 
 	public BagAlteration refineToBag() {
@@ -205,21 +205,21 @@ public class AlterBy
 					List.indexFor.elemAt( idx2 ) ) );
 	}
 
-	public AlterBy takeFirst( int count ) {
+	public AlterBy take( int count ) {
 		return count <= 0
 			? append( empty )
 			: takeTill( lastUpTo( count ), 1 );
 	}
 
 	public AlterBy takeFrom( int index ) {
-		return dropFirst( index );
+		return drop( index );
 	}
 
 	public AlterBy takeFromTo( int start, int end ) {
 		return sublist( start, end - start + 1 );
 	}
 
-	public AlterBy takeLast( int count ) {
+	public AlterBy takeRight( int count ) {
 		return count <= 0
 			? append( empty )
 			: dropTill( List.indexFor.elemOn( -count ) );
@@ -234,7 +234,7 @@ public class AlterBy
 	}
 
 	public AlterBy takeUpTo( int index ) {
-		return takeFirst( index );
+		return take( index );
 	}
 
 	//TODO some kind of takeWhile working with a condition types with the list's type -> other interface
@@ -247,11 +247,11 @@ public class AlterBy
 	}
 
 	public AlterBy trim( int count ) {
-		return append( chain( dropFirst( count ), dropLast( count ) ) );
+		return append( chain( drop( count ), dropRight( count ) ) );
 	}
 
 	private BagAlteration append( BagAlteration snd ) {
-		return chain( utilised, snd );
+		return chain( alteration, snd );
 	}
 
 	private AlterBy append( ListAlteration next ) {
@@ -261,11 +261,11 @@ public class AlterBy
 		if ( next == empty ) {
 			return new AlterBy( next );
 		}
-		return new AlterBy( chain( utilised, next ) );
+		return new AlterBy( chain( alteration, next ) );
 	}
 
 	private SetAlteration append( SetAlteration snd ) {
-		return chain( utilised, snd );
+		return chain( alteration, snd );
 	}
 
 	//TODO filter(Predicate)

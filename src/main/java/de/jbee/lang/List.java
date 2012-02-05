@@ -65,6 +65,8 @@ public interface List<E>
 	Range<Character> letters = Lang.letters;
 	Range<Character> characters = Lang.characters;
 
+	//OPEN instead of contains use consistsOf ?
+
 	//TODO a util for string handling strings as list of characters
 
 	/*
