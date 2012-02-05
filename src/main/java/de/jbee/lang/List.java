@@ -23,14 +23,16 @@ import de.jbee.lang.seq.Range.RangeTo;
  * structure is a core functionality that should be usable as easy, compact and readable as
  * possible.
  * </p>
+ * <br>
+ * <h4>Index Based API</h4>
  * <p>
  * The collection API is index based. This means elements are removed, replaced or inserted at/from
  * a specific index. If this depends on a element's properties the index has to be computed first.
  * Thereby the overuse of generic type arguments is avoided when dealing with lists since the index
- * is generic-free. Since all {@linkplain List} implementations are {@link RandomAccess}able by
- * definition this will not make a relevant difference in performance. Because Lists are chains of
- * sublist in general the decision over random access is a general one that cannot be different from
- * implementation to implementation.
+ * has no generic. Since all {@linkplain List} implementations are {@link RandomAccess}able by
+ * definition using indexes will not make a relevant difference in performance. Because Lists are in
+ * general chained sublists ({@link PartialSequence}s) the decision over random access is a general
+ * one that cannot be different from implementation to implementation.
  * </p>
  * 
  * @author Jan Bernitt (jan.bernitt@gmx.de)
