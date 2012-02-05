@@ -8,6 +8,7 @@ import de.jbee.lang.Enumerate;
 import de.jbee.lang.Enumerator;
 import de.jbee.lang.EnumeratorFactory;
 import de.jbee.lang.List;
+import de.jbee.lang.Sequence;
 import de.jbee.lang.Traversal;
 import de.jbee.lang.dev.Nonnull;
 
@@ -275,7 +276,7 @@ final class EnumList<E>
 			res += "..";
 			res += String.valueOf( type.toEnum( lastOrdinal ) );
 		}
-		return res + "]" + List.CONCAT_OPERATOR_SYMBOL + tail.toString();
+		return res + "]" + Sequence.CONCAT_OPERATOR_SYMBOL + tail.toString();
 	}
 
 	private boolean ascending() {

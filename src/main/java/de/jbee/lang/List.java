@@ -40,19 +40,7 @@ public interface List<E>
 		extends Prepandable<E>, Appendable<E>, PartialSequence<E>, Sequence<E>,
 		ModifiableSequence<E>, Arrayable, Traversable<E>, RandomAccess, Serializable {
 
-	/**
-	 * The operator to use in a {@link Object#toString()} when visualizing concatenation of lists.
-	 * Example:
-	 * 
-	 * <pre>
-	 * [1,2]+[36,9]
-	 * </pre>
-	 * 
-	 * is a list containing the sequence 1,2,36,9 in 2 sublists chained together.
-	 */
-	char CONCAT_OPERATOR_SYMBOL = '+';
-
-	//TODO proxy from Lang.
+	//TODO proxy from sequences
 	UtileLister with = Lang.list;
 	IndexFor indexFor = new IndexFor();
 	RangeTo rangeTo = Lang.enumerator;
@@ -69,8 +57,42 @@ public interface List<E>
 
 	//TODO a util for string handling strings as list of characters
 
+	/**
+	 * <h5>What does {@link #tidyUp()} do ?</h5>
+	 * <p>
+	 * It can avoids possible memory leaks. Persistent data-structures use something that can be
+	 * described as 'shared memory'. A list that is still alive (reachable) may refer also to
+	 * elements that would be dead (not reachable) if this list woundn't exists. Thereby elements
+	 * refereed in list may no be garbage collected as long as the list referring it is alive or
+	 * tidied up. The operation will make sure, that only those elements are refereed further on
+	 * which are part of the list alive. In some cases therefore array copies as necessary so this
+	 * is *not* a cheap operation in every case.
+	 * </p>
+	 * <br/>
+	 * <h5>When is it necessary to do a {@link #tidyUp()} ?</h5>
+	 * <p>
+	 * As long as you just use {@link #append(Object)}, {@link #prepand(Object)} or
+	 * {@link #concat(List)} to construct a list you are fine. You don't need to tidy-up and if you
+	 * do anyway (just to be save) it will be a cheap operation.
+	 * </p>
+	 * <p>
+	 * But as soon as you make use of any of the other 'modifying' operations from
+	 * {@link ModifiableSequence} the resulting list might such a case but doesn't have to be. To be
+	 * save you should *alawys* call {@link #tidyUp()} once when you are finished changing a list
+	 * (end of method call that calls those methods and returns a changed list). Of cause you don't
+	 * have to tidy-up if all lists result from such operations are temporary objects which itself
+	 * will be dead soon and garbage-collected themselfs.
+	 * </p>
+	 */
+	List<E> tidyUp();
+
+	/**
+	 * @return a list having the <code>other</code> list append to this list's elements.
+	 */
+	List<E> concat( List<E> other );
+
 	/*
-	 * Covariant return type overrides for inherited methods from Tailed
+	 * Covariant return type overrides for inherited methods from PartialSequence
 	 */
 
 	@Override
@@ -112,40 +134,5 @@ public interface List<E>
 
 	@Override
 	List<E> drop( int count );
-
-	/*
-	 * additional methods
-	 */
-
-	/**
-	 * <h5>What does {@link #tidyUp()} do ?</h5>
-	 * <p>
-	 * It can avoids possible memory leaks. Persistent data-structures use something that can be
-	 * described as 'shared memory'. A list that is still alive (reachable) may refer also to
-	 * elements that would be dead (not reachable) if this list woundn't exists. Thereby elements
-	 * refereed in list may no be garbage collected as long as the list referring it is alive or
-	 * tidied up. The operation will make sure, that only those elements are refereed further on
-	 * which are part of the list alive. In some cases therefore array copies as necessary so this
-	 * is *not* a cheap operation in every case.
-	 * </p>
-	 * <br/>
-	 * <h5>When is it necessary to do a {@link #tidyUp()} ?</h5>
-	 * <p>
-	 * As long as you just use {@link #append(Object)}, {@link #prepand(Object)} or
-	 * {@link #concat(List)} to construct a list you are fine. You don't need to tidy-up and if you
-	 * do anyway (just to be save) it will be a cheap operation.
-	 * </p>
-	 * <p>
-	 * But as soon as you make use of any of the other 'modifying' operations from
-	 * {@link ModifiableSequence} the resulting list might such a case but doesn't have to be. To be
-	 * save you should *alawys* call {@link #tidyUp()} once when you are finished changing a list
-	 * (end of method call that calls those methods and returns a changed list). Of cause you don't
-	 * have to tidy-up if all lists result from such operations are temporary objects which itself
-	 * will be dead soon and garbage-collected themselfs.
-	 * </p>
-	 */
-	List<E> tidyUp();
-
-	List<E> concat( List<E> other );
 
 }

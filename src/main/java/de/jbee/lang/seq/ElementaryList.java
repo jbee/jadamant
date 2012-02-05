@@ -5,6 +5,7 @@ package de.jbee.lang.seq;
 
 import de.jbee.lang.Array;
 import de.jbee.lang.List;
+import de.jbee.lang.Sequence;
 import de.jbee.lang.Traversal;
 import de.jbee.lang.dev.Nonnull;
 
@@ -157,7 +158,7 @@ final class ElementaryList<E>
 
 	@Override
 	public String toString() {
-		return "[" + String.valueOf( element ) + "]" + List.CONCAT_OPERATOR_SYMBOL
+		return "[" + String.valueOf( element ) + "]" + Sequence.CONCAT_OPERATOR_SYMBOL
 				+ tail.toString();
 	}
 

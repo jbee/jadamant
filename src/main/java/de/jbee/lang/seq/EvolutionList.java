@@ -5,6 +5,7 @@ package de.jbee.lang.seq;
 
 import de.jbee.lang.Array;
 import de.jbee.lang.List;
+import de.jbee.lang.Sequence;
 import de.jbee.lang.Traversal;
 import de.jbee.lang.dev.Nonnull;
 
@@ -218,7 +219,7 @@ abstract class EvolutionList<E>
 			b.append( ',' );
 			b.append( String.valueOf( at( i ) ) );
 		}
-		return "[" + b.substring( 1 ) + "]" + List.CONCAT_OPERATOR_SYMBOL + tail.toString();
+		return "[" + b.substring( 1 ) + "]" + Sequence.CONCAT_OPERATOR_SYMBOL + tail.toString();
 	}
 
 	abstract E element( int index, int l );
