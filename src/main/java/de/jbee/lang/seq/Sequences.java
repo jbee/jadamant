@@ -191,11 +191,11 @@ public final class Sequences {
 
 	}
 
-	static <V> Map.Entry<V> entry( Map.Key key, V value ) {
+	public static <V> Map.Entry<V> entry( Map.Key key, V value ) {
 		return new Sequences.Entry<V>( key, value );
 	}
 
-	static <V> Map.Key key( CharSequence key ) {
+	public static <V> Map.Key key( CharSequence key ) {
 		return new Sequences.Key( key.toString() );
 	}
 
@@ -210,7 +210,7 @@ public final class Sequences {
 		}
 
 		@Override
-		public String pattern() {
+		public String path() {
 			return pattern;
 		}
 

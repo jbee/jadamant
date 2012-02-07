@@ -62,7 +62,9 @@ public interface Map<V>
 		 */
 		String PREFIX_TERMINATOR = "\ufffd";
 
-		String pattern();
+		String path();
+
+		//OPEN add start + end index to narrow search ? -> it doesn't make sense for insert
 	}
 
 	interface Entry<V>

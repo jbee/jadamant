@@ -13,7 +13,7 @@ import de.jbee.lang.Map.Key;
  * 
  */
 public interface Multimap<V>
-		extends Bag<Map.Entry<V>> {
+		extends Bag<Map.Entry<V>>, Table<Map.Entry<V>> {
 
 	/**
 	 * @return All values in this {@link Multimap}. The result is primary ordered by the key order
@@ -33,8 +33,6 @@ public interface Multimap<V>
 	 */
 	Bag<V> valuesAt( int index )
 			throws IndexOutOfBoundsException;
-
-	int indexFor( Key key );
 
 	Multimap<V> insert( Key key, V value );
 

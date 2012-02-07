@@ -156,7 +156,9 @@ abstract class OrderedList<E, L extends Ordered & List<E>>
 
 	@Override
 	public final L take( int count ) {
-		return thisWith( elems.take( count ) );
+		return count >= elems.length()
+			? self()
+			: thisWith( elems.take( count ) );
 	}
 
 	@Override
