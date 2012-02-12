@@ -8,6 +8,7 @@ import de.jbee.data.DataProperty.ValueProperty;
 import de.jbee.lang.List;
 import de.jbee.lang.Map;
 import de.jbee.lang.Table;
+import de.jbee.lang.Map.Key;
 import de.jbee.lang.dev.Nullsave;
 import de.jbee.lang.seq.Sequences;
 
@@ -42,10 +43,11 @@ public class Property {
 		public Data<T> resolveIn( Path prefix, DataTable<?> values ) {
 			final Path path = prefix.dot( name );
 			int objectTypeIndex = values.indexFor( Sequences.key( path.dot( OBJECT_TYPE ) ) );
-			if ( objectTypeIndex != NOT_CONTAINED && values.at( objectTypeIndex ) == type ) {
-				int objectEndIndex = List.indexFor.insertBy(
-						Sequences.entry( Sequences.key( path.toString() + Path.SEPARATOR
-								+ Map.Key.PREFIX_TERMINATOR ), type ), values.order() ).in( values );
+			if ( objectTypeIndex != NOT_CONTAINED && values.at( objectTypeIndex ) == type ) { //FIXME type can be a supertype of the actual available obj.
+				Key key = Sequences.key( path.toString() + Path.SEPARATOR + ""
+						+ Map.Key.PREFIX_TERMINATOR );
+				int objectEndIndex = List.indexFor.insertBy( Sequences.entry( key, type ),
+						values.order() ).in( values );
 				if ( objectEndIndex - objectTypeIndex > 1 ) {
 					return (Data<T>) values.slice( path, objectTypeIndex, objectEndIndex );
 				}
@@ -53,6 +55,10 @@ public class Property {
 			return (Data<T>) values.slice( path, 0, 0 );
 		}
 
+		@Override
+		public String toString() {
+			return type.getSimpleName() + " " + name;
+		}
 	}
 
 	static final class NotionalValueProperty<R, V, T>

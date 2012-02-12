@@ -7,8 +7,11 @@ import static org.junit.Assert.assertThat;
 import org.junit.Test;
 
 import de.jbee.lang.List;
+import de.jbee.lang.Map;
 import de.jbee.lang.Ord;
 import de.jbee.lang.Order;
+import de.jbee.lang.Set;
+import de.jbee.lang.Map.Entry;
 
 public class TestListIndex {
 
@@ -146,5 +149,28 @@ public class TestListIndex {
 		assertThat( List.indexFor.insert( 4 ).in( l ), is( 3 ) );
 		assertThat( List.indexFor.insert( 7 ).in( l ), is( 5 ) );
 		assertThat( List.indexFor.insert( 13 ).in( l ), is( 7 ) );
+	}
+
+	@Test
+	public void testInsertBy_PreviousErrorCase1() {
+		Ord<Object> order = Order.typeaware( Order.alphabetical, CharSequence.class );
+		Set<String> elems = Set.with.elements( order, List.with.elements( "deep..object",
+				"deep.percent", "deep.flat.total", "deep.flat.name", "deep.flat..object" ) );
+		String key = "deep.flat." + Map.Key.PREFIX_TERMINATOR;
+		assertThat( List.indexFor.insertBy( key, elems.order() ).in( elems ), is( 4 ) );
+	}
+
+	@Test
+	public void testInsertBy_MapPreviousErrorCase1() {
+		Map<Object> m = Map.with.noEntries( Map.ENTRY_ORDER );
+		Class<Object> value = Object.class;
+		m = m.insert( Sequences.key( "deep..object" ), value );
+		m = m.insert( Sequences.key( "deep.percent" ), value );
+		m = m.insert( Sequences.key( "deep.flat.total" ), value );
+		m = m.insert( Sequences.key( "deep.flat.name" ), value );
+		m = m.insert( Sequences.key( "deep.flat..object" ), value );
+		Map.Key key = Sequences.key( "deep.flat." + Map.Key.PREFIX_TERMINATOR );
+		Entry<Class<Object>> entry = Sequences.entry( key, value );
+		assertThat( List.indexFor.insertBy( entry, m.order() ).in( m ), is( 4 ) );
 	}
 }

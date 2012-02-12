@@ -25,6 +25,11 @@ public class TestData {
 		ObjectProperty<DeepObject, FlatObject> flat = Property.object( "flat", FlatObject.class );
 	}
 
+	static interface DeeperObject {
+
+		ObjectProperty<DeeperObject, DeepObject> deep = Property.object( "deep", DeepObject.class );
+	}
+
 	@Test
 	public void testFlatObject() {
 		Data<FlatObject> obj = MapData.empty();
@@ -57,5 +62,25 @@ public class TestData {
 		assertThat( flatObj.value( FlatObject.total ), is( 2 ) );
 		assertThat( flatObj.value( FlatObject.name ), is( "erni" ) );
 		assertThat( obj.value( DeepObject.percent ), is( 100f ) );
+	}
+
+	@Test
+	public void testDeeperObject() {
+		Map<Object> properties = Map.with.noEntries( Data.ORDER );
+		properties = properties.insert( Sequences.key( "deep." + Property.OBJECT_TYPE ),
+				DeepObject.class );
+		properties = properties.insert( Sequences.key( "deep.percent" ), 100f );
+		properties = properties.insert( Sequences.key( "deep.flat.total" ), 2 );
+		properties = properties.insert( Sequences.key( "deep.flat.name" ), "erni" );
+		properties = properties.insert( Sequences.key( "deep.flat." + Property.OBJECT_TYPE ),
+				FlatObject.class );
+
+		Data<DeeperObject> obj = MapData.object( properties );
+		Data<DeepObject> deepObj = obj.object( DeeperObject.deep );
+		assertThat( deepObj.length(), is( 5 ) );
+		assertThat( deepObj.value( DeepObject.percent ), is( 100f ) );
+		Data<FlatObject> flatObj = deepObj.object( DeepObject.flat );
+		assertThat( flatObj.length(), is( 3 ) );
+		assertThat( flatObj.value( FlatObject.name ), is( "erni" ) );
 	}
 }

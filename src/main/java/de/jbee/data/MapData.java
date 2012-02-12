@@ -9,6 +9,7 @@ import de.jbee.lang.Map;
 import de.jbee.lang.Ord;
 import de.jbee.lang.Order;
 import de.jbee.lang.Table;
+import de.jbee.lang.Map.Entry;
 import de.jbee.lang.Map.Key;
 
 public class MapData {
@@ -75,7 +76,7 @@ public class MapData {
 
 		@Override
 		public int indexFor( Key key ) {
-			return properties.indexFor( key ) - start;
+			return properties.indexFor( key ) - start; //TODO just search between start and end
 		}
 
 		@Override
@@ -93,12 +94,19 @@ public class MapData {
 			if ( start >= end ) {
 				return empty();
 			}
-			return new ObjectData<Object>( this.prefix.dot( prefix ), start, end, properties );
+			return new ObjectData<Object>( prefix, start, end, properties );
 		}
 
 		@Override
 		public String toString() {
-			return prefix + "[" + start + ":" + end + "]@" + properties;
+			StringBuilder b = new StringBuilder();
+			b.append( prefix );
+			for ( int i = start; i < end; i++ ) {
+				b.append( '\n' );
+				Entry<Object> e = properties.at( i );
+				b.append( String.format( "%-20s => %s", e.key(), e.value() ) );
+			}
+			return b.toString();
 		}
 
 		@Override
