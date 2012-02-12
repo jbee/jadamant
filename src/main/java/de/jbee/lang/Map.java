@@ -2,6 +2,8 @@ package de.jbee.lang;
 
 import static de.jbee.lang.Order.entriesBy;
 import static de.jbee.lang.Order.typeaware;
+import de.jbee.lang.Lister.MapLister;
+import de.jbee.lang.seq.UtileMapLister;
 
 /**
  * A {@linkplain Map} is a special case of {@link Multimap} where each key may just refer to one
@@ -12,6 +14,8 @@ import static de.jbee.lang.Order.typeaware;
  */
 public interface Map<V>
 		extends Set<Map.Entry<V>>, Multimap<V> {
+
+	MapLister with = new UtileMapLister();
 
 	/**
 	 * Default order used for all {@link Map}s. The keys are sorted alphabetical.

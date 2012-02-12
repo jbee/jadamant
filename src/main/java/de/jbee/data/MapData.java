@@ -6,6 +6,8 @@ import de.jbee.data.DataProperty.ValueProperty;
 import de.jbee.lang.List;
 import de.jbee.lang.ListIndex;
 import de.jbee.lang.Map;
+import de.jbee.lang.Ord;
+import de.jbee.lang.Order;
 import de.jbee.lang.Table;
 import de.jbee.lang.Map.Key;
 
@@ -18,18 +20,8 @@ public class MapData {
 		return (Data<T>) EMPTY;
 	}
 
-	static final class Type {
-
-		final Class<?> type;
-		final int length;
-
-		Type( Class<?> type, int length ) {
-			super();
-			assert ( length >= 0 );
-			this.type = type;
-			this.length = length;
-		}
-
+	static <T> Data<T> object( Map<Object> properties ) {
+		return new ObjectData<T>( Path.ROOT, 0, properties.length(), properties );
 	}
 
 	/**
@@ -43,26 +35,24 @@ public class MapData {
 	 * 
 	 */
 	static final class ObjectData<T>
-			implements Data<T>, Table<Object> {
+			implements Data<T>, Table<Object>, Data.DataTable<Object> {
 
-		private final ObjectProperty<?, T> parent;
+		private final Path prefix;
 		private final int start;
 		private final int end;
 		private final Map<Object> properties;
 
-		ObjectData( ObjectProperty<?, T> parent, int start, int end, Map<Object> properties ) {
+		ObjectData( Path prefix, int start, int end, Map<Object> properties ) {
 			super();
-			this.parent = parent;
+			this.prefix = prefix;
 			this.start = start;
 			this.end = end;
 			this.properties = properties;
 		}
 
 		@Override
-		public <S> Data<S> sub( ObjectProperty<? super T, S> path ) {
-
-			// TODO Auto-generated method stub
-			return null;
+		public <S> Data<S> object( ObjectProperty<? super T, S> property ) {
+			return property.resolveIn( prefix, this );
 		}
 
 		@Override
@@ -75,7 +65,7 @@ public class MapData {
 
 		@Override
 		public <V> V value( ValueProperty<? super T, V> property ) {
-			return property.resolveIn( this );
+			return property.resolveIn( prefix, this );
 		}
 
 		@Override
@@ -95,7 +85,25 @@ public class MapData {
 
 		@Override
 		public Object at( int index ) {
-			return properties.at( start + index );
+			return properties.at( start + index ).value();
+		}
+
+		@Override
+		public Data<Object> slice( Path prefix, int start, int end ) {
+			if ( start >= end ) {
+				return empty();
+			}
+			return new ObjectData<Object>( this.prefix.dot( prefix ), start, end, properties );
+		}
+
+		@Override
+		public String toString() {
+			return prefix + "[" + start + ":" + end + "]@" + properties;
+		}
+
+		@Override
+		public Ord<Object> order() {
+			return properties.order();
 		}
 	}
 
@@ -103,7 +111,7 @@ public class MapData {
 			implements Data<T>, Table<Object> {
 
 		@Override
-		public <S> Data<S> sub( ObjectProperty<? super T, S> path ) {
+		public <S> Data<S> object( ObjectProperty<? super T, S> property ) {
 			return empty();
 		}
 
@@ -113,8 +121,8 @@ public class MapData {
 		}
 
 		@Override
-		public <V> V value( ValueProperty<? super T, V> path ) {
-			return path.resolveIn( this );
+		public <V> V value( ValueProperty<? super T, V> property ) {
+			return property.resolveIn( Path.ROOT, this );
 		}
 
 		@Override
@@ -141,6 +149,11 @@ public class MapData {
 		public Object at( int index )
 				throws IndexOutOfBoundsException {
 			return List.with.noElements().at( index );
+		}
+
+		@Override
+		public Ord<Object> order() {
+			return Order.inherent;
 		}
 
 	}

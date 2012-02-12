@@ -214,6 +214,11 @@ public final class Sequences {
 			return pattern;
 		}
 
+		@Override
+		public String toString() {
+			return pattern;
+		}
+
 	}
 
 }

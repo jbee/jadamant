@@ -63,4 +63,9 @@ public interface Lister {
 		@Override
 		<E> Set<E> elements( Ord<Object> order, List<E> elems );
 	}
+
+	interface MapLister {
+
+		<E> Map<E> noEntries();
+	}
 }

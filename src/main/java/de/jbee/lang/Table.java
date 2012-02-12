@@ -9,7 +9,7 @@ import de.jbee.lang.Map.Key;
  * @author Jan Bernitt (jan.bernitt@gmx.de)
  */
 public interface Table<E>
-		extends Searchable, Sequence<E> {
+		extends Searchable, Ordered, Sequence<E> {
 
 	//for now we just name those two interfaces
 

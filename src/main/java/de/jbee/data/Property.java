@@ -1,18 +1,59 @@
 package de.jbee.data;
 
+import static de.jbee.lang.ListIndex.NOT_CONTAINED;
+import de.jbee.data.Data.DataTable;
 import de.jbee.data.DataProperty.NotionalProperty;
+import de.jbee.data.DataProperty.ObjectProperty;
 import de.jbee.data.DataProperty.ValueProperty;
-import de.jbee.lang.ListIndex;
+import de.jbee.lang.List;
+import de.jbee.lang.Map;
 import de.jbee.lang.Table;
+import de.jbee.lang.dev.Nullsave;
 import de.jbee.lang.seq.Sequences;
 
 /**
- * The util class to work with {@link DataProperty}s and {@link Data}.
+ * The util-class to work with {@link DataProperty}s and {@link Data}.
  * 
  * @author Jan Bernitt (jan.bernitt@gmx.de)
  * 
  */
 public class Property {
+
+	/**
+	 * A special value holding the type (interface) represents the values of this 'object' (through
+	 * {@link DataProperty}s).
+	 */
+	public static final Path OBJECT_TYPE = Path.path( ".object" );
+
+	static final class TypedObjectProperty<R, T>
+			implements ObjectProperty<R, T> {
+
+		private final Class<T> type;
+		private final Path name;
+
+		TypedObjectProperty( Class<T> type, Path name ) {
+			super();
+			this.type = type;
+			this.name = name;
+		}
+
+		@SuppressWarnings ( "unchecked" )
+		@Override
+		public Data<T> resolveIn( Path prefix, DataTable<?> values ) {
+			final Path path = prefix.dot( name );
+			int objectTypeIndex = values.indexFor( Sequences.key( path.dot( OBJECT_TYPE ) ) );
+			if ( objectTypeIndex != NOT_CONTAINED && values.at( objectTypeIndex ) == type ) {
+				int objectEndIndex = List.indexFor.insertBy(
+						Sequences.entry( Sequences.key( path.toString() + Path.SEPARATOR
+								+ Map.Key.PREFIX_TERMINATOR ), type ), values.order() ).in( values );
+				if ( objectEndIndex - objectTypeIndex > 1 ) {
+					return (Data<T>) values.slice( path, objectTypeIndex, objectEndIndex );
+				}
+			}
+			return (Data<T>) values.slice( path, 0, 0 );
+		}
+
+	}
 
 	static final class NotionalValueProperty<R, V, T>
 			implements ValueProperty<R, T> {
@@ -27,8 +68,8 @@ public class Property {
 		}
 
 		@Override
-		public T resolveIn( Table<?> values ) {
-			return notional.compute( value.resolveIn( values ) );
+		public T resolveIn( Path prefix, Table<?> values ) {
+			return notional.compute( value.resolveIn( prefix, values ) );
 		}
 
 	}
@@ -37,18 +78,18 @@ public class Property {
 			implements ValueProperty<R, T> {
 
 		private final Class<T> type;
-		private final String name;
+		private final Path name;
 
-		TypedProperty( Class<T> type, String name ) {
+		TypedProperty( Class<T> type, Path name ) {
 			super();
 			this.type = type;
 			this.name = name;
 		}
 
 		@Override
-		public T resolveIn( Table<?> values ) {
-			int index = values.indexFor( Sequences.key( name ) );
-			if ( index == ListIndex.NOT_CONTAINED ) {
+		public T resolveIn( Path prefix, Table<?> values ) {
+			final int index = values.indexFor( Sequences.key( prefix.dot( name ) ) );
+			if ( index == NOT_CONTAINED ) {
 				return null;
 			}
 			Object value = values.at( index );
@@ -77,8 +118,8 @@ public class Property {
 		}
 
 		@Override
-		public T resolveIn( Table<?> values ) {
-			final T value = property.resolveIn( values );
+		public T resolveIn( Path prefix, Table<?> values ) {
+			final T value = property.resolveIn( prefix, values );
 			return value == null
 				? nullValue
 				: value;
@@ -91,11 +132,13 @@ public class Property {
 	}
 
 	static class StringLengthProperty
-			implements NotionalProperty<String, Integer> {
+			implements NotionalProperty<String, Integer>, Nullsave {
 
 		@Override
 		public Integer compute( String value ) {
-			return value.length();
+			return value == null
+				? 0
+				: value.length();
 		}
 
 	}
@@ -121,5 +164,14 @@ public class Property {
 			return new NotionalChainProperty<R, T, V>( this, subpath );
 		}
 
+	}
+
+	public static <T> ValueProperty<T, Integer> value( String name, int defaultValue ) {
+		return new NonnullProperty<T, Integer>( new TypedProperty<T, Integer>( Integer.class,
+				Path.path( name ) ), defaultValue );
+	}
+
+	public static <R, T> ObjectProperty<R, T> object( String name, Class<T> type ) {
+		return new TypedObjectProperty<R, T>( type, Path.path( name ) );
 	}
 }
