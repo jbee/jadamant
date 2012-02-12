@@ -166,9 +166,13 @@ public class Property {
 
 	}
 
-	public static <T> ValueProperty<T, Integer> value( String name, int defaultValue ) {
-		return new NonnullProperty<T, Integer>( new TypedProperty<T, Integer>( Integer.class,
-				Path.path( name ) ), defaultValue );
+	public static <R> ValueProperty<R, Integer> value( String name, int defaultValue ) {
+		return value( name, Integer.class, defaultValue );
+	}
+
+	public static <R, T> ValueProperty<R, T> value( String name, Class<T> type, T defaultValue ) {
+		return new NonnullProperty<R, T>( new TypedProperty<R, T>( type, Path.path( name ) ),
+				defaultValue );
 	}
 
 	public static <R, T> ObjectProperty<R, T> object( String name, Class<T> type ) {

@@ -15,11 +15,13 @@ public class TestData {
 
 	static interface FlatObject {
 
+		ValueProperty<FlatObject, String> name = Property.value( "name", String.class, "unnamed" );
 		ValueProperty<FlatObject, Integer> total = Property.value( "total", 1 );
 	}
 
 	static interface DeepObject {
 
+		ValueProperty<DeepObject, Float> percent = Property.value( "percent", Float.class, 0.1f );
 		ObjectProperty<DeepObject, FlatObject> flat = Property.object( "flat", FlatObject.class );
 	}
 
@@ -27,25 +29,33 @@ public class TestData {
 	public void testFlatObject() {
 		Data<FlatObject> obj = MapData.empty();
 		assertThat( obj.value( FlatObject.total ), is( 1 ) );
+		assertThat( obj.value( FlatObject.name ), is( "unnamed" ) );
 
-		Map<Object> properties = Map.with.noEntries();
+		Map<Object> properties = Map.with.noEntries( Data.ORDER );
 		properties = properties.insert( Sequences.key( "total" ), 2 );
+		properties = properties.insert( Sequences.key( "name" ), "erni" );
 		obj = MapData.object( properties );
 		assertThat( obj.value( FlatObject.total ), is( 2 ) );
+		assertThat( obj.value( FlatObject.name ), is( "erni" ) );
 	}
 
 	@Test
 	public void testDeepObject() {
 		Data<DeepObject> obj = MapData.empty();
 		assertThat( obj.object( DeepObject.flat ).value( FlatObject.total ), is( 1 ) );
+		assertThat( obj.value( DeepObject.percent ), is( 0.1f ) );
 
-		Map<Object> properties = Map.with.noEntries();
+		Map<Object> properties = Map.with.noEntries( Data.ORDER );
+		properties = properties.insert( Sequences.key( "percent" ), 100f );
 		properties = properties.insert( Sequences.key( "flat.total" ), 2 );
+		properties = properties.insert( Sequences.key( "flat.name" ), "erni" );
 		properties = properties.insert( Sequences.key( "flat." + Property.OBJECT_TYPE ),
 				FlatObject.class );
 		obj = MapData.object( properties );
 		Data<FlatObject> flatObj = obj.object( DeepObject.flat );
 		assertFalse( flatObj.isEmpty() );
 		assertThat( flatObj.value( FlatObject.total ), is( 2 ) );
+		assertThat( flatObj.value( FlatObject.name ), is( "erni" ) );
+		assertThat( obj.value( DeepObject.percent ), is( 100f ) );
 	}
 }

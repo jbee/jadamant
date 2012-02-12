@@ -66,6 +66,6 @@ public interface Lister {
 
 	interface MapLister {
 
-		<E> Map<E> noEntries();
+		<E> Map<E> noEntries( Ord<Object> order );
 	}
 }
