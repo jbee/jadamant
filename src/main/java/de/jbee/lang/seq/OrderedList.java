@@ -6,7 +6,6 @@ import de.jbee.lang.Bag;
 import de.jbee.lang.Element;
 import de.jbee.lang.IndexDeterminable;
 import de.jbee.lang.List;
-import de.jbee.lang.ListIndex;
 import de.jbee.lang.Map;
 import de.jbee.lang.Multimap;
 import de.jbee.lang.Ord;
@@ -120,10 +119,7 @@ abstract class OrderedList<E, L extends Ordered & List<E>>
 	}
 
 	protected final int indexFor( E e, Ord<Object> order ) {
-		int pos = Order.binarySearch( elems(), 0, length(), e, order );
-		return pos < 0
-			? ListIndex.NOT_CONTAINED
-			: pos;
+		return Order.binarySearch( elems(), 0, length(), e, order );
 	}
 
 	@Override
@@ -434,9 +430,6 @@ abstract class OrderedList<E, L extends Ordered & List<E>>
 			final Map.Entry<V> e = at( index );
 			final Ord<Object> keyOrder = order();
 			int first = index;
-			if ( first == ListIndex.NOT_CONTAINED ) {
-				return bagOf( List.with.<V> noElements(), valueOrder );
-			}
 			while ( first > 0 && keyOrder.ord( e, at( first - 1 ) ).isEq() ) {
 				first--;
 			}

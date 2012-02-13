@@ -1,6 +1,6 @@
 package de.jbee.lang.seq;
 
-import static de.jbee.lang.ListIndex.NOT_CONTAINED;
+import static de.jbee.lang.seq.IndexFor.exists;
 import de.jbee.lang.Array;
 import de.jbee.lang.Bag;
 import de.jbee.lang.Eq;
@@ -201,8 +201,7 @@ public class AlterBy
 	public AlterBy swap( int idx1, int idx2 ) {
 		return idx1 == idx2
 			? this
-			: append( new SwapAlteration( List.indexFor.elemAt( idx1 ),
-					List.indexFor.elemAt( idx2 ) ) );
+			: append( new SwapAlteration( List.indexFor.elemAt( idx1 ), List.indexFor.elemAt( idx2 ) ) );
 	}
 
 	public AlterBy take( int count ) {
@@ -497,9 +496,9 @@ public class AlterBy
 		@Override
 		public <E> List<E> in( List<E> list ) {
 			final int i = index.in( list );
-			return i == ListIndex.NOT_CONTAINED
-				? list
-				: list.deleteAt( i );
+			return exists( i )
+				? list.deleteAt( i )
+				: list;
 		}
 	}
 
@@ -535,9 +534,9 @@ public class AlterBy
 		@Override
 		public <E> List<E> in( List<E> list ) {
 			final int index = List.indexFor.firstFalse( predicate ).in( list );
-			return index == NOT_CONTAINED
-				? empty.in( list )
-				: list.drop( index );
+			return exists( index )
+				? list.drop( index )
+				: empty.in( list );
 		}
 	}
 
@@ -569,7 +568,7 @@ public class AlterBy
 			int j = 0;
 			for ( int i = 0; i < l; i++ ) {
 				E e = list.at( i );
-				if ( List.indexFor.nthElemBy( 1, e, order ).in( Array.sequence( elements ) ) == ListIndex.NOT_CONTAINED ) {
+				if ( !exists( List.indexFor.nthElemBy( 1, e, order ).in( Array.sequence( elements ) ) ) ) {
 					elements[j++] = e;
 				}
 			}
@@ -791,9 +790,9 @@ public class AlterBy
 		@Override
 		public <E> List<E> in( List<E> list ) {
 			final int index = List.indexFor.firstFalse( predicate ).in( list );
-			return index == NOT_CONTAINED
-				? list
-				: list.take( index );
+			return exists( index )
+				? list.take( index )
+				: list;
 		}
 
 	}

@@ -94,7 +94,7 @@ public class MapData {
 			if ( start >= end ) {
 				return empty();
 			}
-			return new ObjectData<Object>( prefix, start, end, properties );
+			return new ObjectData<Object>( prefix, this.start + start, this.start + end, properties );
 		}
 
 		@Override

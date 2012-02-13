@@ -1,7 +1,7 @@
 package de.jbee.lang;
 
-import static de.jbee.lang.ListIndex.NOT_CONTAINED;
 import static de.jbee.lang.Ordering.fromComparison;
+import static de.jbee.lang.seq.IndexFor.exists;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -740,12 +740,12 @@ public final class Order {
 		public Ordering ord( T left, T right ) {
 			final int leftIndex = List.indexFor.elemBy( left, eq ).in( seq );
 			final int rightIndex = List.indexFor.elemBy( right, eq ).in( seq );
-			if ( leftIndex == NOT_CONTAINED ) {
-				return rightIndex == NOT_CONTAINED
+			if ( !exists( leftIndex ) ) {
+				return !exists( rightIndex )
 					? Ordering.EQ
 					: Ordering.LT;
 			}
-			if ( rightIndex == NOT_CONTAINED ) {
+			if ( !exists( rightIndex ) ) {
 				return Ordering.GT;
 			}
 			return Ordering.fromComparison( leftIndex - rightIndex );

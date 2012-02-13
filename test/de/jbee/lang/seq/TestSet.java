@@ -46,8 +46,8 @@ public class TestSet {
 	public void testIndexFor_MissingElementCase() {
 		Set<Integer> s = Set.refine.in( List.with.elements( 5, 4, 3, 2, 1 ) );
 		assertThat( s.indexFor( 0 ), is( NOT_CONTAINED ) );
-		assertThat( s.indexFor( 6 ), is( NOT_CONTAINED ) );
-		assertThat( s.indexFor( -1 ), is( NOT_CONTAINED ) );
+		assertThat( s.indexFor( 6 ), is( -6 ) );
+		assertThat( s.indexFor( -1 ), is( -1 ) );
 	}
 
 	@Test
@@ -57,7 +57,7 @@ public class TestSet {
 		assertThat( s.indexFor( "a" ), is( NOT_CONTAINED ) );
 		assertThat( s.indexFor( "a." ), is( NOT_CONTAINED ) );
 		assertThat( s.indexFor( "a.a" ), is( NOT_CONTAINED ) );
-		assertThat( s.indexFor( "a.d" ), is( NOT_CONTAINED ) );
+		assertThat( s.indexFor( "a.d" ), is( -3 ) );
 		assertThat( s.indexFor( "a.b" ), is( 0 ) );
 		assertThat( s.indexFor( "a.c" ), is( 1 ) );
 	}

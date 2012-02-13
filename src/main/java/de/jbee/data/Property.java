@@ -1,6 +1,6 @@
 package de.jbee.data;
 
-import static de.jbee.lang.ListIndex.NOT_CONTAINED;
+import static de.jbee.lang.seq.IndexFor.exists;
 import de.jbee.data.Data.DataTable;
 import de.jbee.data.DataProperty.NotionalProperty;
 import de.jbee.data.DataProperty.ObjectProperty;
@@ -43,7 +43,7 @@ public class Property {
 		public Data<T> resolveIn( Path prefix, DataTable<?> values ) {
 			final Path path = prefix.dot( name );
 			int objectTypeIndex = values.indexFor( Sequences.key( path.dot( OBJECT_TYPE ) ) );
-			if ( objectTypeIndex != NOT_CONTAINED && values.at( objectTypeIndex ) == type ) { //FIXME type can be a supertype of the actual available obj.
+			if ( exists( objectTypeIndex ) && values.at( objectTypeIndex ) == type ) { //FIXME type can be a supertype of the actual available obj.
 				Key key = Sequences.key( path.toString() + Path.SEPARATOR + ""
 						+ Map.Key.PREFIX_TERMINATOR );
 				int objectEndIndex = List.indexFor.insertBy( Sequences.entry( key, type ),
@@ -95,7 +95,7 @@ public class Property {
 		@Override
 		public T resolveIn( Path prefix, Table<?> values ) {
 			final int index = values.indexFor( Sequences.key( prefix.dot( name ) ) );
-			if ( index == NOT_CONTAINED ) {
+			if ( !exists( index ) ) {
 				return null;
 			}
 			Object value = values.at( index );

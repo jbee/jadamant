@@ -15,6 +15,16 @@ import de.jbee.lang.dev.Null;
 
 public class IndexFor {
 
+	public static boolean exists( int index ) {
+		return index >= 0;
+	}
+
+	public static int insertionIndex( int index ) {
+		return exists( index )
+			? index
+			: -index - 1;
+	}
+
 	static final ListIndex NONE = new NotContainedListIndex();
 	static final ListIndex FIRST = new OnPositionListIndex( 0 );
 	static final ListIndex LAST = new OnPositionListIndex( -1 );
@@ -368,7 +378,7 @@ public class IndexFor {
 			int length = list.length();
 			for ( int i = start; i < length - 1; i++ ) {
 				int index = List.indexFor.duplicateOfBy( i, eq ).in( list );
-				if ( index != NOT_CONTAINED ) {
+				if ( exists( index ) ) {
 					return index;
 				}
 			}
