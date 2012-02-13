@@ -1,6 +1,5 @@
 package de.jbee.lang.seq;
 
-import static de.jbee.lang.ListIndex.NOT_CONTAINED;
 import static de.jbee.lang.seq.ListMatcher.hasEqualElementsAsIn;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.sameInstance;
@@ -45,7 +44,7 @@ public class TestSet {
 	@Test
 	public void testIndexFor_MissingElementCase() {
 		Set<Integer> s = Set.refine.in( List.with.elements( 5, 4, 3, 2, 1 ) );
-		assertThat( s.indexFor( 0 ), is( NOT_CONTAINED ) );
+		assertThat( s.indexFor( 0 ), is( -1 ) );
 		assertThat( s.indexFor( 6 ), is( -6 ) );
 		assertThat( s.indexFor( -1 ), is( -1 ) );
 	}
@@ -54,9 +53,9 @@ public class TestSet {
 	public void testIndexFor_PrefixMatchCase() {
 		Set<String> s = Set.with.elements( Order.typeaware( Order.alphabetical, String.class ),
 				List.with.elements( "a.b", "a.c" ) );
-		assertThat( s.indexFor( "a" ), is( NOT_CONTAINED ) );
-		assertThat( s.indexFor( "a." ), is( NOT_CONTAINED ) );
-		assertThat( s.indexFor( "a.a" ), is( NOT_CONTAINED ) );
+		assertThat( s.indexFor( "a" ), is( -1 ) );
+		assertThat( s.indexFor( "a." ), is( -1 ) );
+		assertThat( s.indexFor( "a.a" ), is( -1 ) );
 		assertThat( s.indexFor( "a.d" ), is( -3 ) );
 		assertThat( s.indexFor( "a.b" ), is( 0 ) );
 		assertThat( s.indexFor( "a.c" ), is( 1 ) );
@@ -65,7 +64,7 @@ public class TestSet {
 	@Test
 	public void testIndexFor_EmptySetCase() {
 		Set<Integer> s = Set.with.noElements();
-		assertThat( s.indexFor( 0 ), is( NOT_CONTAINED ) );
+		assertThat( s.indexFor( 0 ), is( -1 ) );
 	}
 
 	@Test

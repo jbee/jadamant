@@ -19,6 +19,9 @@ public interface IndexDeterminable<E> {
 	 * 
 	 * In case duplicates are allowed the index of the first equal element is returned. All
 	 * duplicates will directly follow this index.
+	 * 
+	 * In case the element is not found a insert position is returned. That is the negated index
+	 * subtracted by one. E.g. for zero it is -1.
 	 */
 	int indexFor( E e );
 
