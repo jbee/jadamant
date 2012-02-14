@@ -25,6 +25,62 @@ public class MapData {
 		return new ObjectData<T>( Path.ROOT, 0, properties.length(), properties );
 	}
 
+	static final class NoData<T>
+			implements Data<T>, Table<Object> {
+
+		@Override
+		public Object at( int index )
+				throws IndexOutOfBoundsException {
+			return List.with.noElements().at( index );
+		}
+
+		@Override
+		public int indexFor( Key key ) {
+			return ListIndex.NOT_CONTAINED;
+		}
+
+		@Override
+		public int indexFor( Key key, int startInclusive, int endExclusive ) {
+			return ListIndex.NOT_CONTAINED;
+		}
+
+		@Override
+		public boolean isEmpty() {
+			return true;
+		}
+
+		@Override
+		public int length() {
+			return 0;
+		}
+
+		@Override
+		public <S> Data<S> object( ObjectProperty<? super T, S> property ) {
+			return empty();
+		}
+
+		@Override
+		public Ord<Object> order() {
+			return Order.inherent;
+		}
+
+		@Override
+		public <S> List<Data<S>> subs( RangeProperty<? super T, S> path ) {
+			return List.with.noElements();
+		}
+
+		@Override
+		public String toString() {
+			return "[nothing]";
+		}
+
+		@Override
+		public <V> V value( ValueProperty<? super T, V> property ) {
+			return property.resolveIn( Path.ROOT, this );
+		}
+
+	}
+
 	/**
 	 * <pre>
 	 * .class CDBox
@@ -52,21 +108,20 @@ public class MapData {
 		}
 
 		@Override
-		public <S> Data<S> object( ObjectProperty<? super T, S> property ) {
-			return property.resolveIn( prefix, this );
+		public Object at( int index ) {
+			return properties.at( start + index ).value();
 		}
 
 		@Override
-		public <S> List<Data<S>> subs( RangeProperty<? super T, S> path ) {
-			//The list actually has to resolve the result list using this objects data because there can be any kind of selection applied - this object cannot and shouln't know about the way the list is computed. 
-
-			// TODO Auto-generated method stub
-			return null;
+		public int indexFor( Key key ) {
+			return properties.indexFor( key, start, end ) - start;
 		}
 
 		@Override
-		public <V> V value( ValueProperty<? super T, V> property ) {
-			return property.resolveIn( prefix, this );
+		public int indexFor( Key key, int startInclusive, int endExclusive ) {
+			final int low = Math.min( start + startInclusive, end );
+			final int high = Math.min( start + endExclusive, end );
+			return properties.indexFor( key, low, high ) - start;
 		}
 
 		@Override
@@ -75,26 +130,36 @@ public class MapData {
 		}
 
 		@Override
-		public int indexFor( Key key ) {
-			return properties.indexFor( key ) - start; //TODO just search between start and end
-		}
-
-		@Override
 		public int length() {
 			return end - start;
 		}
 
 		@Override
-		public Object at( int index ) {
-			return properties.at( start + index ).value();
+		public <S> Data<S> object( ObjectProperty<? super T, S> property ) {
+			return property.resolveIn( prefix, this );
 		}
 
 		@Override
-		public Data<Object> slice( Path prefix, int start, int end ) {
-			if ( start >= end ) {
+		public Ord<Object> order() {
+			return properties.order();
+		}
+
+		@Override
+		public Data<Object> slice( Path prefix, int startInclusive, int endExclusive ) {
+			final int low = Math.min( start + startInclusive, end );
+			final int high = Math.min( start + endExclusive, end );
+			if ( low >= high ) {
 				return empty();
 			}
-			return new ObjectData<Object>( prefix, this.start + start, this.start + end, properties );
+			return new ObjectData<Object>( prefix, low, high, properties );
+		}
+
+		@Override
+		public <S> List<Data<S>> subs( RangeProperty<? super T, S> path ) {
+			//The list actually has to resolve the result list using this objects data because there can be any kind of selection applied - this object cannot and shouln't know about the way the list is computed. 
+
+			// TODO Auto-generated method stub
+			return null;
 		}
 
 		@Override
@@ -110,59 +175,8 @@ public class MapData {
 		}
 
 		@Override
-		public Ord<Object> order() {
-			return properties.order();
-		}
-	}
-
-	static final class NoData<T>
-			implements Data<T>, Table<Object> {
-
-		@Override
-		public <S> Data<S> object( ObjectProperty<? super T, S> property ) {
-			return empty();
-		}
-
-		@Override
-		public <S> List<Data<S>> subs( RangeProperty<? super T, S> path ) {
-			return List.with.noElements();
-		}
-
-		@Override
 		public <V> V value( ValueProperty<? super T, V> property ) {
-			return property.resolveIn( Path.ROOT, this );
+			return property.resolveIn( prefix, this );
 		}
-
-		@Override
-		public String toString() {
-			return "[nothing]";
-		}
-
-		@Override
-		public boolean isEmpty() {
-			return true;
-		}
-
-		@Override
-		public int indexFor( Key key ) {
-			return ListIndex.NOT_CONTAINED;
-		}
-
-		@Override
-		public int length() {
-			return 0;
-		}
-
-		@Override
-		public Object at( int index )
-				throws IndexOutOfBoundsException {
-			return List.with.noElements().at( index );
-		}
-
-		@Override
-		public Ord<Object> order() {
-			return Order.inherent;
-		}
-
 	}
 }

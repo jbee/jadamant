@@ -6,4 +6,5 @@ public interface Searchable {
 
 	int indexFor( Key key );
 
+	int indexFor( Key key, int startInclusive, int endExclusive );
 }

@@ -25,4 +25,6 @@ public interface IndexDeterminable<E> {
 	 */
 	int indexFor( E e );
 
+	int indexFor( E e, int start, int end );
+
 }

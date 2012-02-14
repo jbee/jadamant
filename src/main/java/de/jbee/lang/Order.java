@@ -191,8 +191,8 @@ public final class Order {
 	 */
 	private static <E> int normalBinarySearch( Sequence<E> list, int startInclusive,
 			int endExcluisve, Object key, Ord<Object> order ) {
-		int low = startInclusive;
-		int high = endExcluisve - 1;
+		int low = Math.max( 0, Math.min( list.length() - 1, startInclusive ) );
+		int high = Math.min( list.length(), Math.max( 1, endExcluisve ) ) - 1;
 		while ( low <= high ) {
 			int mid = ( low + high ) >>> 1;
 			E midVal = list.at( mid );

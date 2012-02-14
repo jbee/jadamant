@@ -23,6 +23,6 @@ public interface Data<T>
 	interface DataTable<T>
 			extends Table<T> {
 
-		Data<T> slice( Path prefix, int start, int end );
+		Data<T> slice( Path prefix, int startInclusive, int endExclusive );
 	}
 }

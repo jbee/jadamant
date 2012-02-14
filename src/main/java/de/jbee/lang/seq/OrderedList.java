@@ -14,6 +14,7 @@ import de.jbee.lang.Order;
 import de.jbee.lang.Ordered;
 import de.jbee.lang.Set;
 import de.jbee.lang.Traversal;
+import de.jbee.lang.Map.Key;
 
 abstract class OrderedList<E, L extends Ordered & List<E>>
 		implements IndexDeterminable<E>, Ordered, List<E> {
@@ -115,12 +116,21 @@ abstract class OrderedList<E, L extends Ordered & List<E>>
 	}
 
 	@Override
-	public int indexFor( E e ) {
+	public final int indexFor( E e ) {
 		return indexFor( e, entryOrder() );
 	}
 
+	@Override
+	public final int indexFor( E e, int startInclusive, int endExclusive ) {
+		return indexFor( e, entryOrder(), startInclusive, endExclusive );
+	}
+
 	protected final int indexFor( E e, Ord<Object> order ) {
-		return Order.binarySearch( elems(), 0, length(), e, order );
+		return indexFor( e, order, 0, length() );
+	}
+
+	protected final int indexFor( E e, Ord<Object> order, int startInclusive, int endExclusive ) {
+		return Order.binarySearch( elems(), startInclusive, endExclusive, e, order );
 	}
 
 	@Override
@@ -314,6 +324,11 @@ abstract class OrderedList<E, L extends Ordered & List<E>>
 		}
 
 		@Override
+		public int indexFor( Key key, int startInclusive, int endExclusive ) {
+			return indexFor( entry( key, (V) null ), startInclusive, endExclusive );
+		}
+
+		@Override
 		public Bag<V> values() {
 			return bagOf( elements( elems() ), Order.keep );
 		}
@@ -394,6 +409,11 @@ abstract class OrderedList<E, L extends Ordered & List<E>>
 		@Override
 		public int indexFor( Map.Key key ) {
 			return indexFor( entry( key, (V) null ), order() );
+		}
+
+		@Override
+		public int indexFor( Key key, int startInclusive, int endExclusive ) {
+			return indexFor( entry( key, (V) null ), order(), startInclusive, endExclusive );
 		}
 
 		@Override
