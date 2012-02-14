@@ -1,0 +1,18 @@
+package de.jbee;
+
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
+
+import de.jbee.data.TestData;
+import de.jbee.lang.TestArray;
+import de.jbee.lang.TestLang;
+import de.jbee.lang.TestOrder;
+import de.jbee.lang.seq.TestsSequences;
+
+@RunWith ( Suite.class )
+@SuiteClasses ( { TestsSequences.class, TestData.class, TestArray.class, TestOrder.class,
+		TestLang.class } )
+public class TestsJadamant {
+	// all tests for the the project
+}
