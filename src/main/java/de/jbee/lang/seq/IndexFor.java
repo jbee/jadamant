@@ -1,5 +1,6 @@
 package de.jbee.lang.seq;
 
+import static de.jbee.lang.Order.effective;
 import de.jbee.lang.Eq;
 import de.jbee.lang.Equal;
 import de.jbee.lang.Is;
@@ -169,24 +170,24 @@ public class IndexFor {
 		return insertBy( e, Order.inherent );
 	}
 
-	public ListIndex insertBy( Object e, Ord<Object> ord ) {
-		return new InsertionListIndex( e, ord );
+	public ListIndex insertBy( Object e, Ord<Object> order ) {
+		return new InsertionListIndex( e, order );
 	}
 
 	public ListIndex minimum() {
 		return minimumBy( Order.inherent );
 	}
 
-	public ListIndex minimumBy( Ord<Object> ord ) {
-		return new MinimumElementListIndex( ord );
+	public ListIndex minimumBy( Ord<Object> order ) {
+		return new MinimumElementListIndex( order );
 	}
 
 	public ListIndex maximum() {
 		return maximumBy( Order.inherent );
 	}
 
-	public ListIndex maximumBy( Ord<Object> ord ) {
-		return new MaximimElementListIndex( ord );
+	public ListIndex maximumBy( Ord<Object> order ) {
+		return new MaximimElementListIndex( order );
 	}
 
 	static final class RelativListIndex
@@ -211,30 +212,31 @@ public class IndexFor {
 			implements ListIndex {
 
 		private final Object key;
-		private final Ord<Object> ord;
+		private final Ord<Object> order;
 
-		InsertionListIndex( Object key, Ord<Object> ord ) {
+		InsertionListIndex( Object key, Ord<Object> order ) {
 			super();
 			this.key = key;
-			this.ord = ord;
+			this.order = order;
 		}
 
 		@Override
 		public <E> int in( Sequence<E> list ) {
 			return list.isEmpty()
 				? 0
-				: insertionIndex( Order.binarySearch( list, 0, list.length(), key, ord ) );
+				: insertionIndex( Order.binarySearch( list, 0, list.length(), key, effective(
+						order, list ) ) );
 		}
 	}
 
 	static abstract class OrderingListIndex
 			implements ListIndex {
 
-		private final Ord<Object> ord;
+		private final Ord<Object> order;
 
-		OrderingListIndex( Ord<Object> ord ) {
+		OrderingListIndex( Ord<Object> order ) {
 			super();
-			this.ord = ord;
+			this.order = order;
 		}
 
 		@Override
@@ -247,20 +249,20 @@ public class IndexFor {
 			int length = list.length();
 			for ( int i = 1; i < length; i++ ) {
 				E e = list.at( i );
-				if ( improving( ord.ord( best, e ) ) ) {
+				if ( improving( order.ord( best, e ) ) ) {
 					best = e;
 					bestIndex = i;
 				}
 			}
 			if ( bestIndex == 0 ) { // does best just "win" because we started with it ?
-				if ( Null.isSave( ord ) ) {
-					if ( ord.ord( null, best ) == ord.ord( best, null ) ) {
+				if ( Null.isSave( order ) ) {
+					if ( order.ord( null, best ) == order.ord( best, null ) ) {
 						return NOT_CONTAINED;
 					}
 				} else if ( list.length() > 1 ) {
 					E other = list.at( 1 );
-					Ordering order = ord.ord( best, other );
-					if ( !order.isEq() && order == ord.ord( other, best ) ) {
+					Ordering ordering = order.ord( best, other );
+					if ( !ordering.isEq() && ordering == order.ord( other, best ) ) {
 						return NOT_CONTAINED;
 					}
 				}
@@ -294,8 +296,8 @@ public class IndexFor {
 	static final class MinimumElementListIndex
 			extends OrderingListIndex {
 
-		MinimumElementListIndex( Ord<Object> ord ) {
-			super( ord );
+		MinimumElementListIndex( Ord<Object> order ) {
+			super( order );
 		}
 
 		@Override

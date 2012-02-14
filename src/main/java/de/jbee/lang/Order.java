@@ -212,6 +212,12 @@ public final class Order {
 		return obj instanceof Ordered && ( (Ordered) obj ).order() == order;
 	}
 
+	public static Ord<Object> effective( Ord<Object> aim, Object obj ) {
+		return aim == Order.inherent && obj instanceof Ordered
+			? ( (Ordered) obj ).order()
+			: aim;
+	}
+
 	private static final class ElementOrder<V>
 			implements Ord<Element<V>> {
 

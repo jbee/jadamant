@@ -11,8 +11,8 @@ import de.jbee.lang.TestOrder;
 import de.jbee.lang.seq.TestsSequences;
 
 @RunWith ( Suite.class )
-@SuiteClasses ( { TestsSequences.class, TestData.class, TestArray.class, TestOrder.class,
-		TestLang.class } )
+@SuiteClasses ( { TestsSequences.class, TestData.class, TestOrder.class, TestLang.class,
+		TestArray.class } )
 public class TestsJadamant {
 	// all tests for the the project
 }
