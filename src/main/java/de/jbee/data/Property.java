@@ -1,11 +1,11 @@
 package de.jbee.data;
 
 import static de.jbee.lang.seq.IndexFor.exists;
+import static de.jbee.lang.seq.IndexFor.insertionIndex;
 import de.jbee.data.Data.DataTable;
 import de.jbee.data.DataProperty.NotionalProperty;
 import de.jbee.data.DataProperty.ObjectProperty;
 import de.jbee.data.DataProperty.ValueProperty;
-import de.jbee.lang.List;
 import de.jbee.lang.Map;
 import de.jbee.lang.Table;
 import de.jbee.lang.Map.Key;
@@ -46,8 +46,7 @@ public class Property {
 			if ( exists( objectTypeIndex ) && values.at( objectTypeIndex ) == type ) { //FIXME type can be a supertype of the actual available obj.
 				Key key = Sequences.key( path.toString() + Path.SEPARATOR + ""
 						+ Map.Key.PREFIX_TERMINATOR );
-				int objectEndIndex = List.indexFor.insertBy( Sequences.entry( key, type ),
-						values.order() ).in( values );
+				int objectEndIndex = insertionIndex( values.indexFor( key ) );
 				if ( objectEndIndex - objectTypeIndex > 1 ) {
 					return (Data<T>) values.slice( path, objectTypeIndex, objectEndIndex );
 				}

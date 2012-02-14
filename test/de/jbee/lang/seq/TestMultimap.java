@@ -22,6 +22,7 @@ public class TestMultimap {
 
 	private static final Key A = key( "a" );
 	private static final Key B = key( "b" );
+	private static final Key C = key( "c" );
 	private static final Key ZERO = key( "zero" );
 	private static final Key ONE = key( "one" );
 	private static final Key TWO = key( "two" );
@@ -152,12 +153,21 @@ public class TestMultimap {
 		assertThat( m.indexFor( A ), is( 0 ) );
 	}
 
+	@Test
+	public void testIndexFor_InsertPosition() {
+		Multimap<Integer> m = emptyMap();
+		m = m.insert( A, 5 );
+		m = m.insert( C, 8 );
+		m = m.insert( A, 7 );
+		assertThat( m.indexFor( entry( B, 6 ) ), is( -3 ) );
+	}
+
 	private Multimap<Integer> emptyMap() {
 		return emptyMap( Order.typeaware( Order.numerical, Integer.class ) );
 	}
 
 	private Multimap<Integer> emptyMap( Ord<Object> valueOrder ) {
-		return OrderedList.multimapOf( List.with.<Map.Entry<Integer>> noElements(), Map.ENTRY_ORDER,
-				valueOrder );
+		return OrderedList.multimapOf( List.with.<Map.Entry<Integer>> noElements(),
+				Map.ENTRY_ORDER, valueOrder );
 	}
 }

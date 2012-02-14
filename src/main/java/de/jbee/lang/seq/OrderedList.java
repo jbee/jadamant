@@ -1,6 +1,7 @@
 package de.jbee.lang.seq;
 
 import static de.jbee.lang.seq.ElementList.elements;
+import static de.jbee.lang.seq.IndexFor.insertionIndex;
 import static de.jbee.lang.seq.Sequences.entry;
 import de.jbee.lang.Bag;
 import de.jbee.lang.Element;
@@ -194,7 +195,7 @@ abstract class OrderedList<E, L extends Ordered & List<E>>
 	}
 
 	int insertionIndexFor( E e ) {
-		return List.indexFor.insertBy( e, entryOrder() ).in( elems );
+		return insertionIndex( indexFor( e ) );
 	}
 
 	Ord<Object> entryOrder() {

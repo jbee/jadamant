@@ -166,11 +166,11 @@ public class IndexFor {
 	}
 
 	public ListIndex insert( Object e ) {
-		return new InsertListIndex( e, Order.inherent );
+		return insertBy( e, Order.inherent );
 	}
 
 	public ListIndex insertBy( Object e, Ord<Object> ord ) {
-		return new InsertListIndex( e, ord );
+		return new InsertionListIndex( e, ord );
 	}
 
 	public ListIndex minimum() {
@@ -207,13 +207,13 @@ public class IndexFor {
 		}
 	}
 
-	static final class InsertListIndex
+	static final class InsertionListIndex
 			implements ListIndex {
 
 		private final Object key;
 		private final Ord<Object> ord;
 
-		InsertListIndex( Object key, Ord<Object> ord ) {
+		InsertionListIndex( Object key, Ord<Object> ord ) {
 			super();
 			this.key = key;
 			this.ord = ord;
@@ -221,13 +221,9 @@ public class IndexFor {
 
 		@Override
 		public <E> int in( Sequence<E> list ) {
-			if ( list.isEmpty() ) {
-				return 0;
-			}
-			int pos = Order.binarySearch( list, 0, list.length(), key, ord );
-			return pos < 0
-				? -pos - 1
-				: pos;
+			return list.isEmpty()
+				? 0
+				: insertionIndex( Order.binarySearch( list, 0, list.length(), key, ord ) );
 		}
 	}
 

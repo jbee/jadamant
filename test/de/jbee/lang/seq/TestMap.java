@@ -1,8 +1,8 @@
 package de.jbee.lang.seq;
 
 import static de.jbee.lang.ListIndex.NOT_CONTAINED;
+import static de.jbee.lang.seq.IndexFor.insertionIndex;
 import static de.jbee.lang.seq.ListMatcher.hasEqualElementsAsIn;
-import static de.jbee.lang.seq.Sequences.entry;
 import static de.jbee.lang.seq.Sequences.key;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -90,15 +90,10 @@ public class TestMap {
 		m = m.insert( aa, 1 );
 		m = m.insert( az, 3 );
 		m = m.insert( ba, 2 );
-		int endExclusive = insertionIndexForPrefix( "a", m );
+		int endExclusive = insertionIndex( m.indexFor( key( "a" + Map.Key.PREFIX_TERMINATOR ) ) );
 		assertThat( endExclusive, is( 3 ) );
-		endExclusive = insertionIndexForPrefix( "aa", m );
+		endExclusive = insertionIndex( m.indexFor( key( "aa" + Map.Key.PREFIX_TERMINATOR ) ) );
 		assertThat( endExclusive, is( 2 ) );
-	}
-
-	private int insertionIndexForPrefix( String prefix, Map<Integer> m ) {
-		return List.indexFor.insertBy( entry( key( prefix + Map.Key.PREFIX_TERMINATOR ), 0 ),
-				m.order() ).in( m );
 	}
 
 	private Map<Integer> emptyMap() {
