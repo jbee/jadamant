@@ -201,6 +201,10 @@ public class AlterBy
 	}
 
 	public AlterBy sublist( int start, int length ) {
+		return sublist( List.indexFor.elemAt( start ), length );
+	}
+
+	public AlterBy sublist( ListIndex start, int length ) {
 		return append( new SublistAlteration( start, length ) );
 	}
 
@@ -735,10 +739,10 @@ public class AlterBy
 	private static final class SublistAlteration
 			implements ListAlteration {
 
-		private final int start;
+		private final ListIndex start;
 		private final int length;
 
-		SublistAlteration( int start, int length ) {
+		SublistAlteration( ListIndex start, int length ) {
 			super();
 			this.start = start;
 			this.length = length;
@@ -746,20 +750,24 @@ public class AlterBy
 
 		@Override
 		public <E> List<E> from( List<E> list ) {
-			if ( start == 0 ) {
+			final int s = start.in( list );
+			if ( !exists( s ) ) { //OPEN all or nothing ? nothing seams more convenient
+				return alterBy.empty.from( list );
+			}
+			if ( s == 0 ) {
 				return list.take( length );
 			}
 			int size = list.length();
-			if ( start >= size ) {
+			if ( s >= size ) {
 				return alterBy.empty.from( list );
 			}
-			if ( start + length > size ) {
-				return list.drop( start );
+			if ( s + length > size ) {
+				return list.drop( s );
 			}
 			if ( length == 1 ) {
-				return list.take( 1 ).replaceAt( 0, list.at( start ) );
+				return list.take( 1 ).replaceAt( 0, list.at( s ) );
 			}
-			return list.drop( start ).take( length );
+			return list.drop( s ).take( length );
 		}
 
 	}
