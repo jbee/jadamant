@@ -46,7 +46,7 @@ public interface List<E>
 	UtileLister with = Lang.list;
 	IndexFor indexFor = new IndexFor();
 	RangeTo rangeTo = Lang.enumerator;
-	AlterBy alterBy = AlterBy.instance;
+	AlterBy alterBy = AlterBy.alterBy;
 	ModifyBy modifyBy = new ModifyBy();
 	Iterate iterate = Iterate.instance;
 	Traverse traverse = Traverse.instance;

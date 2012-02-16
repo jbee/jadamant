@@ -19,15 +19,17 @@ import de.jbee.lang.Traversal;
 public class AlterBy
 		implements ListAlteration {
 
-	public static final ListAlteration none = new NoAlteration();
-	public static final ListAlteration empty = new EmptyingAlteration();
-	public static final ListAlteration reverse = new ReversingAlteration();
-	public static final ListAlteration shuffle = new ShuffleAlteration();
-	public static final ListAlteration tidyUp = new TidyUpAlteration();
-	public static final ListAlteration init = new TakeTillIndexAlteration( List.indexFor.last(), 0 );
-	public static final ListAlteration tail = new DropTillIndexAlteration( List.indexFor.head(), 1 );
+	private static final ListAlteration no = new NoAlteration();
 
-	public static final AlterBy instance = new AlterBy( none );
+	public static final AlterBy alterBy = new AlterBy( no );
+
+	public final ListAlteration none = new NoAlteration();
+	public final ListAlteration empty = new EmptyingAlteration();
+	public final ListAlteration reverse = new ReversingAlteration();
+	public final ListAlteration shuffle = new ShuffleAlteration();
+	public final ListAlteration tidyUp = new TidyUpAlteration();
+	public final ListAlteration init = new TakeTillIndexAlteration( List.indexFor.last(), 0 );
+	public final ListAlteration tail = new DropTillIndexAlteration( List.indexFor.head(), 1 );
 
 	//TODO find better naming - this is not clear enough
 	private static ListIndex lastUpTo( int count ) {
@@ -56,7 +58,7 @@ public class AlterBy
 
 	public BagAlteration chain( ListAlteration fst, BagAlteration snd ) {
 		fst = pure( fst );
-		if ( fst == none ) {
+		if ( fst == no ) {
 			return snd;
 		}
 		return new ConsecutiveBagAlteration( fst, snd );
@@ -65,10 +67,10 @@ public class AlterBy
 	public ListAlteration chain( ListAlteration fst, ListAlteration snd ) {
 		fst = pure( fst );
 		snd = pure( snd );
-		if ( fst == none ) {
+		if ( fst == no ) {
 			return snd;
 		}
-		if ( snd == none ) {
+		if ( snd == no ) {
 			return fst;
 		}
 		return new ConsecutiveAlteration( fst, snd );
@@ -76,7 +78,7 @@ public class AlterBy
 
 	public SetAlteration chain( ListAlteration fst, SetAlteration snd ) {
 		fst = pure( fst );
-		if ( fst == none ) {
+		if ( fst == no ) {
 			return snd;
 		}
 		return new ConsecutiveSetAlteration( fst, snd );
@@ -146,8 +148,8 @@ public class AlterBy
 	}
 
 	@Override
-	public <E> List<E> in( List<E> list ) {
-		return alteration.in( list );
+	public <E> List<E> from( List<E> list ) {
+		return alteration.from( list );
 	}
 
 	public AlterBy nub() {
@@ -192,6 +194,10 @@ public class AlterBy
 
 	public BagAlteration sortBy( Ord<Object> order ) {
 		return append( new SortingAlteration( order ) );
+	}
+
+	public AlterBy sublist( int start ) {
+		return drop( start );
 	}
 
 	public AlterBy sublist( int start, int length ) {
@@ -254,7 +260,7 @@ public class AlterBy
 	}
 
 	private AlterBy append( ListAlteration next ) {
-		if ( next == none ) {
+		if ( next == no ) {
 			return this;
 		}
 		if ( next == empty ) {
@@ -277,7 +283,7 @@ public class AlterBy
 		}
 
 		@Override
-		public <E> List<E> in( List<E> list ) {
+		public <E> List<E> from( List<E> list ) {
 			return list.take( 0 ); // get a empty one
 		}
 	}
@@ -304,7 +310,7 @@ public class AlterBy
 		}
 
 		@Override
-		public <E> List<E> in( List<E> list ) {
+		public <E> List<E> from( List<E> list ) {
 			return list;
 		}
 	}
@@ -317,13 +323,13 @@ public class AlterBy
 		}
 
 		@Override
-		public <E> List<E> in( List<E> list ) {
+		public <E> List<E> from( List<E> list ) {
 			int size = list.length();
 			if ( size < 2 ) {
 				return list;
 			}
 			if ( size == 2 ) {
-				return List.alterBy.swap( 0, 1 ).in( list );
+				return List.alterBy.swap( 0, 1 ).from( list );
 			}
 			return arrangedStackList( list );
 		}
@@ -351,7 +357,7 @@ public class AlterBy
 		}
 
 		@Override
-		public <E> Bag<E> in( List<E> list ) {
+		public <E> Bag<E> from( List<E> list ) {
 			int size = list.length();
 			return size < 2
 				? OrderedList.bagOf( list, order )
@@ -377,7 +383,7 @@ public class AlterBy
 		}
 
 		@Override
-		public <E> List<E> in( List<E> list ) {
+		public <E> List<E> from( List<E> list ) {
 			final int idx1 = index1.in( list );
 			final int idx2 = index2.in( list );
 			if ( idx1 == idx2 ) {
@@ -404,7 +410,7 @@ public class AlterBy
 		}
 
 		@Override
-		public <E> List<E> in( List<E> list ) {
+		public <E> List<E> from( List<E> list ) {
 			return list.tidyUp();
 		}
 
@@ -423,8 +429,8 @@ public class AlterBy
 		}
 
 		@Override
-		public <E> List<E> in( List<E> list ) {
-			return one.in( list ).concat( other.in( list ) );
+		public <E> List<E> from( List<E> list ) {
+			return one.from( list ).concat( other.from( list ) );
 		}
 
 	}
@@ -442,8 +448,8 @@ public class AlterBy
 		}
 
 		@Override
-		public <E> Bag<E> in( List<E> list ) {
-			return snd.in( fst.in( list ) );
+		public <E> Bag<E> from( List<E> list ) {
+			return snd.from( fst.from( list ) );
 		}
 	}
 
@@ -460,8 +466,8 @@ public class AlterBy
 		}
 
 		@Override
-		public <E> Set<E> in( List<E> list ) {
-			return snd.in( fst.in( list ) );
+		public <E> Set<E> from( List<E> list ) {
+			return snd.from( fst.from( list ) );
 		}
 	}
 
@@ -478,8 +484,8 @@ public class AlterBy
 		}
 
 		@Override
-		public <E> List<E> in( List<E> list ) {
-			return snd.in( fst.in( list ) );
+		public <E> List<E> from( List<E> list ) {
+			return snd.from( fst.from( list ) );
 		}
 	}
 
@@ -494,7 +500,7 @@ public class AlterBy
 		}
 
 		@Override
-		public <E> List<E> in( List<E> list ) {
+		public <E> List<E> from( List<E> list ) {
 			final int i = index.in( list );
 			return exists( i )
 				? list.deleteAt( i )
@@ -515,7 +521,7 @@ public class AlterBy
 		}
 
 		@Override
-		public <E> List<E> in( List<E> list ) {
+		public <E> List<E> from( List<E> list ) {
 			return list.drop( index.in( list ) + offset );
 		}
 
@@ -532,11 +538,11 @@ public class AlterBy
 		}
 
 		@Override
-		public <E> List<E> in( List<E> list ) {
+		public <E> List<E> from( List<E> list ) {
 			final int index = List.indexFor.firstFalse( predicate ).in( list );
 			return exists( index )
 				? list.drop( index )
-				: empty.in( list );
+				: alterBy.empty.from( list );
 		}
 	}
 
@@ -551,7 +557,7 @@ public class AlterBy
 		}
 
 		@Override
-		public <E> List<E> in( List<E> list ) {
+		public <E> List<E> from( List<E> list ) {
 			if ( list.isEmpty() ) {
 				return list;
 			}
@@ -717,7 +723,7 @@ public class AlterBy
 		}
 
 		@Override
-		public <E> List<E> in( List<E> list ) {
+		public <E> List<E> from( List<E> list ) {
 			if ( list instanceof ReversingList<?> ) {
 				return ( (ReversingList<E>) list ).list;
 			}
@@ -739,13 +745,13 @@ public class AlterBy
 		}
 
 		@Override
-		public <E> List<E> in( List<E> list ) {
+		public <E> List<E> from( List<E> list ) {
 			if ( start == 0 ) {
 				return list.take( length );
 			}
 			int size = list.length();
 			if ( start >= size ) {
-				return empty.in( list );
+				return alterBy.empty.from( list );
 			}
 			if ( start + length > size ) {
 				return list.drop( start );
@@ -771,7 +777,7 @@ public class AlterBy
 		}
 
 		@Override
-		public <E> List<E> in( List<E> list ) {
+		public <E> List<E> from( List<E> list ) {
 			return list.take( index.in( list ) + offset );
 		}
 
@@ -788,7 +794,7 @@ public class AlterBy
 		}
 
 		@Override
-		public <E> List<E> in( List<E> list ) {
+		public <E> List<E> from( List<E> list ) {
 			final int index = List.indexFor.firstFalse( predicate ).in( list );
 			return exists( index )
 				? list.take( index )
@@ -808,7 +814,7 @@ public class AlterBy
 		}
 
 		@Override
-		public <E> Bag<E> in( List<E> list ) {
+		public <E> Bag<E> from( List<E> list ) {
 			return Bag.with.elements( order, list );
 		}
 
@@ -825,7 +831,7 @@ public class AlterBy
 		}
 
 		@Override
-		public <E> Set<E> in( List<E> list ) {
+		public <E> Set<E> from( List<E> list ) {
 			return Set.with.elements( order, list );
 		}
 

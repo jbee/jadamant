@@ -12,7 +12,7 @@ package de.jbee.lang;
  */
 public interface ListAlteration {
 
-	<E> List<E> in( List<E> list );
+	<E> List<E> from( List<E> list );
 
 	/**
 	 * Any {@link ListAlteration} results in a {@link Bag} may expose itself as a
@@ -25,7 +25,7 @@ public interface ListAlteration {
 			extends ListAlteration {
 
 		@Override
-		<E> Bag<E> in( List<E> list );
+		<E> Bag<E> from( List<E> list );
 	}
 
 	/**
@@ -39,7 +39,7 @@ public interface ListAlteration {
 			extends BagAlteration {
 
 		@Override
-		<E> Set<E> in( List<E> list );
+		<E> Set<E> from( List<E> list );
 	}
 
 }

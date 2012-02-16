@@ -53,6 +53,6 @@ class UtileBagLister
 				return elems;
 			}
 		}
-		return List.alterBy.sortBy( order ).in( elems );
+		return List.alterBy.sortBy( order ).from( elems );
 	}
 }

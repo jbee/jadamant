@@ -60,14 +60,14 @@ public class UtileSetLister
 			}
 			if ( elems instanceof Bag<?> ) {
 				if ( inheritOrder || order == seqOrder ) {
-					return List.alterBy.nubBy( order ).in( elems );
+					return List.alterBy.nubBy( order ).from( elems );
 				}
 			}
 			if ( inheritOrder ) {
 				order = seqOrder;
 			}
 		}
-		return List.alterBy.nubBy( order ).in( List.alterBy.sortBy( order ).in( elems ) );
+		return List.alterBy.nubBy( order ).from( List.alterBy.sortBy( order ).from( elems ) );
 	}
 
 }
