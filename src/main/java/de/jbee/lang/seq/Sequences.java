@@ -199,6 +199,10 @@ public final class Sequences {
 		return new Sequences.Key( key.toString() );
 	}
 
+	public static <V> Map.Key keyStartsWith( CharSequence key ) {
+		return new Sequences.Key( key.toString() + Map.Key.PREFIX_TERMINATOR );
+	}
+
 	private static final class Key
 			implements Map.Key {
 
