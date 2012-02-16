@@ -23,6 +23,10 @@ public class TestMultimap {
 	private static final Key A = key( "a" );
 	private static final Key B = key( "b" );
 	private static final Key C = key( "c" );
+	private static final Key D = key( "d" );
+	private static final Key E = key( "e" );
+	private static final Key F = key( "f" );
+	private static final Key G = key( "g" );
 	private static final Key ZERO = key( "zero" );
 	private static final Key ONE = key( "one" );
 	private static final Key TWO = key( "two" );
@@ -160,6 +164,24 @@ public class TestMultimap {
 		m = m.insert( C, 8 );
 		m = m.insert( A, 7 );
 		assertThat( m.indexFor( entry( B, 6 ) ), is( -3 ) );
+	}
+
+	@Test
+	public void testIndexForStartEnd_CornerCases() {
+		Multimap<Integer> m = emptyMap();
+		m = m.insert( A, 0 );
+		m = m.insert( B, 1 );
+		m = m.insert( C, 2 );
+		m = m.insert( C, 22 );
+		m = m.insert( D, 3 );
+		m = m.insert( E, 4 );
+		m = m.insert( F, 5 );
+		assertThat( m.indexFor( D, 0, 4 ), is( -5 ) );
+		assertThat( m.indexFor( D, 0, 5 ), is( 4 ) );
+		assertThat( m.indexFor( D, 4, 5 ), is( 4 ) );
+		assertThat( m.indexFor( D, 5, 10 ), is( -6 ) );
+		assertThat( m.indexFor( D, 0, 8 ), is( 4 ) );
+		assertThat( m.indexFor( D, -1, 8 ), is( 4 ) );
 	}
 
 	private Multimap<Integer> emptyMap() {

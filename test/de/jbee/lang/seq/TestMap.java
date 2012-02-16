@@ -80,7 +80,7 @@ public class TestMap {
 	}
 
 	@Test
-	public void testIndexForStartEnd_() {
+	public void testIndexForStartEnd_CornerCases() {
 		Map<Integer> m = emptyMap();
 		m = m.insert( A, 0 );
 		m = m.insert( B, 1 );
