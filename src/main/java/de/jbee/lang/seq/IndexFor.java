@@ -26,25 +26,23 @@ public class IndexFor {
 			: -index - 1;
 	}
 
-	static final ListIndex NONE = new NotContainedListIndex();
-	static final ListIndex FIRST = new OnPositionListIndex( 0 );
-	static final ListIndex LAST = new OnPositionListIndex( -1 );
-	static final ListIndex HEAD = FIRST;
+	public final ListIndex nothing = new NotContainedListIndex();
+	public final ListIndex first = new OnPositionListIndex( 0 );
+	public final ListIndex last = new OnPositionListIndex( -1 );
+	public final ListIndex head = first;
+
+	public static final IndexFor indexFor = new IndexFor();
+
+	private IndexFor() {
+		// hide
+	}
 
 	public ListIndex lastUpTo( int count ) {
 		return count <= 0
-			? NONE
+			? nothing
 			: count == 1
-				? FIRST
-				: new MaximumLimitListIndex( LAST, count - 1 );
-	}
-
-	public ListIndex last() {
-		return LAST;
-	}
-
-	public ListIndex head() {
-		return HEAD;
+				? first
+				: new MaximumLimitListIndex( last, count - 1 );
 	}
 
 	public ListIndex nextTo( int index ) {
@@ -74,9 +72,9 @@ public class IndexFor {
 	 */
 	public ListIndex elemAt( int index ) {
 		return index < 0
-			? NONE
+			? nothing
 			: index == 0
-				? HEAD
+				? head
 				: new OnPositionListIndex( index );
 	}
 
@@ -88,9 +86,9 @@ public class IndexFor {
 	 */
 	public ListIndex elemOn( int pos ) {
 		return pos == -1
-			? LAST
+			? last
 			: pos == 0
-				? HEAD
+				? head
 				: new OnPositionListIndex( pos );
 	}
 
@@ -134,7 +132,7 @@ public class IndexFor {
 
 	public ListIndex nthElemBy( int n, Predicate<Object> predicate ) {
 		return n == 0
-			? NONE
+			? nothing
 			: new NthFulfilledListIndex( n, predicate, 1 );
 	}
 

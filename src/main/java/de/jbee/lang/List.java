@@ -44,7 +44,7 @@ public interface List<E>
 
 	//TODO proxy from sequences
 	UtileLister with = Lang.list;
-	IndexFor indexFor = new IndexFor();
+	IndexFor indexFor = IndexFor.indexFor;
 	RangeTo rangeTo = Lang.enumerator;
 	AlterBy alterBy = AlterBy.alterBy;
 	ModifyBy modifyBy = new ModifyBy();

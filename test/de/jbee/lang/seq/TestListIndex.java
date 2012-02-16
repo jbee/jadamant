@@ -61,10 +61,10 @@ public class TestListIndex {
 
 	@Test
 	public void testHeadListIndex() {
-		assertThat( List.indexFor.head().in( List.with.elements( 42, 3, 5 ) ), is( 0 ) );
-		assertThat( List.indexFor.head().in( List.with.elements( 42, 3 ) ), is( 0 ) );
-		assertThat( List.indexFor.head().in( List.with.elements( 42 ) ), is( 0 ) );
-		assertThat( List.indexFor.head().in( List.with.noElements() ), is( NOT_CONTAINED ) );
+		assertThat( List.indexFor.head.in( List.with.elements( 42, 3, 5 ) ), is( 0 ) );
+		assertThat( List.indexFor.head.in( List.with.elements( 42, 3 ) ), is( 0 ) );
+		assertThat( List.indexFor.head.in( List.with.elements( 42 ) ), is( 0 ) );
+		assertThat( List.indexFor.head.in( List.with.noElements() ), is( NOT_CONTAINED ) );
 	}
 
 	@Test
@@ -124,7 +124,7 @@ public class TestListIndex {
 	@Test
 	public void testNthAfterListIndex() {
 		List<Integer> l = List.with.elements( 2, 5, 1, 3, 8, 4 );
-		assertThat( List.indexFor.nthAfter( 1, List.indexFor.head() ).in( l ), is( 1 ) );
+		assertThat( List.indexFor.nthAfter( 1, List.indexFor.head ).in( l ), is( 1 ) );
 		assertThat( List.indexFor.nthAfter( 2, List.indexFor.minimum() ).in( l ), is( 4 ) );
 		assertThat( List.indexFor.nthAfter( 1, List.indexFor.maximum() ).in( l ), is( 5 ) );
 		assertThat( List.indexFor.nthAfter( 2, List.indexFor.maximum() ).in( l ),
@@ -134,7 +134,7 @@ public class TestListIndex {
 	@Test
 	public void testNthBeforeListIndex() {
 		List<Integer> l = List.with.elements( 2, 5, 1, 3, 8, 4 );
-		assertThat( List.indexFor.nthBefore( 1, List.indexFor.head() ).in( l ), is( NOT_CONTAINED ) );
+		assertThat( List.indexFor.nthBefore( 1, List.indexFor.head ).in( l ), is( NOT_CONTAINED ) );
 		assertThat( List.indexFor.nthBefore( 2, List.indexFor.minimum() ).in( l ), is( 0 ) );
 		assertThat( List.indexFor.nthBefore( 1, List.indexFor.maximum() ).in( l ), is( 3 ) );
 		assertThat( List.indexFor.nthBefore( 2, List.indexFor.maximum() ).in( l ), is( 2 ) );

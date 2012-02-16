@@ -28,8 +28,8 @@ public class AlterBy
 	public final ListAlteration reverse = new ReversingAlteration();
 	public final ListAlteration shuffle = new ShuffleAlteration();
 	public final ListAlteration tidyUp = new TidyUpAlteration();
-	public final ListAlteration init = new TakeTillIndexAlteration( List.indexFor.last(), 0 );
-	public final ListAlteration tail = new DropTillIndexAlteration( List.indexFor.head(), 1 );
+	public final ListAlteration init = new TakeTillIndexAlteration( List.indexFor.last, 0 );
+	public final ListAlteration tail = new DropTillIndexAlteration( List.indexFor.head, 1 );
 
 	//TODO find better naming - this is not clear enough
 	private static ListIndex lastUpTo( int count ) {
