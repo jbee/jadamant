@@ -1,7 +1,7 @@
 package de.jbee.lang.seq;
 
 import de.jbee.lang.Array;
-import de.jbee.lang.Lang;
+import de.jbee.lang.Calculate;
 import de.jbee.lang.List;
 import de.jbee.lang.Lister;
 import de.jbee.lang.Sequence;
@@ -81,7 +81,7 @@ public class UtileLister
 	}
 
 	public <E> List<E> replicate( int n, E e ) {
-		Object[] stack = new Object[Lang.nextHighestPowerOf2( n )];
+		Object[] stack = new Object[Calculate.nextHighestPowerOf2( n )];
 		Array.fill( stack, e, stack.length - n, n );
 		return EvolutionList.dominant( n, stack );
 	}

@@ -8,6 +8,7 @@ import de.jbee.lang.seq.IndexFor;
 import de.jbee.lang.seq.Iterate;
 import de.jbee.lang.seq.ModifyBy;
 import de.jbee.lang.seq.Range;
+import de.jbee.lang.seq.Sequences;
 import de.jbee.lang.seq.UtileLister;
 import de.jbee.lang.seq.Range.RangeTo;
 
@@ -43,17 +44,17 @@ public interface List<E>
 		ModifiableSequence<E>, Arrayable, Traversable<E>, RandomAccess, Serializable {
 
 	//TODO proxy from sequences
-	UtileLister with = Lang.list;
+	UtileLister with = Sequences.list;
 	IndexFor indexFor = IndexFor.indexFor;
-	RangeTo rangeTo = Lang.enumerator;
+	RangeTo rangeTo = Sequences.enumerator;
 	AlterBy alterBy = AlterBy.alterBy;
 	ModifyBy modifyBy = new ModifyBy();
 	Iterate iterate = Iterate.instance;
 	Traverse traverse = Traverse.instance;
 
-	Range<Integer> numbers = Lang.numbers;
-	Range<Character> letters = Lang.letters;
-	Range<Character> characters = Lang.characters;
+	Range<Integer> numbers = Sequences.numbers;
+	Range<Character> letters = Sequences.letters;
+	Range<Character> characters = Sequences.characters;
 
 	//OPEN instead of contains use consistsOf ?
 

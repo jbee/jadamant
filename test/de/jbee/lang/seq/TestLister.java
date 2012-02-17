@@ -3,6 +3,8 @@ package de.jbee.lang.seq;
 import static de.jbee.lang.Enumerate.INTEGERS;
 import static de.jbee.lang.Enumerate.numbers;
 import static de.jbee.lang.Enumerate.stepwise;
+import static de.jbee.lang.seq.ListMatcher.hasEqualElementsAsIn;
+import static de.jbee.lang.seq.Sequences.list;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -13,6 +15,16 @@ import de.jbee.lang.List;
 import de.jbee.lang.Sequence;
 
 public class TestLister {
+
+	@Test
+	public void testStaticListUpTo6Elements() {
+		assertThat( list( 12 ), hasEqualElementsAsIn( 12 ) );
+		assertThat( list( 11, 12 ), hasEqualElementsAsIn( 11, 12 ) );
+		assertThat( list( 22, 11, 12 ), hasEqualElementsAsIn( 22, 11, 12 ) );
+		assertThat( list( 11, 22, 11, 12 ), hasEqualElementsAsIn( 11, 22, 11, 12 ) );
+		assertThat( list( 19, 11, 22, 11, 12 ), hasEqualElementsAsIn( 19, 11, 22, 11, 12 ) );
+		assertThat( list( 11, 19, 11, 22, 11, 12 ), hasEqualElementsAsIn( 11, 19, 11, 22, 11, 12 ) );
+	}
 
 	static enum Weekday {
 		Monday,

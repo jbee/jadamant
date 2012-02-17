@@ -1,8 +1,8 @@
 package de.jbee.lang.seq;
 
-import static de.jbee.lang.Lang.noInts;
 import static de.jbee.lang.seq.ListMatcher.hasEqualElementsAsIn;
 import static de.jbee.lang.seq.ListMatcher.hasNoElements;
+import static de.jbee.lang.seq.Sequences.noInts;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.sameInstance;

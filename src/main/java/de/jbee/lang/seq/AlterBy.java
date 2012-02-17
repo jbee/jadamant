@@ -5,7 +5,7 @@ import de.jbee.lang.Array;
 import de.jbee.lang.Bag;
 import de.jbee.lang.Eq;
 import de.jbee.lang.Equal;
-import de.jbee.lang.Lang;
+import de.jbee.lang.Calculate;
 import de.jbee.lang.List;
 import de.jbee.lang.ListAlteration;
 import de.jbee.lang.ListIndex;
@@ -305,7 +305,7 @@ public class AlterBy
 
 		protected final <E> List<E> arrangedStackList( List<E> list ) {
 			int size = list.length();
-			Object[] elems = new Object[Lang.nextHighestPowerOf2( size )];
+			Object[] elems = new Object[Calculate.nextHighestPowerOf2( size )];
 			list.fill( elems.length - size, elems, 0, size );
 			rearrange( elems, elems.length - size );
 			return EvolutionList.dominant( list.length(), elems, list.take( 0 ) );
@@ -499,7 +499,7 @@ public class AlterBy
 
 		private <E> List<E> preOrderedNub( List<E> list ) {
 			final int l = list.length();
-			Object[] elements = new Object[Lang.nextHighestPowerOf2( l )];
+			Object[] elements = new Object[Calculate.nextHighestPowerOf2( l )];
 			int j = 0;
 			E previous = list.at( 0 );
 			elements[j++] = previous;
@@ -515,7 +515,7 @@ public class AlterBy
 
 		private <E> List<E> unorderedNub( List<E> list ) {
 			final int l = list.length();
-			Object[] elements = new Object[Lang.nextHighestPowerOf2( l )];
+			Object[] elements = new Object[Calculate.nextHighestPowerOf2( l )];
 			int j = 0;
 			for ( int i = 0; i < l; i++ ) {
 				E e = list.at( i );

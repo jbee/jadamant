@@ -1,11 +1,15 @@
 package de.jbee.lang.seq;
 
+import static de.jbee.lang.Enumerate.CHARACTERS;
+import static de.jbee.lang.Enumerate.DIGITS;
+import static de.jbee.lang.Enumerate.INTEGERS;
+import static de.jbee.lang.Enumerate.LETTERS;
 import de.jbee.lang.Arrayable;
 import de.jbee.lang.Enum;
 import de.jbee.lang.Enumerate;
 import de.jbee.lang.Enumerator;
 import de.jbee.lang.EnumeratorFactory;
-import de.jbee.lang.Lang;
+import de.jbee.lang.Calculate;
 import de.jbee.lang.List;
 import de.jbee.lang.Lister;
 import de.jbee.lang.Map;
@@ -24,11 +28,227 @@ import de.jbee.lang.seq.EvolutionList.DominantEvolutionList;
  */
 public final class Sequences {
 
-	public static final Lister LISTER = new DefaultLister();
+	static final Lister LISTER = new DefaultLister();
+	static final EnumeratorFactory ENUMERATOR_FACTORY = EnumList.ENUMERATOR_FACTORY;
+	static final EnumeratorFactory LISTER_ENUMERATOR_FACTORY = new ListerEnumeratorFactory();
+
+	//TODO should be private
 	public static final Lister.BagLister BAG_LISTER = new UtileBagLister();
 	public static final Lister.SetLister SET_LISTER = new UtileSetLister();
-	public static final EnumeratorFactory ENUMERATOR_FACTORY = EnumList.ENUMERATOR_FACTORY;
-	public static final EnumeratorFactory LISTER_ENUMERATOR_FACTORY = new ListerEnumeratorFactory();
+
+	private static final ProxyLister listProxy = new ProxyLister();
+	public static final UtileLister list = new UtileLister( listProxy );
+
+	private static final ProxyEnumeratorFactory enumeratorProxy = new ProxyEnumeratorFactory(
+			Sequences.ENUMERATOR_FACTORY );
+	public static final Range.RangeTo enumerator = Range.factory( enumeratorProxy );
+
+	private static final ProxyEnumerator<Integer> numbersProxy = proxy( INTEGERS );
+	private static final ProxyEnumerator<Integer> digitsProxy = proxy( DIGITS );
+	private static final ProxyEnumerator<Character> charactersProxy = proxy( CHARACTERS );
+	private static final ProxyEnumerator<Character> lettersProxy = proxy( LETTERS );
+
+	public static final Range<Integer> numbers = utile( numbersProxy, INTEGERS );
+	public static final Range<Integer> digits = utile( digitsProxy, DIGITS );
+	public static final Range<Character> characters = utile( charactersProxy, CHARACTERS );
+	public static final Range<Character> letters = utile( lettersProxy, LETTERS );
+
+	private static <T> ProxyEnumerator<T> proxy( Enum<T> type ) {
+		return new ProxyEnumerator<T>( enumerator.enumerate( type ) );
+	}
+
+	private static <T> Range<T> utile( Enumerator<T> e, Enum<T> type ) {
+		return new Range<T>( e, type );
+	}
+
+	/**
+	 * Change the list implementation used by changing the general list factory.
+	 */
+	static void setUp( Lister lister ) {
+		listProxy.factory = lister;
+	}
+
+	@SuppressWarnings ( "unchecked" )
+	static <T> void setUp( Class<T> type, Enumerator<T> enumerator ) {
+		if ( type == Integer.class ) {
+			setUpNumbers( (Enumerator<Integer>) enumerator );
+			setUpDigits( (Enumerator<Integer>) enumerator );
+		} else if ( type == Character.class ) {
+			setUpCharacters( (Enumerator<Character>) enumerator );
+			setUpLetters( (Enumerator<Character>) enumerator );
+		}
+	}
+
+	/**
+	 * Change the lister used for digit lists when created through the general {@link Enumerator}.
+	 */
+	public static void setUpDigits( Enumerator<Integer> digitEnumerator ) {
+		digitsProxy.proxied = digitEnumerator;
+	}
+
+	/**
+	 * Change the lister used for number lists when created through the general {@link Enumerator}.
+	 */
+	public static void setUpNumbers( Enumerator<Integer> numberEnumerator ) {
+		numbersProxy.proxied = numberEnumerator;
+	}
+
+	/**
+	 * Change the lister used for number lists when created through the general {@link Enumerator}.
+	 */
+	public static void setUpCharacters( Enumerator<Character> characterEnumerator ) {
+		charactersProxy.proxied = characterEnumerator;
+	}
+
+	/**
+	 * Change the lister used for number lists when created through the general {@link Enumerator}.
+	 */
+	public static void setUpLetters( Enumerator<Character> letterEnumerator ) {
+		lettersProxy.proxied = letterEnumerator;
+	}
+
+	/**
+	 * Change the factory creating new listers for custom {@link Enum}s.
+	 */
+	public static void setUp( EnumeratorFactory factory ) {
+		enumeratorProxy.proxied = factory;
+	}
+
+	public static List<Integer> noInts() {
+		return list.noElements();
+	}
+
+	public static List<Character> noChars() {
+		return list.noElements();
+	}
+
+	public static List<Float> noFloats() {
+		return list.noElements();
+	}
+
+	public static List<Double> noDoubles() {
+		return list.noElements();
+	}
+
+	public static List<Long> noLongs() {
+		return list.noElements();
+	}
+
+	public static List<String> noStrings() {
+		return list.noElements();
+	}
+
+	public static List<Boolean> noBools() {
+		return list.noElements();
+	}
+
+	public static <E> List<E> list() {
+		return list.noElements();
+	}
+
+	public static <E> List<E> list( E e ) {
+		return list.element( e );
+	}
+
+	public static <E> List<E> list( E e1, E e2 ) {
+		return list.element( e2 ).prepand( e1 );
+	}
+
+	public static <E> List<E> list( E e1, E e2, E e3 ) {
+		return list.element( e3 ).prepand( e2 ).prepand( e1 );
+	}
+
+	public static <E> List<E> list( E e1, E e2, E e3, E e4 ) {
+		return list.element( e4 ).prepand( e3 ).prepand( e2 ).prepand( e1 );
+	}
+
+	public static <E> List<E> list( E e1, E e2, E e3, E e4, E e5 ) {
+		return list.element( e5 ).prepand( e4 ).prepand( e3 ).prepand( e2 ).prepand( e1 );
+	}
+
+	public static <E> List<E> list( E e1, E e2, E e3, E e4, E e5, E e6 ) {
+		return list.element( e6 ).prepand( e5 ).prepand( e4 ).prepand( e3 ).prepand( e2 ).prepand(
+				e1 );
+	}
+
+	public static <E> List<E> list( E e1, E e2, E e3, E e4, E e5, E e6, E e7 ) {
+		return list.element( e7 ).prepand( e6 ).prepand( e5 ).prepand( e4 ).prepand( e3 ).prepand(
+				e2 ).prepand( e1 );
+	}
+
+	public static <E> List<E> list( E e1, E e2, E e3, E e4, E e5, E e6, E e7, E e8 ) {
+		return list.element( e8 ).prepand( e7 ).prepand( e6 ).prepand( e5 ).prepand( e4 ).prepand(
+				e3 ).prepand( e2 ).prepand( e1 );
+	}
+
+	public static <E> List<E> list( E e1, E e2, E e3, E e4, E e5, E e6, E e7, E e8, E e9 ) {
+		return list.element( e9 ).prepand( e8 ).prepand( e7 ).prepand( e6 ).prepand( e5 ).prepand(
+				e4 ).prepand( e3 ).prepand( e2 ).prepand( e1 );
+	}
+
+	static final class ProxyEnumeratorFactory
+			implements EnumeratorFactory {
+
+		EnumeratorFactory proxied;
+
+		ProxyEnumeratorFactory( EnumeratorFactory proxied ) {
+			super();
+			this.proxied = proxied;
+		}
+
+		@Override
+		public <E> Enumerator<E> enumerate( Enum<E> type ) {
+			return proxied.enumerate( type );
+		}
+	}
+
+	static final class ProxyEnumerator<E>
+			implements Enumerator<E> {
+
+		Enumerator<E> proxied;
+
+		ProxyEnumerator( Enumerator<E> proxied ) {
+			super();
+			this.proxied = proxied;
+		}
+
+		@Override
+		public List<E> stepwiseFromTo( E first, E last, int increment ) {
+			return proxied.stepwiseFromTo( first, last, increment );
+		}
+
+	}
+
+	static final class ProxyLister
+			implements Lister {
+
+		Lister factory = Sequences.LISTER;
+
+		ProxyLister() {
+			// hide for singleton
+		}
+
+		@Override
+		public <E> List<E> element( E e ) {
+			return factory.element( e );
+		}
+
+		@Override
+		public <E> List<E> elements( E... elems ) {
+			return factory.elements( elems );
+		}
+
+		@Override
+		public <E> List<E> elements( Sequence<E> elems ) {
+			return factory.elements( elems );
+		}
+
+		@Override
+		public <E> List<E> noElements() {
+			return factory.noElements();
+		}
+
+	}
 
 	/**
 	 * A {@link Lister} uses the default implementations {@link EmptyList}, {@link ElementaryList},
@@ -65,7 +285,7 @@ public final class Sequences {
 			if ( elems.getClass() == Object[].class && ( elems.length % 2 ) == 0 ) {
 				return EvolutionList.dominant( elems.length, elems );
 			}
-			Object[] stack = new Object[Lang.nextHighestPowerOf2( size )];
+			Object[] stack = new Object[Calculate.nextHighestPowerOf2( size )];
 			System.arraycopy( elems, 0, stack, stack.length - size, size );
 			return EvolutionList.dominant( size, stack );
 		}
@@ -79,7 +299,7 @@ public final class Sequences {
 			if ( size == 1 ) {
 				return element( elems.at( 0 ) );
 			}
-			Object[] stack = new Object[Lang.nextHighestPowerOf2( size )];
+			Object[] stack = new Object[Calculate.nextHighestPowerOf2( size )];
 			if ( elems instanceof Arrayable ) {
 				( (Arrayable) elems ).fill( stack.length - size, stack, 0, size );
 			} else {
