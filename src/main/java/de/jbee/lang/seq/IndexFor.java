@@ -37,12 +37,12 @@ public class IndexFor {
 		// hide
 	}
 
-	public ListIndex lastUpTo( int count ) {
+	public ListIndex highestLimitedTo( int count ) {
 		return count <= 0
 			? nothing
 			: count == 1
 				? first
-				: new MaximumLimitListIndex( last, count - 1 );
+				: new LimitedHighestListIndex( last, count - 1 );
 	}
 
 	public ListIndex nextTo( int index ) {
@@ -272,13 +272,13 @@ public class IndexFor {
 		abstract <E> boolean improving( Ordering ordering );
 	}
 
-	static final class MaximumLimitListIndex
+	static final class LimitedHighestListIndex
 			implements ListIndex {
 
 		private final ListIndex index;
 		private final int maxIndex;
 
-		MaximumLimitListIndex( ListIndex index, int maxIndex ) {
+		LimitedHighestListIndex( ListIndex index, int maxIndex ) {
 			super();
 			this.index = index;
 			this.maxIndex = maxIndex;

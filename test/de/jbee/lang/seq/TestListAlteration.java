@@ -17,18 +17,21 @@ public class TestListAlteration {
 	@Test
 	public void testInit() {
 		List<Integer> l = List.with.elements( 7, 9 );
-		assertThat( List.alterBy.init.from( l ), hasEqualElementsAsIn( 7 ) );
+		assertThat( List.alterBy.init().from( l ), hasEqualElementsAsIn( 7 ) );
 	}
 
 	@Test
 	public void testTail() {
-		assertThat( List.alterBy.tail.from( List.with.<Integer> noElements() ),
+		assertThat( List.alterBy.tail().from( List.with.<Integer> noElements() ),
 				hasNoElements( Integer.class ) );
-		assertThat( List.alterBy.tail.from( List.with.elements( 7 ) ),
+		assertThat( List.alterBy.tail().from( List.with.elements( 7 ) ),
 				hasNoElements( Integer.class ) );
-		assertThat( List.alterBy.tail.from( List.with.elements( 7, 9 ) ), hasEqualElementsAsIn( 9 ) );
-		assertThat( List.alterBy.tail.from( List.with.elements( 7, 9, 2 ) ), hasEqualElementsAsIn(
-				9, 2 ) );
+		assertThat( List.alterBy.tail().tail().from( List.with.elements( 7, 9 ) ),
+				hasNoElements( Integer.class ) );
+		assertThat( List.alterBy.tail().from( List.with.elements( 7, 9 ) ),
+				hasEqualElementsAsIn( 9 ) );
+		assertThat( List.alterBy.tail().from( List.with.elements( 7, 9, 2 ) ),
+				hasEqualElementsAsIn( 9, 2 ) );
 	}
 
 	@Test
@@ -106,7 +109,8 @@ public class TestListAlteration {
 	@Test
 	public void testShuffle() {
 		List<Integer> l = List.with.elements( 4, 5, 7, 3, 1, 8 );
-		assertThat( List.alterBy.shuffle.from( l ), not( hasEqualElementsAsIn( 4, 5, 7, 3, 1, 8 ) ) );
+		assertThat( List.alterBy.shuffle().from( l ),
+				not( hasEqualElementsAsIn( 4, 5, 7, 3, 1, 8 ) ) );
 	}
 
 	@Test

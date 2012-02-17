@@ -1,6 +1,7 @@
 package de.jbee.lang.seq;
 
 import static de.jbee.lang.ListIndex.NOT_CONTAINED;
+import static de.jbee.lang.seq.Sequences.key;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -164,12 +165,12 @@ public class TestListIndex {
 	public void testInsertBy_MapPreviousErrorCase1() {
 		Map<Object> m = Map.with.noEntries( Map.ENTRY_ORDER );
 		Class<Object> value = Object.class;
-		m = m.insert( Sequences.key( "deep..object" ), value );
-		m = m.insert( Sequences.key( "deep.percent" ), value );
-		m = m.insert( Sequences.key( "deep.flat.total" ), value );
-		m = m.insert( Sequences.key( "deep.flat.name" ), value );
-		m = m.insert( Sequences.key( "deep.flat..object" ), value );
-		Map.Key key = Sequences.key( "deep.flat." + Map.Key.PREFIX_TERMINATOR );
+		m = m.insert( key( "deep..object" ), value );
+		m = m.insert( key( "deep.percent" ), value );
+		m = m.insert( key( "deep.flat.total" ), value );
+		m = m.insert( key( "deep.flat.name" ), value );
+		m = m.insert( key( "deep.flat..object" ), value );
+		Map.Key key = key( "deep.flat." + Map.Key.PREFIX_TERMINATOR );
 		Entry<Class<Object>> entry = Sequences.entry( key, value );
 		assertThat( List.indexFor.insertBy( entry, m.order() ).in( m ), is( 4 ) );
 	}

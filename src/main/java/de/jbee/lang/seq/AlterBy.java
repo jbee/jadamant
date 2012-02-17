@@ -23,37 +23,26 @@ public class AlterBy
 
 	public static final AlterBy alterBy = new AlterBy( no );
 
-	public final ListAlteration none = new NoAlteration();
-	public final ListAlteration empty = new EmptyingAlteration();
-	public final ListAlteration reverse = new ReversingAlteration();
-	public final ListAlteration shuffle = new ShuffleAlteration();
-	public final ListAlteration tidyUp = new TidyUpAlteration();
-	public final ListAlteration init = new TakeTillIndexAlteration( List.indexFor.last, 0 );
-	public final ListAlteration tail = new DropTillIndexAlteration( List.indexFor.head, 1 );
-
-	//TODO find better naming - this is not clear enough
-	private static ListIndex lastUpTo( int count ) {
-		return List.indexFor.lastUpTo( count );
-	}
-
 	private static ListAlteration pure( ListAlteration t ) {
 		return t instanceof AlterBy
 			? ( (AlterBy) t ).alteration
 			: t;
 	}
 
+	static final ListAlteration empty = new EmptyingAlteration();
+	static final ListAlteration reverse = new ReversingAlteration();
+	static final ListAlteration shuffle = new ShuffleAlteration();
+	static final ListAlteration tidyUp = new TidyUpAlteration();
+	static final ListAlteration init = new TakeTillIndexAlteration( List.indexFor.last, 0 );
+	static final ListAlteration tail = new DropTillIndexAlteration( List.indexFor.head, 1 );
+
+	/**
+	 * the {@link ListAlteration} that is decorated by {@link AlterBy} to allow chaining.
+	 */
 	private final ListAlteration alteration;
 
 	private AlterBy( ListAlteration utilised ) {
 		this.alteration = utilised;
-	}
-
-	public AlterBy chop( int start, int end ) {
-		return cutOut( start, end );
-	}
-
-	public AlterBy concat( ListAlteration head, ListAlteration tail ) {
-		return append( new ConcatAlteration( head, tail ) );
 	}
 
 	public BagAlteration chain( ListAlteration fst, BagAlteration snd ) {
@@ -82,6 +71,14 @@ public class AlterBy
 			return snd;
 		}
 		return new ConsecutiveSetAlteration( fst, snd );
+	}
+
+	public AlterBy chop( int start, int end ) {
+		return cutOut( start, end );
+	}
+
+	public AlterBy concat( ListAlteration head, ListAlteration tail ) {
+		return append( new ConcatAlteration( head, tail ) );
 	}
 
 	public AlterBy cutOut( int start, int end ) {
@@ -113,7 +110,7 @@ public class AlterBy
 			? this
 			: count == 1
 				? append( tail )
-				: dropTill( lastUpTo( count ), 1 );
+				: dropTill( List.indexFor.highestLimitedTo( count ), 1 );
 	}
 
 	public AlterBy dropFrom( int index ) {
@@ -147,21 +144,33 @@ public class AlterBy
 		return append( new DropWhileAlteration( condition ) );
 	}
 
+	public AlterBy empty() {
+		return append( empty );
+	}
+
 	@Override
 	public <E> List<E> from( List<E> list ) {
 		return alteration.from( list );
+	}
+
+	public AlterBy init() {
+		return append( init );
+	}
+
+	public AlterBy none() {
+		return alterBy;
 	}
 
 	public AlterBy nub() {
 		return nubBy( Equal.equals );
 	}
 
-	public AlterBy nubBy( Ord<Object> order ) {
-		return append( new NubAlteration( order ) );
-	}
-
 	public AlterBy nubBy( Eq<Object> equality ) {
 		return nubBy( Order.by( equality ) );
+	}
+
+	public AlterBy nubBy( Ord<Object> order ) {
+		return append( new NubAlteration( order ) );
 	}
 
 	public ListAlteration pure() {
@@ -182,6 +191,14 @@ public class AlterBy
 
 	public SetAlteration refineToSetBy( Ord<Object> order ) {
 		return append( new ToSetAlteration( order ) );
+	}
+
+	public AlterBy reverse() {
+		return append( reverse );
+	}
+
+	public AlterBy shuffle() {
+		return append( shuffle );
 	}
 
 	public AlterBy slice( int startInclusive, int endExclusive ) {
@@ -214,10 +231,14 @@ public class AlterBy
 			: append( new SwapAlteration( List.indexFor.elemAt( idx1 ), List.indexFor.elemAt( idx2 ) ) );
 	}
 
+	public AlterBy tail() {
+		return append( tail );
+	}
+
 	public AlterBy take( int count ) {
 		return count <= 0
 			? append( empty )
-			: takeTill( lastUpTo( count ), 1 );
+			: takeTill( List.indexFor.highestLimitedTo( count ), 1 );
 	}
 
 	public AlterBy takeFrom( int index ) {
@@ -273,23 +294,10 @@ public class AlterBy
 		return new AlterBy( chain( alteration, next ) );
 	}
 
-	private SetAlteration append( SetAlteration snd ) {
-		return chain( alteration, snd );
-	}
-
 	//TODO filter(Predicate)
 
-	private static final class EmptyingAlteration
-			implements ListAlteration {
-
-		EmptyingAlteration() {
-			// make visible
-		}
-
-		@Override
-		public <E> List<E> from( List<E> list ) {
-			return list.take( 0 ); // get a empty one
-		}
+	private SetAlteration append( SetAlteration snd ) {
+		return chain( alteration, snd );
 	}
 
 	static abstract class FillAndArrangeAlteration
@@ -304,120 +312,6 @@ public class AlterBy
 		}
 
 		protected abstract <E> void rearrange( Object[] list, int start );
-	}
-
-	private static final class NoAlteration
-			implements ListAlteration {
-
-		NoAlteration() {
-			// make visible
-		}
-
-		@Override
-		public <E> List<E> from( List<E> list ) {
-			return list;
-		}
-	}
-
-	private static final class ShuffleAlteration
-			extends FillAndArrangeAlteration {
-
-		ShuffleAlteration() {
-			// make visible
-		}
-
-		@Override
-		public <E> List<E> from( List<E> list ) {
-			int size = list.length();
-			if ( size < 2 ) {
-				return list;
-			}
-			if ( size == 2 ) {
-				return List.alterBy.swap( 0, 1 ).from( list );
-			}
-			return arrangedStackList( list );
-		}
-
-		@Override
-		protected <E> void rearrange( Object[] list, int start ) {
-			Array.shuffle( list ); //FIXME consider start / end
-		}
-
-	}
-
-	/**
-	 * We cannot just create a {@link Bag} using the {@link Lister.BagLister} since the
-	 * implementation might use this alteration to ensure bag ordering constraint.
-	 */
-	private static final class SortingAlteration
-			extends FillAndArrangeAlteration
-			implements BagAlteration {
-
-		private final Ord<Object> order;
-
-		SortingAlteration( Ord<Object> order ) {
-			super();
-			this.order = order;
-		}
-
-		@Override
-		public <E> Bag<E> from( List<E> list ) {
-			int size = list.length();
-			return size < 2
-				? OrderedList.bagOf( list, order )
-				: OrderedList.bagOf( arrangedStackList( list ), order );
-		}
-
-		@Override
-		public <E> void rearrange( Object[] list, int start ) {
-			Order.sort( list, order ); //FIXME consider start
-		}
-	}
-
-	private static final class SwapAlteration
-			implements ListAlteration {
-
-		private final ListIndex index1;
-		private final ListIndex index2;
-
-		SwapAlteration( ListIndex idx1, ListIndex idx2 ) {
-			super();
-			this.index1 = idx1;
-			this.index2 = idx2;
-		}
-
-		@Override
-		public <E> List<E> from( List<E> list ) {
-			final int idx1 = index1.in( list );
-			final int idx2 = index2.in( list );
-			if ( idx1 == idx2 ) {
-				return list;
-			}
-			// swap indices so that idx1 is always smaller - that will change higher index first
-			return idx1 > idx2
-				? swap( idx2, idx1, list )
-				: swap( idx1, idx2, list );
-		}
-
-		private <E> List<E> swap( int idx1, int idx2, List<E> list ) {
-			final E e2 = list.at( idx2 );
-			List<E> replaceAt = list.replaceAt( idx2, list.at( idx1 ) );
-			return replaceAt.replaceAt( idx1, e2 );
-		}
-	}
-
-	private static final class TidyUpAlteration
-			implements ListAlteration {
-
-		TidyUpAlteration() {
-			// make visible
-		}
-
-		@Override
-		public <E> List<E> from( List<E> list ) {
-			return list.tidyUp();
-		}
-
 	}
 
 	private static final class ConcatAlteration
@@ -437,6 +331,24 @@ public class AlterBy
 			return one.from( list ).concat( other.from( list ) );
 		}
 
+	}
+
+	private static final class ConsecutiveAlteration
+			implements ListAlteration {
+
+		final ListAlteration fst;
+		final ListAlteration snd;
+
+		ConsecutiveAlteration( ListAlteration fst, ListAlteration snd ) {
+			super();
+			this.fst = fst;
+			this.snd = snd;
+		}
+
+		@Override
+		public <E> List<E> from( List<E> list ) {
+			return snd.from( fst.from( list ) );
+		}
 	}
 
 	private static final class ConsecutiveBagAlteration
@@ -471,24 +383,6 @@ public class AlterBy
 
 		@Override
 		public <E> Set<E> from( List<E> list ) {
-			return snd.from( fst.from( list ) );
-		}
-	}
-
-	private static final class ConsecutiveAlteration
-			implements ListAlteration {
-
-		final ListAlteration fst;
-		final ListAlteration snd;
-
-		ConsecutiveAlteration( ListAlteration fst, ListAlteration snd ) {
-			super();
-			this.fst = fst;
-			this.snd = snd;
-		}
-
-		@Override
-		public <E> List<E> from( List<E> list ) {
 			return snd.from( fst.from( list ) );
 		}
 	}
@@ -546,7 +440,33 @@ public class AlterBy
 			final int index = List.indexFor.firstFalse( predicate ).in( list );
 			return exists( index )
 				? list.drop( index )
-				: alterBy.empty.from( list );
+				: empty.from( list );
+		}
+	}
+
+	private static final class EmptyingAlteration
+			implements ListAlteration {
+
+		EmptyingAlteration() {
+			// make visible
+		}
+
+		@Override
+		public <E> List<E> from( List<E> list ) {
+			return list.take( 0 ); // get a empty one
+		}
+	}
+
+	private static final class NoAlteration
+			implements ListAlteration {
+
+		NoAlteration() {
+			// make visible
+		}
+
+		@Override
+		public <E> List<E> from( List<E> list ) {
+			return list;
 		}
 	}
 
@@ -572,19 +492,6 @@ public class AlterBy
 			return unorderedNub( list );
 		}
 
-		private <E> List<E> unorderedNub( List<E> list ) {
-			final int l = list.length();
-			Object[] elements = new Object[Lang.nextHighestPowerOf2( l )];
-			int j = 0;
-			for ( int i = 0; i < l; i++ ) {
-				E e = list.at( i );
-				if ( !exists( List.indexFor.nthElemBy( 1, e, order ).in( Array.sequence( elements ) ) ) ) {
-					elements[j++] = e;
-				}
-			}
-			return evoList( j, elements );
-		}
-
 		private <E> List<E> evoList( int occupied, Object[] elems ) {
 			Array.push( elems.length - occupied, elems );
 			return EvolutionList.dominant( occupied, elems );
@@ -605,6 +512,36 @@ public class AlterBy
 			}
 			return evoList( j, elements );
 		}
+
+		private <E> List<E> unorderedNub( List<E> list ) {
+			final int l = list.length();
+			Object[] elements = new Object[Lang.nextHighestPowerOf2( l )];
+			int j = 0;
+			for ( int i = 0; i < l; i++ ) {
+				E e = list.at( i );
+				if ( !exists( List.indexFor.nthElemBy( 1, e, order ).in( Array.sequence( elements ) ) ) ) {
+					elements[j++] = e;
+				}
+			}
+			return evoList( j, elements );
+		}
+	}
+
+	private static final class ReversingAlteration
+			implements ListAlteration {
+
+		ReversingAlteration() {
+			// make visible
+		}
+
+		@Override
+		public <E> List<E> from( List<E> list ) {
+			if ( list instanceof ReversingList<?> ) {
+				return ( (ReversingList<E>) list ).list;
+			}
+			return new ReversingList<E>( list );
+		}
+
 	}
 
 	private final static class ReversingList<E>
@@ -620,11 +557,6 @@ public class AlterBy
 		@Override
 		public List<E> append( E e ) {
 			return reverseViewOf( list.prepand( e ) );
-		}
-
-		@Override
-		public List<E> subsequent() {
-			return reverseViewOf( list.subsequent() );
 		}
 
 		@Override
@@ -683,6 +615,11 @@ public class AlterBy
 		}
 
 		@Override
+		public List<E> subsequent() {
+			return reverseViewOf( list.subsequent() );
+		}
+
+		@Override
 		public List<E> take( int count ) {
 			return reverseViewOf( list.drop( list.length() - count ) );
 		}
@@ -719,21 +656,59 @@ public class AlterBy
 		}
 	}
 
-	private static final class ReversingAlteration
-			implements ListAlteration {
+	private static final class ShuffleAlteration
+			extends FillAndArrangeAlteration {
 
-		ReversingAlteration() {
+		ShuffleAlteration() {
 			// make visible
 		}
 
 		@Override
 		public <E> List<E> from( List<E> list ) {
-			if ( list instanceof ReversingList<?> ) {
-				return ( (ReversingList<E>) list ).list;
+			int size = list.length();
+			if ( size < 2 ) {
+				return list;
 			}
-			return new ReversingList<E>( list );
+			if ( size == 2 ) {
+				return List.alterBy.swap( 0, 1 ).from( list );
+			}
+			return arrangedStackList( list );
 		}
 
+		@Override
+		protected <E> void rearrange( Object[] list, int start ) {
+			Array.shuffle( list ); //FIXME consider start / end
+		}
+
+	}
+
+	/**
+	 * We cannot just create a {@link Bag} using the {@link Lister.BagLister} since the
+	 * implementation might use this alteration to ensure bag ordering constraint.
+	 */
+	private static final class SortingAlteration
+			extends FillAndArrangeAlteration
+			implements BagAlteration {
+
+		private final Ord<Object> order;
+
+		SortingAlteration( Ord<Object> order ) {
+			super();
+			this.order = order;
+		}
+
+		@Override
+		public <E> Bag<E> from( List<E> list ) {
+			int size = list.length();
+			return size < 2
+				? OrderedList.bagOf( list, order )
+				: OrderedList.bagOf( arrangedStackList( list ), order );
+		}
+
+		@Override
+		public <E> void rearrange( Object[] list, int start ) {
+			Order.sort( list, order ); //FIXME consider start
+		}
 	}
 
 	private static final class SublistAlteration
@@ -752,14 +727,14 @@ public class AlterBy
 		public <E> List<E> from( List<E> list ) {
 			final int s = start.in( list );
 			if ( !exists( s ) ) { //OPEN all or nothing ? nothing seams more convenient
-				return alterBy.empty.from( list );
+				return empty.from( list );
 			}
 			if ( s == 0 ) {
 				return list.take( length );
 			}
 			int size = list.length();
 			if ( s >= size ) {
-				return alterBy.empty.from( list );
+				return empty.from( list );
 			}
 			if ( s + length > size ) {
 				return list.drop( s );
@@ -770,6 +745,38 @@ public class AlterBy
 			return list.drop( s ).take( length );
 		}
 
+	}
+
+	private static final class SwapAlteration
+			implements ListAlteration {
+
+		private final ListIndex index1;
+		private final ListIndex index2;
+
+		SwapAlteration( ListIndex idx1, ListIndex idx2 ) {
+			super();
+			this.index1 = idx1;
+			this.index2 = idx2;
+		}
+
+		@Override
+		public <E> List<E> from( List<E> list ) {
+			final int idx1 = index1.in( list );
+			final int idx2 = index2.in( list );
+			if ( idx1 == idx2 ) {
+				return list;
+			}
+			// swap indices so that idx1 is always smaller - that will change higher index first
+			return idx1 > idx2
+				? swap( idx2, idx1, list )
+				: swap( idx1, idx2, list );
+		}
+
+		private <E> List<E> swap( int idx1, int idx2, List<E> list ) {
+			final E e2 = list.at( idx2 );
+			List<E> replaceAt = list.replaceAt( idx2, list.at( idx1 ) );
+			return replaceAt.replaceAt( idx1, e2 );
+		}
 	}
 
 	private static final class TakeTillIndexAlteration
@@ -807,6 +814,20 @@ public class AlterBy
 			return exists( index )
 				? list.take( index )
 				: list;
+		}
+
+	}
+
+	private static final class TidyUpAlteration
+			implements ListAlteration {
+
+		TidyUpAlteration() {
+			// make visible
+		}
+
+		@Override
+		public <E> List<E> from( List<E> list ) {
+			return list.tidyUp();
 		}
 
 	}
