@@ -10,6 +10,12 @@ public class ModifyBy {
 	@SuppressWarnings ( "unchecked" )
 	private static final ListModification NONE = new NoModification<Object>();
 
+	public final static ModifyBy modifyBy = new ModifyBy();
+
+	private ModifyBy() {
+		// hide
+	}
+
 	@SuppressWarnings ( "unchecked" )
 	public <E> ListModification<E> none() {
 		return NONE;

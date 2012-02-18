@@ -43,12 +43,11 @@ public interface List<E>
 		extends Prepandable<E>, Appendable<E>, PartialSequence<E>, Sequence<E>,
 		ModifiableSequence<E>, Arrayable, Traversable<E>, RandomAccess, Serializable {
 
-	//TODO proxy from sequences
 	UtileLister with = Sequences.list;
-	IndexFor indexFor = IndexFor.indexFor;
 	RangeTo rangeTo = Sequences.enumerator;
+	IndexFor indexFor = IndexFor.indexFor;
 	AlterBy alterBy = AlterBy.alterBy;
-	ModifyBy modifyBy = new ModifyBy();
+	ModifyBy modifyBy = ModifyBy.modifyBy;
 	Iterate iterate = Iterate.instance;
 	Traverse traverse = Traverse.instance;
 

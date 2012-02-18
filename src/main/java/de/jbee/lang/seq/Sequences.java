@@ -5,14 +5,15 @@ import static de.jbee.lang.Enumerate.DIGITS;
 import static de.jbee.lang.Enumerate.INTEGERS;
 import static de.jbee.lang.Enumerate.LETTERS;
 import de.jbee.lang.Arrayable;
+import de.jbee.lang.Calculate;
 import de.jbee.lang.Enum;
 import de.jbee.lang.Enumerate;
 import de.jbee.lang.Enumerator;
 import de.jbee.lang.EnumeratorFactory;
-import de.jbee.lang.Calculate;
 import de.jbee.lang.List;
 import de.jbee.lang.Lister;
 import de.jbee.lang.Map;
+import de.jbee.lang.PartialSequence;
 import de.jbee.lang.Sequence;
 import de.jbee.lang.seq.EvolutionList.DominantEvolutionList;
 
@@ -184,6 +185,12 @@ public final class Sequences {
 	public static <E> List<E> list( E e1, E e2, E e3, E e4, E e5, E e6, E e7, E e8, E e9 ) {
 		return list.element( e9 ).prepand( e8 ).prepand( e7 ).prepand( e6 ).prepand( e5 ).prepand(
 				e4 ).prepand( e3 ).prepand( e2 ).prepand( e1 );
+	}
+
+	public static int depth( PartialSequence<?> seq ) {
+		return seq.isEmpty()
+			? 0
+			: 1 + depth( seq.subsequent() );
 	}
 
 	static final class ProxyEnumeratorFactory
