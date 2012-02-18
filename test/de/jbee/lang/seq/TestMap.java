@@ -4,7 +4,7 @@ import static de.jbee.lang.ListIndex.NOT_CONTAINED;
 import static de.jbee.lang.seq.IndexFor.insertionIndex;
 import static de.jbee.lang.seq.ListMatcher.hasEqualElementsAsIn;
 import static de.jbee.lang.seq.Sequences.key;
-import static de.jbee.lang.seq.Sequences.keyStartsWith;
+import static de.jbee.lang.seq.Sequences.keyLastStartsWith;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -110,8 +110,8 @@ public class TestMap {
 		m = m.insert( aa, 1 );
 		m = m.insert( az, 3 );
 		m = m.insert( ba, 2 );
-		assertThat( insertionIndex( m.indexFor( keyStartsWith( "a" ) ) ), is( 3 ) );
-		assertThat( insertionIndex( m.indexFor( keyStartsWith( "aa" ) ) ), is( 2 ) );
+		assertThat( insertionIndex( m.indexFor( keyLastStartsWith( "a" ) ) ), is( 3 ) );
+		assertThat( insertionIndex( m.indexFor( keyLastStartsWith( "aa" ) ) ), is( 2 ) );
 	}
 
 	private Map<Integer> emptyMap() {

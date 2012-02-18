@@ -426,7 +426,11 @@ public final class Sequences {
 		return new Sequences.Key( key.toString() );
 	}
 
-	public static <V> Map.Key keyStartsWith( CharSequence key ) {
+	public static <V> Map.Key keyFirstStartsWith( CharSequence key ) {
+		return new Sequences.Key( key.toString() + Character.MIN_VALUE );
+	}
+
+	public static <V> Map.Key keyLastStartsWith( CharSequence key ) {
 		return new Sequences.Key( key.toString() + Map.Key.PREFIX_TERMINATOR );
 	}
 

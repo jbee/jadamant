@@ -8,6 +8,7 @@ import de.jbee.lang.ListIndex;
 import de.jbee.lang.Map;
 import de.jbee.lang.Ord;
 import de.jbee.lang.Order;
+import de.jbee.lang.Sequence;
 import de.jbee.lang.Table;
 import de.jbee.lang.Map.Entry;
 import de.jbee.lang.Map.Key;
@@ -65,8 +66,8 @@ public class MapData {
 		}
 
 		@Override
-		public <S> List<Data<S>> subs( RangeProperty<? super T, S> path ) {
-			return List.with.noElements();
+		public <S> Data<S> objects( RangeProperty<? super T, S> property ) {
+			return empty();
 		}
 
 		@Override
@@ -77,6 +78,11 @@ public class MapData {
 		@Override
 		public <V> V value( ValueProperty<? super T, V> property ) {
 			return property.resolveIn( Path.ROOT, this );
+		}
+
+		@Override
+		public Sequence<Data<T>> each() {
+			return List.with.noElements();
 		}
 
 	}
@@ -155,11 +161,8 @@ public class MapData {
 		}
 
 		@Override
-		public <S> List<Data<S>> subs( RangeProperty<? super T, S> path ) {
-			//The list actually has to resolve the result list using this objects data because there can be any kind of selection applied - this object cannot and shouln't know about the way the list is computed. 
-
-			// TODO Auto-generated method stub
-			return null;
+		public <S> Data<S> objects( RangeProperty<? super T, S> property ) {
+			return property.resolveIn( prefix, this );
 		}
 
 		@Override
@@ -177,6 +180,11 @@ public class MapData {
 		@Override
 		public <V> V value( ValueProperty<? super T, V> property ) {
 			return property.resolveIn( prefix, this );
+		}
+
+		@Override
+		public Sequence<Data<T>> each() {
+			return List.with.<Data<T>> element( this );
 		}
 	}
 }

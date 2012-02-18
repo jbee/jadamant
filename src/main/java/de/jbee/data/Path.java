@@ -43,4 +43,8 @@ public final class Path
 	public Path subSequence( int start, int end ) {
 		return new Path( path.substring( start, end ) );
 	}
+
+	public static Path element( int start ) {
+		return new Path( start + "" );
+	}
 }
