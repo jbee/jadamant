@@ -95,19 +95,26 @@ public class TestData {
 	@Test
 	public void testRangeObjects() {
 		Map<Object> properties = Map.with.noEntries( Data.ORDER );
-		properties = properties.insert( key( "members." + Property.OBJECT_TYPE ), FlatObject.class );
+		properties = properties.insert( key( "members.1." + Property.OBJECT_TYPE ),
+				FlatObject.class );
 		properties = properties.insert( key( "members.1.name" ), "erni" );
 		properties = properties.insert( key( "members.1.total" ), 42 );
+		properties = properties.insert( key( "members.2." + Property.OBJECT_TYPE ),
+				FlatObject.class );
 		properties = properties.insert( key( "members.2.name" ), "bert" );
 		properties = properties.insert( key( "members.2.total" ), 23 );
+		properties = properties.insert( key( "members.3." + Property.OBJECT_TYPE ),
+				FlatObject.class );
 		properties = properties.insert( key( "members.3.name" ), "tiffi" );
 		properties = properties.insert( key( "members.3.total" ), 5 );
+		properties = properties.insert( key( "members.4." + Property.OBJECT_TYPE ),
+				FlatObject.class );
 		properties = properties.insert( key( "members.4.name" ), "samson" );
 		properties = properties.insert( key( "members.4.total" ), 1 );
 		Data<RangeObject> obj = MapData.object( properties );
 		Data<FlatObject> rangeObj = obj.objects( RangeObject.bestmembers );
-		assertThat( rangeObj.length(), is( 4 ) );
+		assertThat( rangeObj.length(), is( 6 ) );
 		Data<FlatObject> members = obj.objects( RangeObject.members );
-		assertThat( members.length(), is( 8 ) );
+		assertThat( members.length(), is( 12 ) );
 	}
 }

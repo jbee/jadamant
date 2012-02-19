@@ -20,10 +20,33 @@ abstract class OrderedList<E, L extends Ordered & List<E>>
 		implements IndexDeterminable<E>, Ordered, List<E> {
 
 	/**
+	 * This level is just to add methods that are just visible to all subclasses.
+	 * 
+	 * @author Jan Bernitt (jan.bernitt@gmx.de)
+	 */
+	private static abstract class OrderedSequence<E, L extends Ordered & List<E>>
+			extends OrderedList<E, L> {
+
+		OrderedSequence( Ord<Object> order, List<E> elements ) {
+			super( order, elements );
+		}
+
+		static <E> Bag<E> bag( List<E> elements, Ord<Object> order ) {
+			return new BagList<E>( order, elements );
+		}
+
+		static <E> Set<E> set( List<E> elements, Ord<Object> order ) {
+			return new SetList<E>( order, elements );
+		}
+	}
+
+	/**
 	 * The elements are considered to be ordered by given order.
 	 */
 	static <E> Bag<E> bagOf( List<E> elements, Ord<Object> order ) {
-		//TODO maybe elements is already a bag having the order ?
+		if ( elements instanceof Bag<?> && Order.used( order, elements ) ) {
+			return (Bag<E>) elements;
+		}
 		return new BagList<E>( order, elements );
 	}
 
@@ -31,7 +54,9 @@ abstract class OrderedList<E, L extends Ordered & List<E>>
 	 * The elements are considered to be ordered by given order and containing no duplicates.
 	 */
 	static <E> Set<E> setOf( List<E> elements, Ord<Object> order ) {
-		//TODO maybe elements is already a set having the order ?
+		if ( elements instanceof Set<?> && Order.used( order, elements ) ) {
+			return (Set<E>) elements;
+		}
 		return new SetList<E>( order, elements );
 	}
 
@@ -253,7 +278,7 @@ abstract class OrderedList<E, L extends Ordered & List<E>>
 	}
 
 	private static class SetList<E>
-			extends OrderedList<E, Set<E>>
+			extends OrderedSequence<E, Set<E>>
 			implements Set<E> {
 
 		SetList( Ord<Object> ord, List<E> elements ) {
@@ -266,15 +291,15 @@ abstract class OrderedList<E, L extends Ordered & List<E>>
 			if ( !containsAt( idx, e ) ) {
 				return insert( e, idx );
 			}
-			return bagOf( elems().insertAt( idx, e ), order() );
+			return bag( elems().insertAt( idx, e ), order() );
 		}
 
 		@Override
 		public Set<E> entriesAt( int index ) {
 			if ( index < 0 || index >= length() ) {
-				return setOf( List.with.<E> noElements(), order() );
+				return set( List.with.<E> noElements(), order() );
 			}
-			return setOf( List.with.element( at( index ) ), order() );
+			return set( List.with.element( at( index ) ), order() );
 		}
 
 		@Override
@@ -307,7 +332,7 @@ abstract class OrderedList<E, L extends Ordered & List<E>>
 	}
 
 	private static class MapList<V>
-			extends OrderedList<Map.Entry<V>, Map<V>>
+			extends OrderedSequence<Map.Entry<V>, Map<V>>
 			implements Map<V> {
 
 		MapList( List<Map.Entry<V>> entries ) {
@@ -330,12 +355,12 @@ abstract class OrderedList<E, L extends Ordered & List<E>>
 
 		@Override
 		public Bag<V> values() {
-			return bagOf( elements( elems() ), Order.keep );
+			return bag( elements( elems() ), Order.keep );
 		}
 
 		@Override
 		public Bag<V> valuesAt( int index ) {
-			return bagOf( List.with.element( at( index ).value() ), Order.keep );
+			return bag( List.with.element( at( index ).value() ), Order.keep );
 		}
 
 		@Override
@@ -393,7 +418,7 @@ abstract class OrderedList<E, L extends Ordered & List<E>>
 	}
 
 	private static class MultimapList<V>
-			extends OrderedList<Map.Entry<V>, Multimap<V>>
+			extends OrderedSequence<Map.Entry<V>, Multimap<V>>
 			implements Multimap<V> {
 
 		/**
@@ -418,7 +443,7 @@ abstract class OrderedList<E, L extends Ordered & List<E>>
 
 		@Override
 		public Bag<V> values() {
-			return bagOf( elements( elems() ), valueOrder );
+			return bag( elements( elems() ), valueOrder );
 		}
 
 		@Override
@@ -459,7 +484,7 @@ abstract class OrderedList<E, L extends Ordered & List<E>>
 			while ( idx < l && keyOrder.ord( e, at( idx ) ).isEq() ) {
 				idx++;
 			}
-			return bagOf( elements( List.alterBy.slice( first, idx ).from( elems() ) ), valueOrder );
+			return bag( elements( List.alterBy.slice( first, idx ).from( elems() ) ), valueOrder );
 		}
 
 		@Override
