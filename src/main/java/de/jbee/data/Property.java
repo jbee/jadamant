@@ -5,7 +5,6 @@ import static de.jbee.lang.seq.Sequences.key;
 import de.jbee.data.DataProperty.ItemProperty;
 import de.jbee.data.DataProperty.MemberProperty;
 import de.jbee.data.DataProperty.NotionalProperty;
-import de.jbee.data.DataProperty.RangeProperty;
 import de.jbee.data.DataProperty.ValueProperty;
 import de.jbee.data.Dataset.Items;
 import de.jbee.data.Dataset.Members;
@@ -24,17 +23,6 @@ public class Property {
 
 	public static <R, T> MemberProperty<R, T> object( String name, Class<T> type ) {
 		return new TypedObjectProperty<R, T>( type, Path.path( name ) );
-	}
-
-	@Deprecated
-	public static <R, T> RangeProperty<R, T> objects( String name, Class<T> elementType, int start,
-			int end ) {
-		return null;
-	}
-
-	@Deprecated
-	public static <R, T> RangeProperty<R, T> objects( String string, Class<T> elementType ) {
-		return objects( string, elementType, 0, -1 );
 	}
 
 	public static <R, T> ValueProperty<R, T> value( String name, Class<T> type, T defaultValue ) {
@@ -157,6 +145,7 @@ public class Property {
 		public Dataset<T> resolveIn( Path root, Members members ) {
 			final Path path = root.dot( name );
 			return exists( members.indexFor( key( path.dot( Members.TYPE ) ) ) )
+				//FIXME need to recognize start of list/map also
 				? members.memberAt( path, type )
 				: members.none( type );
 		}

@@ -6,6 +6,7 @@ import de.jbee.data.DataProperty.MemberProperty;
 import de.jbee.data.DataProperty.ValueProperty;
 import de.jbee.lang.Ord;
 import de.jbee.lang.ReducibleSequence;
+import de.jbee.lang.Searchable;
 import de.jbee.lang.Sequence;
 import de.jbee.lang.Table;
 import de.jbee.lang.Map.Entry;
@@ -36,7 +37,9 @@ public interface Dataset<T>
 	}
 
 	interface Items<E>
-			extends ReducibleSequence<Dataset<E>> {
+			extends Searchable, ReducibleSequence<Dataset<E>> {
+
+		Items<E> range( Path start, Path end );
 
 		@Override
 		Items<E> take( int count );

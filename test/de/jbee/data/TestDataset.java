@@ -8,7 +8,6 @@ import static org.junit.Assert.assertThat;
 import org.junit.Test;
 
 import de.jbee.data.DataProperty.MemberProperty;
-import de.jbee.data.DataProperty.RangeProperty;
 import de.jbee.data.DataProperty.ValueProperty;
 import de.jbee.data.Dataset.Members;
 import de.jbee.lang.Map;
@@ -34,11 +33,9 @@ public class TestDataset {
 
 	static interface RangeObject {
 
-		RangeProperty<RangeObject, FlatObject> members = Property.objects( "members",
+		MemberProperty<RangeObject, FlatObject> members = Property.object( "members",
 				FlatObject.class );
 
-		RangeProperty<RangeObject, FlatObject> bestmembers = Property.objects( "members",
-				FlatObject.class, 0, 1 );
 	}
 
 	@Test
@@ -108,8 +105,6 @@ public class TestDataset {
 		properties = properties.insert( key( "members:4.name" ), "samson" );
 		properties = properties.insert( key( "members:4.total" ), 1 );
 		Dataset<RangeObject> obj = Datamap.object( properties );
-		Dataset<FlatObject> rangeObj = obj.member( RangeObject.bestmembers );
-		assertThat( rangeObj.length(), is( 6 ) );
 		Dataset<FlatObject> members = obj.member( RangeObject.members );
 		assertThat( members.length(), is( 12 ) );
 	}

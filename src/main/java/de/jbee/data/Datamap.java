@@ -140,6 +140,24 @@ public class Datamap {
 			return null;
 		}
 
+		@Override
+		public Items<E> range( Path start, Path end ) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public int indexFor( Key key ) {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+
+		@Override
+		public int indexFor( Key key, int startInclusive, int endExclusive ) {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+
 	}
 
 	private static final class NoItems<E>
@@ -175,6 +193,24 @@ public class Datamap {
 			return this;
 		}
 
+		@Override
+		public Items<E> range( Path start, Path end ) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public int indexFor( Key key ) {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+
+		@Override
+		public int indexFor( Key key, int startInclusive, int endExclusive ) {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+
 	}
 
 	/**
@@ -190,14 +226,14 @@ public class Datamap {
 	private static final class ObjectDataset<T>
 			implements Dataset<T>, Members {
 
-		private final Path prefix;
+		private final Path root;
 		private final int start;
 		private final int end;
 		private final Map<Object> properties;
 
-		ObjectDataset( Path prefix, int start, int end, Map<Object> properties ) {
+		ObjectDataset( Path root, int start, int end, Map<Object> properties ) {
 			super();
-			this.prefix = prefix;
+			this.root = root;
 			this.start = start;
 			this.end = end;
 			this.properties = properties;
@@ -238,11 +274,12 @@ public class Datamap {
 
 		@Override
 		public <S> Dataset<S> member( MemberProperty<? super T, S> property ) {
-			return property.resolveIn( prefix, this );
+			return property.resolveIn( root, this );
 		}
 
 		@Override
 		public <E> Dataset<E> memberAt( Path root, Class<E> type ) {
+			//FIXME need to recognize start of list/map also --> maybe the root argument should point to the exact member wanted and the end is parent(root)+terminator
 			int startInclusive = indexFor( key( root.dot( Members.TYPE ) ) );
 			if ( startInclusive < start || startInclusive >= end
 					|| !isMemberOfType( type, at( startInclusive ) ) ) {
@@ -276,7 +313,7 @@ public class Datamap {
 		@Override
 		public String toString() {
 			StringBuilder b = new StringBuilder();
-			b.append( prefix );
+			b.append( root );
 			for ( int i = start; i < end; i++ ) {
 				b.append( '\n' );
 				Entry<Object> e = properties.at( i );
@@ -287,7 +324,7 @@ public class Datamap {
 
 		@Override
 		public <V> V value( ValueProperty<? super T, V> property ) {
-			return property.resolveIn( prefix, this );
+			return property.resolveIn( root, this );
 		}
 
 	}
