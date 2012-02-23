@@ -163,7 +163,7 @@ public class TestListIndex {
 
 	@Test
 	public void testInsertBy_MapPreviousErrorCase1() {
-		Map<Object> m = Map.with.noEntries( Map.ENTRY_ORDER );
+		Map<Object> m = Map.with.noEntries( Entry.ORDER );
 		Class<Object> value = Object.class;
 		m = m.insert( key( "deep..object" ), value );
 		m = m.insert( key( "deep.percent" ), value );

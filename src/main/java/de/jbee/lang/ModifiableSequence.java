@@ -1,6 +1,15 @@
 package de.jbee.lang;
 
-public interface ModifiableSequence<E> {
+public interface ModifiableSequence<E>
+		extends ReducibleSequence<E> {
+
+	/*
+	 * Covariant return type overrides for inherited methods from ReducibleSequence
+	 */
+
+	ModifiableSequence<E> drop( int count );
+
+	ModifiableSequence<E> take( int count );
 
 	/*
 	 * reducing modifications
@@ -8,11 +17,7 @@ public interface ModifiableSequence<E> {
 
 	ModifiableSequence<E> deleteAt( int index );
 
-	ModifiableSequence<E> drop( int count );
-
 	ModifiableSequence<E> replaceAt( int index, E e );
-
-	ModifiableSequence<E> take( int count );
 
 	/*
 	 * expanding modifications

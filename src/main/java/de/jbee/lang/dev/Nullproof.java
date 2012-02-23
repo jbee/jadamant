@@ -10,6 +10,7 @@ package de.jbee.lang.dev;
  * </p>
  * 
  * @see Nullsave
+ * @see Nullfragile
  * 
  * @author Jan Bernitt (jan.bernitt@gmx.de)
  */

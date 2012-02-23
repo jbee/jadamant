@@ -3,7 +3,8 @@
  */
 package de.jbee.data;
 
-import de.jbee.data.Data.DataTable;
+import de.jbee.data.Dataset.Items;
+import de.jbee.data.Dataset.Members;
 import de.jbee.lang.Table;
 
 /**
@@ -13,14 +14,14 @@ import de.jbee.lang.Table;
  */
 public interface DataProperty<R, T> { // maybe we don't need a common Property interface since there are no methods in it
 
-	public static interface PseudoProperty<R, T> { // in contrast to a NotionalPath is must not be a ValuePath (and the type of element stays the same?)
+	interface PseudoProperty<R, T> { // in contrast to a NotionalPath is must not be a ValuePath (and the type of element stays the same?)
 		// etwa 1. element eines ListPath
 
 		// für counter: addition oder subtraktion eines fixen betrags auf ein counter 
 	}
 
-	public static interface RangeProperty<R, E>
-			extends ObjectProperty<R, E> {
+	interface RangeProperty<R, E>
+			extends MemberProperty<R, E> {
 
 		//		ObjectProperty<R, E> head(); //OPEN how to model lists of values and objects ?
 		//
@@ -39,16 +40,16 @@ public interface DataProperty<R, T> { // maybe we don't need a common Property i
 	 * 
 	 * @author Jan Bernitt (jan.bernitt@gmx.de)
 	 */
-	public static interface SelectionProperty<R, E>
-			extends ObjectProperty<R, E> { //OPEN maybe extend RangePath ??
+	interface SelectionProperty<R, E>
+			extends MemberProperty<R, E> { //OPEN maybe extend RangePath ??
 
 		//TODO 
 	}
 
-	public static interface ObjectProperty<R, T>
+	interface MemberProperty<R, T>
 			extends DataProperty<R, T> {
 
-		Data<T> resolveIn( Path prefix, DataTable<?> values );
+		Dataset<T> resolveIn( Path root, Members members );
 
 		//		RangeProperty<R, T> repeat( int times );
 
@@ -65,22 +66,27 @@ public interface DataProperty<R, T> { // maybe we don't need a common Property i
 	 * 
 	 * @author Jan Bernitt (jan.bernitt@gmx.de)
 	 */
-	public static interface ValueProperty<R, T>
+	interface ValueProperty<R, T>
 			extends DataProperty<R, T> {
 
 		/**
 		 * A data container is telling this path to resolve the value returned to the caller of
-		 * {@link Data#value(ValueProperty)}.
+		 * {@link Dataset#value(ValueProperty)}.
 		 * 
 		 * @return usually the <code>value</code> passed in as an argument.
 		 */
-		T resolveIn( Path prefix, Table<?> values );
+		T resolveIn( Path root, Table<?> values );
 
 	}
 
-	public static interface NotionalProperty<R, T> {
+	interface NotionalProperty<R, T> {
 
 		T compute( R value );
+	}
+
+	interface ItemProperty<T, I> {
+
+		I resolveIn( Items<T> items );
 	}
 
 }

@@ -1,5 +1,7 @@
 package de.jbee.data;
 
+import static java.lang.Character.isDigit;
+
 public final class Path
 		implements CharSequence {
 
@@ -8,6 +10,7 @@ public final class Path
 	private final String path;
 
 	public static final char SEPARATOR = '.';
+	public static final char ITEM_SEPARATOR = ':';
 
 	private Path( String path ) {
 		super();
@@ -15,13 +18,17 @@ public final class Path
 	}
 
 	public static Path path( String value ) {
-		return new Path( value );
+		return value == null || value.isEmpty()
+			? ROOT
+			: new Path( value );
 	}
 
 	public Path dot( Path suffix ) {
 		return path.isEmpty()
 			? suffix
-			: new Path( path + Path.SEPARATOR + suffix.path );
+			: suffix.startsWithItem()
+				? new Path( path + Path.ITEM_SEPARATOR + suffix.path )
+				: new Path( path + Path.SEPARATOR + suffix.path );
 	}
 
 	@Override
@@ -39,12 +46,27 @@ public final class Path
 		return path.length();
 	}
 
-	@Override
-	public Path subSequence( int start, int end ) {
-		return new Path( path.substring( start, end ) );
+	public boolean startsWithItem() {
+		return length() > 0 && isDigit( path.charAt( 0 ) );
 	}
 
-	public static Path element( int start ) {
-		return new Path( start + "" );
+	public boolean endsWithItem() {
+		final int dotIndex = path.lastIndexOf( SEPARATOR );
+		return dotIndex >= 0 && isDigit( path.charAt( dotIndex + 1 ) );
+	}
+
+	public Path itemParent() {
+		return endsWithItem()
+			? subSequence( 0, path.lastIndexOf( SEPARATOR ) )
+			: this;
+	}
+
+	@Override
+	public Path subSequence( int start, int end ) {
+		return path( path.substring( start, end ) );
+	}
+
+	public static Path item( int index ) {
+		return new Path( index + "" );
 	}
 }

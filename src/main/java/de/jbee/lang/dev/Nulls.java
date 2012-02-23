@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
  * <b>If used: Do not except any methods from this contract! Behavior should be predictable
  * easily!</b>
  * 
- * In case a interface is annotated <b>all</b> implementation <b>has to</b> follow this contrat!
+ * In case a interface is annotated <b>all</b> implementation <b>has to</b> follow this contract!
  * 
  * @author Jan Bernitt (jan.bernitt@gmx.de)
  */

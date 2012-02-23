@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import de.jbee.lang.List;
 import de.jbee.lang.Map;
+import de.jbee.lang.Map.Entry;
 import de.jbee.lang.Map.Key;
 
 public class TestMap {
@@ -116,6 +117,6 @@ public class TestMap {
 
 	private Map<Integer> emptyMap() {
 		return OrderedList.mapOf( OrderedList.setOf( List.with.<Map.Entry<Integer>> noElements(),
-				Map.ENTRY_ORDER ) );
+				Entry.ORDER ) );
 	}
 }

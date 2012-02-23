@@ -16,6 +16,7 @@ import de.jbee.lang.Map;
 import de.jbee.lang.Multimap;
 import de.jbee.lang.Ord;
 import de.jbee.lang.Order;
+import de.jbee.lang.Map.Entry;
 import de.jbee.lang.Map.Key;
 
 public class TestMultimap {
@@ -190,6 +191,6 @@ public class TestMultimap {
 
 	private Multimap<Integer> emptyMap( Ord<Object> valueOrder ) {
 		return OrderedList.multimapOf( List.with.<Map.Entry<Integer>> noElements(),
-				Map.ENTRY_ORDER, valueOrder );
+				Entry.ORDER, valueOrder );
 	}
 }

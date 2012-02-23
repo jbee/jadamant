@@ -1,44 +1,38 @@
 package de.jbee.data;
 
-import static de.jbee.data.Path.element;
 import static de.jbee.lang.seq.IndexFor.exists;
-import static de.jbee.lang.seq.IndexFor.insertionIndex;
-import static de.jbee.lang.seq.Sequences.keyFirstStartsWith;
-import static de.jbee.lang.seq.Sequences.keyLastStartsWith;
-import de.jbee.data.Data.DataTable;
+import static de.jbee.lang.seq.Sequences.key;
+import de.jbee.data.DataProperty.ItemProperty;
+import de.jbee.data.DataProperty.MemberProperty;
 import de.jbee.data.DataProperty.NotionalProperty;
-import de.jbee.data.DataProperty.ObjectProperty;
 import de.jbee.data.DataProperty.RangeProperty;
 import de.jbee.data.DataProperty.ValueProperty;
-import de.jbee.lang.Map;
+import de.jbee.data.Dataset.Items;
+import de.jbee.data.Dataset.Members;
+import de.jbee.lang.Sequence;
 import de.jbee.lang.Table;
-import de.jbee.lang.Map.Key;
 import de.jbee.lang.dev.Nullsave;
 import de.jbee.lang.seq.Sequences;
 
 /**
- * The util-class to work with {@link DataProperty}s and {@link Data}.
+ * The util-class to work with {@link DataProperty}s and {@link Dataset}.
  * 
  * @author Jan Bernitt (jan.bernitt@gmx.de)
  * 
  */
 public class Property {
 
-	/**
-	 * A special value holding the type (interface) represents the values of this 'object' (through
-	 * {@link DataProperty}s).
-	 */
-	public static final Path OBJECT_TYPE = Path.path( ".object" );
-
-	public static <R, T> ObjectProperty<R, T> object( String name, Class<T> type ) {
+	public static <R, T> MemberProperty<R, T> object( String name, Class<T> type ) {
 		return new TypedObjectProperty<R, T>( type, Path.path( name ) );
 	}
 
+	@Deprecated
 	public static <R, T> RangeProperty<R, T> objects( String name, Class<T> elementType, int start,
 			int end ) {
-		return new TypedRangeProperty<R, T>( elementType, Path.path( name ), start, end );
+		return null;
 	}
 
+	@Deprecated
 	public static <R, T> RangeProperty<R, T> objects( String string, Class<T> elementType ) {
 		return objects( string, elementType, 0, -1 );
 	}
@@ -48,8 +42,22 @@ public class Property {
 				defaultValue );
 	}
 
+	public static <E> ItemProperty<E, Sequence<Dataset<E>>> each() {
+		return new EachItemProperty<E>();
+	}
+
 	public static <R> ValueProperty<R, Integer> value( String name, int defaultValue ) {
 		return value( name, Integer.class, defaultValue );
+	}
+
+	static class EachItemProperty<E>
+			implements ItemProperty<E, Sequence<Dataset<E>>> {
+
+		@Override
+		public Sequence<Dataset<E>> resolveIn( Items<E> items ) {
+			return items;
+		}
+
 	}
 
 	static final class NonnullProperty<R, T>
@@ -66,8 +74,8 @@ public class Property {
 		}
 
 		@Override
-		public T resolveIn( Path prefix, Table<?> values ) {
-			final T value = property.resolveIn( prefix, values );
+		public T resolveIn( Path root, Table<?> values ) {
+			final T value = property.resolveIn( root, values );
 			return value == null
 				? nullValue
 				: value;
@@ -115,8 +123,8 @@ public class Property {
 		}
 
 		@Override
-		public T resolveIn( Path prefix, Table<?> values ) {
-			return notional.compute( value.resolveIn( prefix, values ) );
+		public T resolveIn( Path root, Table<?> values ) {
+			return notional.compute( value.resolveIn( root, values ) );
 		}
 
 	}
@@ -134,7 +142,7 @@ public class Property {
 	}
 
 	static final class TypedObjectProperty<R, T>
-			implements ObjectProperty<R, T> {
+			implements MemberProperty<R, T> {
 
 		private final Class<T> type;
 		private final Path name;
@@ -145,20 +153,12 @@ public class Property {
 			this.name = name;
 		}
 
-		@SuppressWarnings ( "unchecked" )
 		@Override
-		public Data<T> resolveIn( Path prefix, DataTable<?> values ) {
-			final Path path = prefix.dot( name );
-			int objectTypeIndex = values.indexFor( Sequences.key( path.dot( OBJECT_TYPE ) ) );
-			if ( exists( objectTypeIndex ) && values.at( objectTypeIndex ) == type ) { //FIXME type can be a supertype of the actual available obj.
-				Key key = Sequences.key( path.toString() + Path.SEPARATOR + ""
-						+ Map.Key.PREFIX_TERMINATOR );
-				int objectEndIndex = insertionIndex( values.indexFor( key ) );
-				if ( objectEndIndex - objectTypeIndex > 1 ) {
-					return (Data<T>) values.slice( path, objectTypeIndex, objectEndIndex );
-				}
-			}
-			return (Data<T>) values.slice( path, 0, 0 );
+		public Dataset<T> resolveIn( Path root, Members members ) {
+			final Path path = root.dot( name );
+			return exists( members.indexFor( key( path.dot( Members.TYPE ) ) ) )
+				? members.memberAt( path, type )
+				: members.none( type );
 		}
 
 		@Override
@@ -180,8 +180,8 @@ public class Property {
 		}
 
 		@Override
-		public T resolveIn( Path prefix, Table<?> values ) {
-			final int index = values.indexFor( Sequences.key( prefix.dot( name ) ) );
+		public T resolveIn( Path root, Table<?> values ) {
+			final int index = values.indexFor( Sequences.key( root.dot( name ) ) );
 			if ( !exists( index ) ) {
 				return null;
 			}
@@ -195,40 +195,6 @@ public class Property {
 		public String toString() {
 			return type.getSimpleName() + " " + name;
 		}
-	}
-
-	static final class TypedRangeProperty<R, E>
-			implements RangeProperty<R, E> {
-
-		private final Class<E> elementType;
-		private final Path name;
-		private final int start;
-		private final int end;
-
-		TypedRangeProperty( Class<E> elementType, Path name, int start, int end ) {
-			super();
-			this.elementType = elementType;
-			this.name = name;
-			this.start = start;
-			this.end = end;
-		}
-
-		@Override
-		public Data<E> resolveIn( Path prefix, DataTable<?> values ) {
-			Path path = prefix.dot( name );
-			int startIndex = insertionIndex( values.indexFor( keyFirstStartsWith( path.dot( element( start + 1 ) ) ) ) );
-			Path endPath = end < 0
-				? path
-				: path.dot( element( end + 1 ) );
-			int endIndex = insertionIndex( values.indexFor( keyLastStartsWith( endPath ) ) );
-			return (Data<E>) values.slice( path, startIndex, endIndex );
-		}
-
-		@Override
-		public String toString() {
-			return elementType.getSimpleName() + " " + name + "[" + start + ":" + end + "]";
-		}
-
 	}
 
 }

@@ -7,12 +7,13 @@ import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 
-import de.jbee.data.DataProperty.ObjectProperty;
+import de.jbee.data.DataProperty.MemberProperty;
 import de.jbee.data.DataProperty.RangeProperty;
 import de.jbee.data.DataProperty.ValueProperty;
+import de.jbee.data.Dataset.Members;
 import de.jbee.lang.Map;
 
-public class TestData {
+public class TestDataset {
 
 	static interface FlatObject {
 
@@ -23,12 +24,12 @@ public class TestData {
 	static interface DeepObject {
 
 		ValueProperty<DeepObject, Float> percent = Property.value( "percent", Float.class, 0.1f );
-		ObjectProperty<DeepObject, FlatObject> flat = Property.object( "flat", FlatObject.class );
+		MemberProperty<DeepObject, FlatObject> flat = Property.object( "flat", FlatObject.class );
 	}
 
 	static interface DeeperObject {
 
-		ObjectProperty<DeeperObject, DeepObject> deep = Property.object( "deep", DeepObject.class );
+		MemberProperty<DeeperObject, DeepObject> deep = Property.object( "deep", DeepObject.class );
 	}
 
 	static interface RangeObject {
@@ -42,31 +43,31 @@ public class TestData {
 
 	@Test
 	public void testFlatObject() {
-		Data<FlatObject> obj = MapData.empty();
+		Dataset<FlatObject> obj = Datamap.empty();
 		assertThat( obj.value( FlatObject.total ), is( 1 ) );
 		assertThat( obj.value( FlatObject.name ), is( "unnamed" ) );
 
-		Map<Object> properties = Map.with.noEntries( Data.ORDER );
+		Map<Object> properties = Map.with.noEntries( Dataset.ORDER );
 		properties = properties.insert( key( "total" ), 2 );
 		properties = properties.insert( key( "name" ), "erni" );
-		obj = MapData.object( properties );
+		obj = Datamap.object( properties );
 		assertThat( obj.value( FlatObject.total ), is( 2 ) );
 		assertThat( obj.value( FlatObject.name ), is( "erni" ) );
 	}
 
 	@Test
 	public void testDeepObject() {
-		Data<DeepObject> obj = MapData.empty();
-		assertThat( obj.object( DeepObject.flat ).value( FlatObject.total ), is( 1 ) );
+		Dataset<DeepObject> obj = Datamap.empty();
+		assertThat( obj.member( DeepObject.flat ).value( FlatObject.total ), is( 1 ) );
 		assertThat( obj.value( DeepObject.percent ), is( 0.1f ) );
 
-		Map<Object> properties = Map.with.noEntries( Data.ORDER );
+		Map<Object> properties = Map.with.noEntries( Dataset.ORDER );
 		properties = properties.insert( key( "percent" ), 100f );
 		properties = properties.insert( key( "flat.total" ), 2 );
 		properties = properties.insert( key( "flat.name" ), "erni" );
-		properties = properties.insert( key( "flat." + Property.OBJECT_TYPE ), FlatObject.class );
-		obj = MapData.object( properties );
-		Data<FlatObject> flatObj = obj.object( DeepObject.flat );
+		properties = properties.insert( key( "flat." + Members.TYPE ), FlatObject.class );
+		obj = Datamap.object( properties );
+		Dataset<FlatObject> flatObj = obj.member( DeepObject.flat );
 		assertFalse( flatObj.isEmpty() );
 		assertThat( flatObj.value( FlatObject.total ), is( 2 ) );
 		assertThat( flatObj.value( FlatObject.name ), is( "erni" ) );
@@ -75,46 +76,41 @@ public class TestData {
 
 	@Test
 	public void testDeeperObject() {
-		Map<Object> properties = Map.with.noEntries( Data.ORDER );
-		properties = properties.insert( key( "deep." + Property.OBJECT_TYPE ), DeepObject.class );
+		Map<Object> properties = Map.with.noEntries( Dataset.ORDER );
+		properties = properties.insert( key( "deep." + Members.TYPE ), DeepObject.class );
 		properties = properties.insert( key( "deep.percent" ), 100f );
 		properties = properties.insert( key( "deep.flat.total" ), 2 );
 		properties = properties.insert( key( "deep.flat.name" ), "erni" );
-		properties = properties.insert( key( "deep.flat." + Property.OBJECT_TYPE ),
-				FlatObject.class );
+		properties = properties.insert( key( "deep.flat." + Members.TYPE ), FlatObject.class );
 
-		Data<DeeperObject> obj = MapData.object( properties );
-		Data<DeepObject> deepObj = obj.object( DeeperObject.deep );
+		Dataset<DeeperObject> obj = Datamap.object( properties );
+		Dataset<DeepObject> deepObj = obj.member( DeeperObject.deep );
 		assertThat( deepObj.length(), is( 5 ) );
 		assertThat( deepObj.value( DeepObject.percent ), is( 100f ) );
-		Data<FlatObject> flatObj = deepObj.object( DeepObject.flat );
+		Dataset<FlatObject> flatObj = deepObj.member( DeepObject.flat );
 		assertThat( flatObj.length(), is( 3 ) );
 		assertThat( flatObj.value( FlatObject.name ), is( "erni" ) );
 	}
 
 	@Test
 	public void testRangeObjects() {
-		Map<Object> properties = Map.with.noEntries( Data.ORDER );
-		properties = properties.insert( key( "members.1." + Property.OBJECT_TYPE ),
-				FlatObject.class );
-		properties = properties.insert( key( "members.1.name" ), "erni" );
-		properties = properties.insert( key( "members.1.total" ), 42 );
-		properties = properties.insert( key( "members.2." + Property.OBJECT_TYPE ),
-				FlatObject.class );
-		properties = properties.insert( key( "members.2.name" ), "bert" );
-		properties = properties.insert( key( "members.2.total" ), 23 );
-		properties = properties.insert( key( "members.3." + Property.OBJECT_TYPE ),
-				FlatObject.class );
-		properties = properties.insert( key( "members.3.name" ), "tiffi" );
-		properties = properties.insert( key( "members.3.total" ), 5 );
-		properties = properties.insert( key( "members.4." + Property.OBJECT_TYPE ),
-				FlatObject.class );
-		properties = properties.insert( key( "members.4.name" ), "samson" );
-		properties = properties.insert( key( "members.4.total" ), 1 );
-		Data<RangeObject> obj = MapData.object( properties );
-		Data<FlatObject> rangeObj = obj.objects( RangeObject.bestmembers );
+		Map<Object> properties = Map.with.noEntries( Dataset.ORDER );
+		properties = properties.insert( key( "members:1." + Members.TYPE ), FlatObject.class );
+		properties = properties.insert( key( "members:1.name" ), "erni" );
+		properties = properties.insert( key( "members:1.total" ), 42 );
+		properties = properties.insert( key( "members:2." + Members.TYPE ), FlatObject.class );
+		properties = properties.insert( key( "members:2.name" ), "bert" );
+		properties = properties.insert( key( "members:2.total" ), 23 );
+		properties = properties.insert( key( "members:3." + Members.TYPE ), FlatObject.class );
+		properties = properties.insert( key( "members:3.name" ), "tiffi" );
+		properties = properties.insert( key( "members:3.total" ), 5 );
+		properties = properties.insert( key( "members:4." + Members.TYPE ), FlatObject.class );
+		properties = properties.insert( key( "members:4.name" ), "samson" );
+		properties = properties.insert( key( "members:4.total" ), 1 );
+		Dataset<RangeObject> obj = Datamap.object( properties );
+		Dataset<FlatObject> rangeObj = obj.member( RangeObject.bestmembers );
 		assertThat( rangeObj.length(), is( 6 ) );
-		Data<FlatObject> members = obj.objects( RangeObject.members );
+		Dataset<FlatObject> members = obj.member( RangeObject.members );
 		assertThat( members.length(), is( 12 ) );
 	}
 }

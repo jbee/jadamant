@@ -14,6 +14,7 @@ import de.jbee.lang.Order;
 import de.jbee.lang.Ordered;
 import de.jbee.lang.Set;
 import de.jbee.lang.Traversal;
+import de.jbee.lang.Map.Entry;
 import de.jbee.lang.Map.Key;
 
 abstract class OrderedList<E, L extends Ordered & List<E>>
@@ -336,7 +337,7 @@ abstract class OrderedList<E, L extends Ordered & List<E>>
 			implements Map<V> {
 
 		MapList( List<Map.Entry<V>> entries ) {
-			this( ENTRY_ORDER, entries );
+			this( Entry.ORDER, entries );
 		}
 
 		MapList( Ord<Object> order, List<Map.Entry<V>> entries ) {

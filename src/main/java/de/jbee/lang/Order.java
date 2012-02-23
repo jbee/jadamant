@@ -59,10 +59,11 @@ public final class Order {
 	public static final Ord<Object> hashCode = new HashCodeOrder();
 
 	@SuppressWarnings ( "unchecked" )
-	public static final Ord<Map.Entry> entriesBy( Ord<CharSequence> keyOrder ) {
-		return new EntryOrder( keyOrder );
+	public static final Ord<Map.Entry> entryKeysBy( Ord<CharSequence> keyOrder ) {
+		return new EntryKeyOrder( keyOrder );
 	}
 
+	@SuppressWarnings ( "unchecked" )
 	public static <V> Ord<Element> elementsBy( Ord<? super V> valueOrder ) {
 		return new ElementOrder( valueOrder );
 	}
@@ -240,12 +241,12 @@ public final class Order {
 	}
 
 	@SuppressWarnings ( "unchecked" )
-	private static final class EntryOrder
+	private static final class EntryKeyOrder
 			implements Ord<Map.Entry> {
 
 		private final Ord<CharSequence> keyOrder;
 
-		EntryOrder( Ord<CharSequence> keyOrder ) {
+		EntryKeyOrder( Ord<CharSequence> keyOrder ) {
 			super();
 			this.keyOrder = keyOrder;
 		}

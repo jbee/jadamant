@@ -15,8 +15,10 @@ package de.jbee.lang.dev;
  * <li>They are lightweight enough to be created when needed and thrown away when no longer needed</li>
  * </ul>
  * 
- * @author Jan Bernitt (jan.bernitt@gmx.de)
+ * @see EntityObject
+ * @see ServiceObject
  * 
+ * @author Jan Bernitt (jan.bernitt@gmx.de)
  */
 public interface ValueObject {
 	// just a marker

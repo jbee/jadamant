@@ -1,6 +1,6 @@
 package de.jbee.lang;
 
-import static de.jbee.lang.Order.entriesBy;
+import static de.jbee.lang.Order.entryKeysBy;
 import static de.jbee.lang.Order.typeaware;
 import de.jbee.lang.Lister.MapLister;
 import de.jbee.lang.seq.UtileMapLister;
@@ -16,15 +16,6 @@ public interface Map<V>
 		extends Set<Map.Entry<V>>, Multimap<V> {
 
 	MapLister with = new UtileMapLister();
-
-	/**
-	 * Default order used for all {@link Map}s. The keys are sorted alphabetical.
-	 */
-	Ord<Object> ENTRY_ORDER = typeaware( entriesBy( Order.alphabetical ), Map.Entry.class );
-
-	/*
-	 * Covariant return type overrides from List/Bag/Set/Multimap interface with Map return type
-	 */
 
 	@Override
 	Map<V> deleteAt( int index );
@@ -73,6 +64,11 @@ public interface Map<V>
 
 	interface Entry<V>
 			extends Element<V> {
+
+		/**
+		 * Default order used for all {@link Map}s. The keys are sorted alphabetical.
+		 */
+		Ord<Object> ORDER = typeaware( entryKeysBy( Order.alphabetical ), Entry.class );
 
 		Key key();
 
