@@ -8,9 +8,9 @@ import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 
-import de.jbee.data.DataProperty.MemberProperty;
-import de.jbee.data.DataProperty.ValueProperty;
+import de.jbee.data.Dataset.MemberProperty;
 import de.jbee.data.Dataset.Members;
+import de.jbee.data.Dataset.ValueProperty;
 import de.jbee.lang.Map;
 
 public class TestDataset {

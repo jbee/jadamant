@@ -1,18 +1,19 @@
 package de.jbee.data;
 
+import static de.jbee.data.Path.itemPath;
+import static de.jbee.data.Path.memberPath;
 import static de.jbee.lang.seq.IndexFor.exists;
 import static de.jbee.lang.seq.Sequences.key;
-import de.jbee.data.DataProperty.ItemProperty;
-import de.jbee.data.DataProperty.MemberProperty;
-import de.jbee.data.DataProperty.NotionalProperty;
-import de.jbee.data.DataProperty.ValueProperty;
+import de.jbee.data.Dataset.ItemProperty;
 import de.jbee.data.Dataset.Items;
 import de.jbee.data.Dataset.MemberDescriptor;
+import de.jbee.data.Dataset.MemberProperty;
 import de.jbee.data.Dataset.Members;
+import de.jbee.data.Dataset.NotionalProperty;
+import de.jbee.data.Dataset.ValueProperty;
+import de.jbee.data.Dataset.Values;
 import de.jbee.lang.Sequence;
-import de.jbee.lang.Table;
 import de.jbee.lang.dev.Nullsave;
-import de.jbee.lang.seq.Sequences;
 
 /**
  * The util-class to work with {@link DataProperty}s and {@link Dataset}.
@@ -27,11 +28,11 @@ public class Property {
 	}
 
 	public static <R, T> MemberProperty<R, T> object( String name, Class<T> type ) {
-		return new DynamicMemberProperty<R, T>( type, Path.path( name ), Path.item( 1 ) );
+		return new DynamicMemberProperty<R, T>( type, memberPath( name ), itemPath( 1 ) );
 	}
 
 	public static <R, T> ValueProperty<R, T> value( String name, Class<T> type, T defaultValue ) {
-		return new NonnullProperty<R, T>( new TypedProperty<R, T>( type, Path.path( name ) ),
+		return new NonnullProperty<R, T>( new TypedProperty<R, T>( type, memberPath( name ) ),
 				defaultValue );
 	}
 
@@ -67,7 +68,7 @@ public class Property {
 		}
 
 		@Override
-		public T resolveIn( Path root, Table<?> values ) {
+		public T resolveIn( Path root, Values<? extends R> values ) {
 			final T value = property.resolveIn( root, values );
 			return value == null
 				? nullValue
@@ -116,7 +117,7 @@ public class Property {
 		}
 
 		@Override
-		public T resolveIn( Path root, Table<?> values ) {
+		public T resolveIn( Path root, Values<? extends R> values ) {
 			return notional.compute( value.resolveIn( root, values ) );
 		}
 
@@ -188,6 +189,25 @@ public class Property {
 		}
 	}
 
+	static final class MemberValueProperty<R, T, V>
+			implements ValueProperty<R, V> {
+
+		private final MemberProperty<R, T> member;
+		private final ValueProperty<T, V> value;
+
+		MemberValueProperty( MemberProperty<R, T> member, ValueProperty<T, V> value ) {
+			super();
+			this.member = member;
+			this.value = value;
+		}
+
+		@Override
+		public V resolveIn( Path root, Values<? extends R> values ) {
+			return values.member( member ).value( value );
+		}
+
+	}
+
 	static final class TypedProperty<R, T>
 			implements ValueProperty<R, T> {
 
@@ -201,8 +221,8 @@ public class Property {
 		}
 
 		@Override
-		public T resolveIn( Path root, Table<?> values ) {
-			final int index = values.indexFor( Sequences.key( root.dot( name ) ) );
+		public T resolveIn( Path root, Values<? extends R> values ) {
+			final int index = values.indexFor( key( root.dot( name ) ) );
 			if ( !exists( index ) ) {
 				return null;
 			}

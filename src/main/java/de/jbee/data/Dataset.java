@@ -1,9 +1,6 @@
 package de.jbee.data;
 
-import static de.jbee.data.Path.path;
-import de.jbee.data.DataProperty.ItemProperty;
-import de.jbee.data.DataProperty.MemberProperty;
-import de.jbee.data.DataProperty.ValueProperty;
+import static de.jbee.data.Path.memberPath;
 import de.jbee.lang.Ord;
 import de.jbee.lang.ReducibleSequence;
 import de.jbee.lang.Searchable;
@@ -16,11 +13,19 @@ public interface Dataset<T>
 
 	Ord<Object> ORDER = Entry.ORDER;
 
-	<S> Dataset<S> member( MemberProperty<? super T, S> property );
+	<M> Dataset<M> member( MemberProperty<? super T, M> property );
 
 	<I> I items( ItemProperty<T, I> property );
 
 	<V> V value( ValueProperty<? super T, V> property );
+
+	interface Values<T>
+			extends Table<Object> {
+
+		//TODO duplicate method also in Dataset...
+		<M> Dataset<M> member( MemberProperty<? super T, M> property );
+
+	}
 
 	interface Members
 			extends Table<Object> {
@@ -29,7 +34,7 @@ public interface Dataset<T>
 		 * A special value holding the type (interface) represents the values of this 'object'
 		 * (through {@link DataProperty}s).
 		 */
-		Path TYPE = path( "__type__" );
+		Path TYPE = memberPath( "__type__" );
 
 		<E> Dataset<E> memberAt( Path descriptor, Class<E> type );
 
@@ -51,5 +56,46 @@ public interface Dataset<T>
 	interface MemberDescriptor {
 
 		boolean isAssured( Class<?> required );
+	}
+
+	interface MemberProperty<R, T> {
+
+		Dataset<T> resolveIn( Path root, Members members );
+
+		//		RangeProperty<R, T> repeat( int times );
+
+		//		<S> ObjectProperty<R, S> dot( ObjectProperty<T, S> subpath );
+		//
+		//		<V> ValueProperty<R, V> dot( ValueProperty<T, V> subpath );
+		//
+		//		<E> RangeProperty<R, E> dot( RangeProperty<T, E> subpath );
+	}
+
+	/**
+	 * Represents a <i>simple</i> (unstructured) value that is resolved from a data object by
+	 * {@link #resolveIn(Table)}. The actual <i>"path"</i> is hidden inside of the property.
+	 * 
+	 * @author Jan Bernitt (jan.bernitt@gmx.de)
+	 */
+	interface ValueProperty<R, T> {
+
+		/**
+		 * A data container is telling this path to resolve the value returned to the caller of
+		 * {@link Dataset#value(ValueProperty)}.
+		 * 
+		 * @return usually the <code>value</code> passed in as an argument.
+		 */
+		T resolveIn( Path root, Values<? extends R> values );
+
+	}
+
+	interface NotionalProperty<R, T> {
+
+		T compute( R value );
+	}
+
+	interface ItemProperty<T, I> {
+
+		I resolveIn( Items<T> items );
 	}
 }

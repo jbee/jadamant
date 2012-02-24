@@ -2,9 +2,6 @@ package de.jbee.data;
 
 import static de.jbee.lang.seq.IndexFor.insertionIndex;
 import static de.jbee.lang.seq.Sequences.key;
-import de.jbee.data.DataProperty.ItemProperty;
-import de.jbee.data.DataProperty.MemberProperty;
-import de.jbee.data.DataProperty.ValueProperty;
 import de.jbee.data.Dataset.Items;
 import de.jbee.data.Dataset.Members;
 import de.jbee.lang.List;
@@ -35,7 +32,7 @@ public class Datamap {
 	}
 
 	static final class EmptyDataset<T>
-			implements Dataset<T>, Members {
+			implements Dataset<T>, Members, de.jbee.data.Dataset.Values<T> {
 
 		@Override
 		public Object at( int index )
@@ -224,7 +221,7 @@ public class Datamap {
 	 * 
 	 */
 	private static final class ObjectDataset<T>
-			implements Dataset<T>, Members {
+			implements Dataset<T>, Members, de.jbee.data.Dataset.Values<T> {
 
 		private final Path root;
 		private final int start;
