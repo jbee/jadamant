@@ -8,6 +8,7 @@ import de.jbee.data.DataProperty.NotionalProperty;
 import de.jbee.data.DataProperty.ValueProperty;
 import de.jbee.data.Dataset.Items;
 import de.jbee.data.Dataset.Members;
+import de.jbee.data.Dataset.TypeDescriptor;
 import de.jbee.lang.Sequence;
 import de.jbee.lang.Table;
 import de.jbee.lang.dev.Nullsave;
@@ -21,8 +22,12 @@ import de.jbee.lang.seq.Sequences;
  */
 public class Property {
 
+	public static TypeDescriptor type( Class<?> type ) {
+		return new InheritanceTypeDescriptor( type );
+	}
+
 	public static <R, T> MemberProperty<R, T> object( String name, Class<T> type ) {
-		return new TypedObjectProperty<R, T>( type, Path.path( name ) );
+		return new DynamicMemberProperty<R, T>( type, Path.path( name ), Path.item( 1 ) );
 	}
 
 	public static <R, T> ValueProperty<R, T> value( String name, Class<T> type, T defaultValue ) {
@@ -129,25 +134,49 @@ public class Property {
 
 	}
 
-	static final class TypedObjectProperty<R, T>
+	static final class InheritanceTypeDescriptor
+			implements TypeDescriptor {
+
+		private final Class<?> type;
+
+		InheritanceTypeDescriptor( Class<?> type ) {
+			super();
+			this.type = type;
+		}
+
+		@Override
+		public boolean isAssured( Class<?> required ) {
+			return required == type || type.isAssignableFrom( required );
+		}
+
+	}
+
+	static final class DynamicMemberProperty<R, T>
 			implements MemberProperty<R, T> {
 
 		private final Class<T> type;
 		private final Path name;
+		private final Path defaultItem;
 
-		TypedObjectProperty( Class<T> type, Path name ) {
+		DynamicMemberProperty( Class<T> type, Path name, Path defaultItem ) {
 			super();
 			this.type = type;
 			this.name = name;
+			this.defaultItem = defaultItem;
 		}
 
 		@Override
 		public Dataset<T> resolveIn( Path root, Members members ) {
-			final Path path = root.dot( name );
-			return exists( members.indexFor( key( path.dot( Members.TYPE ) ) ) )
-				//FIXME need to recognize start of list/map also
-				? members.memberAt( path, type )
-				: members.none( type );
+			final Path member = root.dot( name );
+			Path descriptor = member.dot( Members.TYPE );
+			if ( exists( members.indexFor( key( descriptor ) ) ) ) {
+				return members.memberAt( descriptor, type );
+			}
+			descriptor = member.dot( defaultItem ).dot( Members.TYPE );
+			if ( exists( members.indexFor( key( descriptor ) ) ) ) {
+				return members.memberAt( descriptor, type );
+			}
+			return members.noneAs( type );
 		}
 
 		@Override

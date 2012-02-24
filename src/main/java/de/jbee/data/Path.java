@@ -31,6 +31,12 @@ public final class Path
 				: new Path( path + Path.SEPARATOR + suffix.path );
 	}
 
+	public Path parent() {
+		return path.isEmpty()
+			? this
+			: subSequence( 0, path.lastIndexOf( SEPARATOR ) );
+	}
+
 	@Override
 	public String toString() {
 		return path;

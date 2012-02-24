@@ -74,12 +74,12 @@ public class Datamap {
 		}
 
 		@Override
-		public <E> Dataset<E> memberAt( Path root, Class<E> type ) {
+		public <E> Dataset<E> memberAt( Path descriptor, Class<E> type ) {
 			return empty();
 		}
 
 		@Override
-		public <E> Dataset<E> none( Class<E> type ) {
+		public <E> Dataset<E> noneAs( Class<E> type ) {
 			return empty();
 		}
 
@@ -278,30 +278,31 @@ public class Datamap {
 		}
 
 		@Override
-		public <E> Dataset<E> memberAt( Path root, Class<E> type ) {
+		public <E> Dataset<E> memberAt( Path descriptor, Class<E> type ) {
 			//FIXME need to recognize start of list/map also --> maybe the root argument should point to the exact member wanted and the end is parent(root)+terminator
-			int startInclusive = indexFor( key( root.dot( Members.TYPE ) ) );
+			int startInclusive = indexFor( key( descriptor ) );
 			if ( startInclusive < start || startInclusive >= end
 					|| !isMemberOfType( type, at( startInclusive ) ) ) {
 				return empty();
 			}
-			Key key = key( root.toString() + Path.SEPARATOR + "" + Map.Key.PREFIX_TERMINATOR );
+			Path memberRoot = descriptor.parent();
+			Key key = key( memberRoot.toString() + Path.SEPARATOR + "" + Map.Key.PREFIX_TERMINATOR );
 			int endExclusive = insertionIndex( indexFor( key ) );
 			final int low = Math.min( start + startInclusive, end );
 			final int high = Math.min( start + endExclusive, end );
 			if ( low >= high ) {
 				return empty();
 			}
-			return new ObjectDataset<E>( root, low, high, properties );
+			return new ObjectDataset<E>( memberRoot, low, high, properties );
 		}
 
-		private <E> boolean isMemberOfType( Class<E> expected, Object actual ) {
-			return actual == expected // most of the cases this will work
-					|| ( actual instanceof Class<?> && expected.isAssignableFrom( (Class<?>) actual ) );
+		private <E> boolean isMemberOfType( Class<E> required, Object actual ) {
+			return actual instanceof TypeDescriptor
+					&& ( (TypeDescriptor) actual ).isAssured( required );
 		}
 
 		@Override
-		public <E> Dataset<E> none( Class<E> type ) {
+		public <E> Dataset<E> noneAs( Class<E> type ) {
 			return empty();
 		}
 

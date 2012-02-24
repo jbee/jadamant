@@ -31,9 +31,9 @@ public interface Dataset<T>
 		 */
 		Path TYPE = path( "__type__" );
 
-		<E> Dataset<E> memberAt( Path root, Class<E> type );
+		<E> Dataset<E> memberAt( Path descriptor, Class<E> type );
 
-		<E> Dataset<E> none( Class<E> type );
+		<E> Dataset<E> noneAs( Class<E> type );
 	}
 
 	interface Items<E>
@@ -48,4 +48,8 @@ public interface Dataset<T>
 		Items<E> drop( int count );
 	}
 
+	interface TypeDescriptor {
+
+		boolean isAssured( Class<?> required );
+	}
 }
