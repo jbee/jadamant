@@ -48,7 +48,7 @@ public interface Dataset<T>
 		Items<E> drop( int count );
 	}
 
-	interface TypeDescriptor {
+	interface MemberDescriptor {
 
 		boolean isAssured( Class<?> required );
 	}

@@ -279,17 +279,16 @@ public class Datamap {
 
 		@Override
 		public <E> Dataset<E> memberAt( Path descriptor, Class<E> type ) {
-			//FIXME need to recognize start of list/map also --> maybe the root argument should point to the exact member wanted and the end is parent(root)+terminator
-			int startInclusive = indexFor( key( descriptor ) );
-			if ( startInclusive < start || startInclusive >= end
-					|| !isMemberOfType( type, at( startInclusive ) ) ) {
+			int descriptorIndex = indexFor( key( descriptor ) );
+			if ( descriptorIndex < start || descriptorIndex >= end
+					|| !isMemberOfType( type, at( descriptorIndex ) ) ) {
 				return empty();
 			}
 			Path memberRoot = descriptor.parent();
 			Key key = key( memberRoot.toString() + Path.SEPARATOR + "" + Map.Key.PREFIX_TERMINATOR );
-			int endExclusive = insertionIndex( indexFor( key ) );
-			final int low = Math.min( start + startInclusive, end );
-			final int high = Math.min( start + endExclusive, end );
+			int memberEnd = insertionIndex( indexFor( key ) );
+			final int low = Math.min( start + descriptorIndex, end );
+			final int high = Math.min( start + memberEnd, end );
 			if ( low >= high ) {
 				return empty();
 			}
@@ -297,8 +296,8 @@ public class Datamap {
 		}
 
 		private <E> boolean isMemberOfType( Class<E> required, Object actual ) {
-			return actual instanceof TypeDescriptor
-					&& ( (TypeDescriptor) actual ).isAssured( required );
+			return actual instanceof MemberDescriptor
+					&& ( (MemberDescriptor) actual ).isAssured( required );
 		}
 
 		@Override

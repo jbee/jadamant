@@ -7,8 +7,8 @@ import de.jbee.data.DataProperty.MemberProperty;
 import de.jbee.data.DataProperty.NotionalProperty;
 import de.jbee.data.DataProperty.ValueProperty;
 import de.jbee.data.Dataset.Items;
+import de.jbee.data.Dataset.MemberDescriptor;
 import de.jbee.data.Dataset.Members;
-import de.jbee.data.Dataset.TypeDescriptor;
 import de.jbee.lang.Sequence;
 import de.jbee.lang.Table;
 import de.jbee.lang.dev.Nullsave;
@@ -22,7 +22,7 @@ import de.jbee.lang.seq.Sequences;
  */
 public class Property {
 
-	public static TypeDescriptor type( Class<?> type ) {
+	public static MemberDescriptor type( Class<?> type ) {
 		return new InheritanceTypeDescriptor( type );
 	}
 
@@ -135,7 +135,7 @@ public class Property {
 	}
 
 	static final class InheritanceTypeDescriptor
-			implements TypeDescriptor {
+			implements MemberDescriptor {
 
 		private final Class<?> type;
 
@@ -169,14 +169,17 @@ public class Property {
 		public Dataset<T> resolveIn( Path root, Members members ) {
 			final Path member = root.dot( name );
 			Path descriptor = member.dot( Members.TYPE );
-			if ( exists( members.indexFor( key( descriptor ) ) ) ) {
-				return members.memberAt( descriptor, type );
+			if ( !existsMember( descriptor, members ) ) {
+				descriptor = member.dot( defaultItem ).dot( Members.TYPE );
+				if ( !existsMember( descriptor, members ) ) {
+					return members.noneAs( type );
+				}
 			}
-			descriptor = member.dot( defaultItem ).dot( Members.TYPE );
-			if ( exists( members.indexFor( key( descriptor ) ) ) ) {
-				return members.memberAt( descriptor, type );
-			}
-			return members.noneAs( type );
+			return members.memberAt( descriptor, type );
+		}
+
+		private boolean existsMember( Path descriptor, Members members ) {
+			return exists( members.indexFor( key( descriptor ) ) );
 		}
 
 		@Override
