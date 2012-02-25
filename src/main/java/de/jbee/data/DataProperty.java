@@ -3,7 +3,7 @@
  */
 package de.jbee.data;
 
-import de.jbee.data.Dataset.MemberProperty;
+import de.jbee.data.Dataset.RecordProperty;
 
 /**
  * TODO the utility methods to transit into other paths should not be part of the interfaces.
@@ -22,7 +22,7 @@ interface DataProperty<R, T> { // maybe we don't need a common Property interfac
 	}
 
 	interface RangeProperty<R, E>
-			extends MemberProperty<R, E> {
+			extends RecordProperty<R, E> {
 
 		//		ObjectProperty<R, E> head(); //OPEN how to model lists of values and objects ?
 		//
@@ -42,7 +42,7 @@ interface DataProperty<R, T> { // maybe we don't need a common Property interfac
 	 * @author Jan Bernitt (jan.bernitt@gmx.de)
 	 */
 	interface SelectionProperty<R, E>
-			extends MemberProperty<R, E> { //OPEN maybe extend RangePath ??
+			extends RecordProperty<R, E> { //OPEN maybe extend RangePath ??
 
 		//TODO 
 	}

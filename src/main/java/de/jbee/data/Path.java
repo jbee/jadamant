@@ -17,7 +17,7 @@ public final class Path
 		this.path = path;
 	}
 
-	public static Path memberPath( String value ) {
+	public static Path recordPath( String value ) {
 		return value == null || value.isEmpty()
 			? ROOT
 			: new Path( value );
@@ -69,7 +69,7 @@ public final class Path
 
 	@Override
 	public Path subSequence( int start, int end ) {
-		return memberPath( path.substring( start, end ) );
+		return recordPath( path.substring( start, end ) );
 	}
 
 	public static Path itemPath( int index ) {

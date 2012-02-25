@@ -1,14 +1,14 @@
 package de.jbee.data;
 
 import static de.jbee.data.Path.itemPath;
-import static de.jbee.data.Path.memberPath;
+import static de.jbee.data.Path.recordPath;
 import static de.jbee.lang.seq.IndexFor.exists;
 import static de.jbee.lang.seq.Sequences.key;
 import de.jbee.data.Dataset.ItemProperty;
 import de.jbee.data.Dataset.Items;
-import de.jbee.data.Dataset.MemberDescriptor;
-import de.jbee.data.Dataset.MemberProperty;
-import de.jbee.data.Dataset.Members;
+import de.jbee.data.Dataset.RecordDescriptor;
+import de.jbee.data.Dataset.RecordProperty;
+import de.jbee.data.Dataset.Records;
 import de.jbee.data.Dataset.NotionalProperty;
 import de.jbee.data.Dataset.ValueProperty;
 import de.jbee.data.Dataset.Values;
@@ -23,16 +23,16 @@ import de.jbee.lang.dev.Nullsave;
  */
 public class Property {
 
-	public static MemberDescriptor type( Class<?> type ) {
+	public static RecordDescriptor type( Class<?> type ) {
 		return new InheritanceTypeDescriptor( type );
 	}
 
-	public static <R, T> MemberProperty<R, T> object( String name, Class<T> type ) {
-		return new DynamicMemberProperty<R, T>( type, memberPath( name ), itemPath( 1 ) );
+	public static <R, T> RecordProperty<R, T> record( String name, Class<T> type ) {
+		return new DynamicRecordProperty<R, T>( type, recordPath( name ), itemPath( 1 ) );
 	}
 
 	public static <R, T> ValueProperty<R, T> value( String name, Class<T> type, T defaultValue ) {
-		return new NonnullProperty<R, T>( new TypedProperty<R, T>( type, memberPath( name ) ),
+		return new NonnullProperty<R, T>( new TypedProperty<R, T>( type, recordPath( name ) ),
 				defaultValue );
 	}
 
@@ -136,7 +136,7 @@ public class Property {
 	}
 
 	static final class InheritanceTypeDescriptor
-			implements MemberDescriptor {
+			implements RecordDescriptor {
 
 		private final Class<?> type;
 
@@ -152,14 +152,14 @@ public class Property {
 
 	}
 
-	static final class DynamicMemberProperty<R, T>
-			implements MemberProperty<R, T> {
+	static final class DynamicRecordProperty<R, T>
+			implements RecordProperty<R, T> {
 
 		private final Class<T> type;
 		private final Path name;
 		private final Path defaultItem;
 
-		DynamicMemberProperty( Class<T> type, Path name, Path defaultItem ) {
+		DynamicRecordProperty( Class<T> type, Path name, Path defaultItem ) {
 			super();
 			this.type = type;
 			this.name = name;
@@ -167,20 +167,20 @@ public class Property {
 		}
 
 		@Override
-		public Dataset<T> resolveIn( Path root, Members members ) {
-			final Path member = root.dot( name );
-			Path descriptor = member.dot( Members.TYPE );
-			if ( !existsMember( descriptor, members ) ) {
-				descriptor = member.dot( defaultItem ).dot( Members.TYPE );
-				if ( !existsMember( descriptor, members ) ) {
-					return members.noneAs( type );
+		public Dataset<T> resolveIn( Path root, Records records ) {
+			final Path record = root.dot( name );
+			Path descriptor = record.dot( Records.TYPE );
+			if ( !existsRecord( descriptor, records ) ) {
+				descriptor = record.dot( defaultItem ).dot( Records.TYPE );
+				if ( !existsRecord( descriptor, records ) ) {
+					return records.noneAs( type );
 				}
 			}
-			return members.memberAt( descriptor, type );
+			return records.recordAt( descriptor, type );
 		}
 
-		private boolean existsMember( Path descriptor, Members members ) {
-			return exists( members.indexFor( key( descriptor ) ) );
+		private boolean existsRecord( Path descriptor, Records records ) {
+			return exists( records.indexFor( key( descriptor ) ) );
 		}
 
 		@Override
@@ -189,21 +189,40 @@ public class Property {
 		}
 	}
 
-	static final class MemberValueProperty<R, T, V>
+	static final class ChildRecordProperty<R, T, M>
+			implements RecordProperty<R, M> {
+
+		private final RecordProperty<R, T> parent;
+		private final RecordProperty<T, M> child;
+
+		ChildRecordProperty( RecordProperty<R, T> parent, RecordProperty<T, M> child ) {
+			super();
+			this.parent = parent;
+			this.child = child;
+		}
+
+		@Override
+		public Dataset<M> resolveIn( Path root, Records records ) {
+			return parent.resolveIn( root, records ).record( child );
+		}
+
+	}
+
+	static final class RecordValueProperty<R, T, V>
 			implements ValueProperty<R, V> {
 
-		private final MemberProperty<R, T> member;
+		private final RecordProperty<R, T> record;
 		private final ValueProperty<T, V> value;
 
-		MemberValueProperty( MemberProperty<R, T> member, ValueProperty<T, V> value ) {
+		RecordValueProperty( RecordProperty<R, T> record, ValueProperty<T, V> value ) {
 			super();
-			this.member = member;
+			this.record = record;
 			this.value = value;
 		}
 
 		@Override
 		public V resolveIn( Path root, Values<? extends R> values ) {
-			return values.member( member ).value( value );
+			return values.record( record ).value( value );
 		}
 
 	}

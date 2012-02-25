@@ -1,6 +1,6 @@
 package de.jbee.data;
 
-import static de.jbee.data.Path.memberPath;
+import static de.jbee.data.Path.recordPath;
 import de.jbee.lang.Ord;
 import de.jbee.lang.ReducibleSequence;
 import de.jbee.lang.Searchable;
@@ -13,7 +13,7 @@ public interface Dataset<T>
 
 	Ord<Object> ORDER = Entry.ORDER;
 
-	<M> Dataset<M> member( MemberProperty<? super T, M> property );
+	<M> Dataset<M> record( RecordProperty<? super T, M> property );
 
 	<I> I items( ItemProperty<T, I> property );
 
@@ -23,20 +23,20 @@ public interface Dataset<T>
 			extends Table<Object> {
 
 		//TODO duplicate method also in Dataset...
-		<M> Dataset<M> member( MemberProperty<? super T, M> property );
+		<M> Dataset<M> record( RecordProperty<? super T, M> property );
 
 	}
 
-	interface Members
+	interface Records
 			extends Table<Object> {
 
 		/**
 		 * A special value holding the type (interface) represents the values of this 'object'
 		 * (through {@link DataProperty}s).
 		 */
-		Path TYPE = memberPath( "__type__" );
+		Path TYPE = recordPath( "__type__" );
 
-		<E> Dataset<E> memberAt( Path descriptor, Class<E> type );
+		<E> Dataset<E> recordAt( Path descriptor, Class<E> type );
 
 		<E> Dataset<E> noneAs( Class<E> type );
 	}
@@ -53,14 +53,14 @@ public interface Dataset<T>
 		Items<E> drop( int count );
 	}
 
-	interface MemberDescriptor {
+	interface RecordDescriptor {
 
 		boolean isAssured( Class<?> required );
 	}
 
-	interface MemberProperty<R, T> {
+	interface RecordProperty<R, T> {
 
-		Dataset<T> resolveIn( Path root, Members members );
+		Dataset<T> resolveIn( Path root, Records records );
 
 		//		RangeProperty<R, T> repeat( int times );
 

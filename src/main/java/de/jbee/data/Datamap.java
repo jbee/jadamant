@@ -3,7 +3,7 @@ package de.jbee.data;
 import static de.jbee.lang.seq.IndexFor.insertionIndex;
 import static de.jbee.lang.seq.Sequences.key;
 import de.jbee.data.Dataset.Items;
-import de.jbee.data.Dataset.Members;
+import de.jbee.data.Dataset.Records;
 import de.jbee.lang.List;
 import de.jbee.lang.ListIndex;
 import de.jbee.lang.Map;
@@ -32,7 +32,7 @@ public class Datamap {
 	}
 
 	static final class EmptyDataset<T>
-			implements Dataset<T>, Members, de.jbee.data.Dataset.Values<T> {
+			implements Dataset<T>, Records, de.jbee.data.Dataset.Values<T> {
 
 		@Override
 		public Object at( int index )
@@ -66,12 +66,12 @@ public class Datamap {
 		}
 
 		@Override
-		public <S> Dataset<S> member( MemberProperty<? super T, S> property ) {
+		public <S> Dataset<S> record( RecordProperty<? super T, S> property ) {
 			return empty();
 		}
 
 		@Override
-		public <E> Dataset<E> memberAt( Path descriptor, Class<E> type ) {
+		public <E> Dataset<E> recordAt( Path descriptor, Class<E> type ) {
 			return empty();
 		}
 
@@ -221,7 +221,7 @@ public class Datamap {
 	 * 
 	 */
 	private static final class ObjectDataset<T>
-			implements Dataset<T>, Members, de.jbee.data.Dataset.Values<T> {
+			implements Dataset<T>, Records, de.jbee.data.Dataset.Values<T> {
 
 		private final Path root;
 		private final int start;
@@ -270,31 +270,31 @@ public class Datamap {
 		}
 
 		@Override
-		public <S> Dataset<S> member( MemberProperty<? super T, S> property ) {
+		public <S> Dataset<S> record( RecordProperty<? super T, S> property ) {
 			return property.resolveIn( root, this );
 		}
 
 		@Override
-		public <E> Dataset<E> memberAt( Path descriptor, Class<E> type ) {
+		public <E> Dataset<E> recordAt( Path descriptor, Class<E> type ) {
 			int descriptorIndex = indexFor( key( descriptor ) );
 			if ( descriptorIndex < start || descriptorIndex >= end
-					|| !isMemberOfType( type, at( descriptorIndex ) ) ) {
+					|| !isRecordOfType( type, at( descriptorIndex ) ) ) {
 				return empty();
 			}
-			Path memberRoot = descriptor.parent();
-			Key key = key( memberRoot.toString() + Path.SEPARATOR + "" + Map.Key.PREFIX_TERMINATOR );
-			int memberEnd = insertionIndex( indexFor( key ) );
+			Path recordRoot = descriptor.parent();
+			Key key = key( recordRoot.toString() + Path.SEPARATOR + "" + Map.Key.PREFIX_TERMINATOR );
+			int recordEnd = insertionIndex( indexFor( key ) );
 			final int low = Math.min( start + descriptorIndex, end );
-			final int high = Math.min( start + memberEnd, end );
+			final int high = Math.min( start + recordEnd, end );
 			if ( low >= high ) {
 				return empty();
 			}
-			return new ObjectDataset<E>( memberRoot, low, high, properties );
+			return new ObjectDataset<E>( recordRoot, low, high, properties );
 		}
 
-		private <E> boolean isMemberOfType( Class<E> required, Object actual ) {
-			return actual instanceof MemberDescriptor
-					&& ( (MemberDescriptor) actual ).isAssured( required );
+		private <E> boolean isRecordOfType( Class<E> required, Object actual ) {
+			return actual instanceof RecordDescriptor
+					&& ( (RecordDescriptor) actual ).isAssured( required );
 		}
 
 		@Override
