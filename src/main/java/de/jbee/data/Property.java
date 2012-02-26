@@ -10,7 +10,6 @@ import de.jbee.data.Dataset.Records;
 import de.jbee.data.Dataset.ValueProperty;
 import de.jbee.data.Dataset.Values;
 import de.jbee.data.Dataset.VirtualProperty;
-import de.jbee.lang.Sequence;
 import de.jbee.lang.dev.Nullsave;
 
 /**
@@ -36,7 +35,11 @@ public class Property {
 				defaultValue );
 	}
 
-	public static <E> ItemProperty<E, Sequence<Dataset<E>>> each( Class<E> type ) {
+	public static <E> ItemProperty<E, Items<E>> each() {
+		return new EachItemProperty<E>();
+	}
+
+	public static <E> ItemProperty<E, Items<E>> each( Class<E> type ) {
 		return new EachItemProperty<E>();
 	}
 
@@ -45,11 +48,11 @@ public class Property {
 	}
 
 	static class EachItemProperty<E>
-			implements ItemProperty<E, Sequence<Dataset<E>>> {
+			implements ItemProperty<E, Items<E>> {
 
 		@Override
-		public Sequence<Dataset<E>> resolveIn( Items<E> items ) {
-			return items;
+		public Items<E> resolveIn( Items<? extends E> items ) {
+			return (Items<E>) items;
 		}
 
 	}

@@ -17,7 +17,7 @@ public interface Dataset<T>
 
 	<R> Dataset<R> record( RecordProperty<? super T, R> property );
 
-	<I> I items( ItemProperty<T, I> property );
+	<I> I items( ItemProperty<? super T, I> property );
 
 	/**
 	 * Represents a <i>simple</i> (unstructured) value that is resolved from a data object by
@@ -78,7 +78,7 @@ public interface Dataset<T>
 
 	interface ItemProperty<T, I> {
 
-		I resolveIn( Items<T> items );
+		I resolveIn( Items<? extends T> items );
 	}
 
 	interface Items<E>

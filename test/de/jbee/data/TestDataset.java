@@ -54,7 +54,7 @@ public class TestDataset {
 		Map<Object> properties = Map.with.noEntries( Dataset.ORDER );
 		properties = properties.insert( key( "total" ), 2 );
 		properties = properties.insert( key( "name" ), "erni" );
-		Dataset<Shallow> obj = Datamap.object( properties );
+		Dataset<Shallow> obj = Datamap.dataset( properties );
 		assertThat( obj.value( Shallow.total ), is( 2 ) );
 		assertThat( obj.value( Shallow.name ), is( "erni" ) );
 	}
@@ -70,7 +70,7 @@ public class TestDataset {
 		properties = properties.insert( key( "flat.total" ), 2 );
 		properties = properties.insert( key( "flat.name" ), "erni" );
 		properties = properties.insert( key( "flat." + Records.TYPE ), Shallow.class );
-		obj = Datamap.object( properties );
+		obj = Datamap.dataset( properties );
 		Dataset<Shallow> shallow = obj.record( Deep.shallow );
 		assertFalse( shallow.isEmpty() );
 		assertThat( shallow.value( Shallow.total ), is( 2 ) );
@@ -87,7 +87,7 @@ public class TestDataset {
 		properties = properties.insert( key( "deep.flat.name" ), "erni" );
 		properties = properties.insert( key( "deep.flat." + Records.TYPE ), Shallow.class );
 
-		Dataset<Deeper> obj = Datamap.object( properties );
+		Dataset<Deeper> obj = Datamap.dataset( properties );
 		Dataset<Deep> deep = obj.record( Deeper.deep );
 		assertThat( deep.length(), is( 5 ) );
 		assertThat( deep.value( Deep.percent ), is( 100f ) );
@@ -111,14 +111,14 @@ public class TestDataset {
 		properties = properties.insert( key( "members:4." + Records.TYPE ), Shallow.class );
 		properties = properties.insert( key( "members:4.name" ), "samson" );
 		properties = properties.insert( key( "members:4.total" ), 1 );
-		Dataset<ShallowItems> obj = Datamap.object( properties );
-		Dataset<Shallow> members = obj.record( ShallowItems.members );
-		assertThat( members.length(), is( 3 ) );
-		assertThat( members.value( Shallow.name ), is( "erni" ) );
-		Dataset<Shallow> second = members.items( each( Shallow.class ) ).at( 2 );
+		Dataset<ShallowItems> obj = Datamap.dataset( properties );
+		Dataset<Shallow> shallowItems = obj.record( ShallowItems.members );
+		assertThat( shallowItems.length(), is( 3 ) );
+		assertThat( shallowItems.value( Shallow.name ), is( "erni" ) );
+		Dataset<Shallow> second = shallowItems.items( each( Shallow.class ) ).at( 2 );
 		assertThat( second.length(), is( 3 ) );
 		assertThat( second.value( Shallow.name ), is( "bert" ) );
-		Dataset<Shallow> third = members.items( each( Shallow.class ) ).at( 3 );
+		Dataset<Shallow> third = shallowItems.items( each( Shallow.class ) ).at( 3 );
 		assertThat( third.length(), is( 3 ) );
 		assertThat( third.value( Shallow.name ), is( "tiffi" ) );
 	}
@@ -128,7 +128,7 @@ public class TestDataset {
 		Map<Object> properties = Map.with.noEntries( Dataset.ORDER );
 		properties = properties.insert( key( "total" ), 2 );
 		properties = properties.insert( key( "name" ), "erni" );
-		Dataset<Shallow> obj = Datamap.object( properties );
+		Dataset<Shallow> obj = Datamap.dataset( properties );
 		Sequence<Dataset<Shallow>> items = obj.items( each( Shallow.class ) );
 		assertThat( items.isEmpty(), is( false ) );
 		assertThat( items.length(), is( 1 ) );

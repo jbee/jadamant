@@ -29,7 +29,7 @@ public class Datamap {
 		return (Items<E>) NO_ITEMS;
 	}
 
-	static <T> Dataset<T> object( Map<Object> properties ) {
+	static <T> Dataset<T> dataset( Map<Object> properties ) {
 		return new ObjectDataset<T>( Path.ROOT, 0, properties.length(), properties );
 	}
 
@@ -58,7 +58,7 @@ public class Datamap {
 		}
 
 		@Override
-		public <I> I items( ItemProperty<T, I> property ) {
+		public <I> I items( ItemProperty<? super T, I> property ) {
 			return property.resolveIn( Datamap.<T> noItems() );
 		}
 
@@ -315,7 +315,7 @@ public class Datamap {
 		}
 
 		@Override
-		public <I> I items( ItemProperty<T, I> property ) {
+		public <I> I items( ItemProperty<? super T, I> property ) {
 			return root.endsWithItem()
 				? property.resolveIn( new ListItems<T>( this ) )
 				: property.resolveIn( new VirtualItems<T, ObjectDataset<T>>( this ) );
