@@ -1,5 +1,6 @@
 package de.jbee.data;
 
+import static de.jbee.data.Property.each;
 import static de.jbee.lang.seq.Sequences.key;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -10,111 +11,129 @@ import org.junit.Test;
 import de.jbee.data.Dataset.Records;
 import de.jbee.data.Dataset.ValueProperty;
 import de.jbee.lang.Map;
+import de.jbee.lang.Sequence;
 
 public class TestDataset {
 
-	static interface FlatObject {
+	static interface Shallow {
 
-		ValueProperty<FlatObject, String> name = Property.value( "name", String.class, "unnamed" );
-		ValueProperty<FlatObject, Integer> total = Property.value( "total", 1 );
+		ValueProperty<Shallow, String> name = Property.value( "name", String.class, "unnamed" );
+		ValueProperty<Shallow, Integer> total = Property.value( "total", 1 );
 	}
 
-	static interface DeepObject {
+	static interface Deep {
 
-		ValueProperty<DeepObject, Float> percent = Property.value( "percent", Float.class, 0.1f );
-		Record<DeepObject, FlatObject> flat = Property.record( "flat", FlatObject.class );
+		ValueProperty<Deep, Float> percent = Property.value( "percent", Float.class, 0.1f );
+		Record<Deep, Shallow> shallow = Property.record( "flat", Shallow.class );
 	}
 
-	static interface DeeperObject {
+	static interface Deeper {
 
-		Record<DeeperObject, DeepObject> deep = Property.record( "deep", DeepObject.class );
+		Record<Deeper, Deep> deep = Property.record( "deep", Deep.class );
 	}
 
-	static interface RangeObject {
+	static interface ShallowItems {
 
-		Record<RangeObject, FlatObject> members = Property.record( "members", FlatObject.class );
+		Record<ShallowItems, Shallow> members = Property.record( "members", Shallow.class );
 
 	}
 
 	public void test() {
-		Record<DeeperObject, FlatObject> deep_flat = DeeperObject.deep.child( DeepObject.flat );
+		Record<Deeper, Shallow> deeper = Deeper.deep.child( Deep.shallow );
 	}
 
 	@Test
-	public void valuesInAFlatObjectCanBeAccessed() {
-		Dataset<FlatObject> obj = Datamap.empty();
-		assertThat( obj.value( FlatObject.total ), is( 1 ) );
-		assertThat( obj.value( FlatObject.name ), is( "unnamed" ) );
+	public void valuesOfEmptyRecordsReturningDefaultsFromProperties() {
+		Dataset<Shallow> obj = Datamap.empty();
+		assertThat( obj.value( Shallow.total ), is( 1 ) );
+		assertThat( obj.value( Shallow.name ), is( "unnamed" ) );
+	}
 
+	@Test
+	public void valuesOfShallowRecordsCanBeReadUsingDirectProperties() {
 		Map<Object> properties = Map.with.noEntries( Dataset.ORDER );
 		properties = properties.insert( key( "total" ), 2 );
 		properties = properties.insert( key( "name" ), "erni" );
-		obj = Datamap.object( properties );
-		assertThat( obj.value( FlatObject.total ), is( 2 ) );
-		assertThat( obj.value( FlatObject.name ), is( "erni" ) );
+		Dataset<Shallow> obj = Datamap.object( properties );
+		assertThat( obj.value( Shallow.total ), is( 2 ) );
+		assertThat( obj.value( Shallow.name ), is( "erni" ) );
 	}
 
 	@Test
-	public void recordsAndItsValuesInADeepObjectCanBeAccessed() {
-		Dataset<DeepObject> obj = Datamap.empty();
-		assertThat( obj.record( DeepObject.flat ).value( FlatObject.total ), is( 1 ) );
-		assertThat( obj.value( DeepObject.percent ), is( 0.1f ) );
+	public void recordsAndItsValuesInADeepRecordCanBeReadUsingDirectProperties() {
+		Dataset<Deep> obj = Datamap.empty();
+		assertThat( obj.record( Deep.shallow ).value( Shallow.total ), is( 1 ) );
+		assertThat( obj.value( Deep.percent ), is( 0.1f ) );
 
 		Map<Object> properties = Map.with.noEntries( Dataset.ORDER );
 		properties = properties.insert( key( "percent" ), 100f );
 		properties = properties.insert( key( "flat.total" ), 2 );
 		properties = properties.insert( key( "flat.name" ), "erni" );
-		properties = properties.insert( key( "flat." + Records.TYPE ), FlatObject.class );
+		properties = properties.insert( key( "flat." + Records.TYPE ), Shallow.class );
 		obj = Datamap.object( properties );
-		Dataset<FlatObject> flatObj = obj.record( DeepObject.flat );
-		assertFalse( flatObj.isEmpty() );
-		assertThat( flatObj.value( FlatObject.total ), is( 2 ) );
-		assertThat( flatObj.value( FlatObject.name ), is( "erni" ) );
-		assertThat( obj.value( DeepObject.percent ), is( 100f ) );
+		Dataset<Shallow> shallow = obj.record( Deep.shallow );
+		assertFalse( shallow.isEmpty() );
+		assertThat( shallow.value( Shallow.total ), is( 2 ) );
+		assertThat( shallow.value( Shallow.name ), is( "erni" ) );
+		assertThat( obj.value( Deep.percent ), is( 100f ) );
 	}
 
 	@Test
-	public void recordsNestedInAnotherRecordAndTheirValuesCanBeAccessed() {
+	public void nestedRecordsAndTheirValuesCanBeReadUsingDirectProperties() {
 		Map<Object> properties = Map.with.noEntries( Dataset.ORDER );
-		properties = properties.insert( key( "deep." + Records.TYPE ), DeepObject.class );
+		properties = properties.insert( key( "deep." + Records.TYPE ), Deep.class );
 		properties = properties.insert( key( "deep.percent" ), 100f );
 		properties = properties.insert( key( "deep.flat.total" ), 2 );
 		properties = properties.insert( key( "deep.flat.name" ), "erni" );
-		properties = properties.insert( key( "deep.flat." + Records.TYPE ), FlatObject.class );
+		properties = properties.insert( key( "deep.flat." + Records.TYPE ), Shallow.class );
 
-		Dataset<DeeperObject> obj = Datamap.object( properties );
-		Dataset<DeepObject> deepObj = obj.record( DeeperObject.deep );
-		assertThat( deepObj.length(), is( 5 ) );
-		assertThat( deepObj.value( DeepObject.percent ), is( 100f ) );
-		Dataset<FlatObject> flatObj = deepObj.record( DeepObject.flat );
-		assertThat( flatObj.length(), is( 3 ) );
-		assertThat( flatObj.value( FlatObject.name ), is( "erni" ) );
+		Dataset<Deeper> obj = Datamap.object( properties );
+		Dataset<Deep> deep = obj.record( Deeper.deep );
+		assertThat( deep.length(), is( 5 ) );
+		assertThat( deep.value( Deep.percent ), is( 100f ) );
+		Dataset<Shallow> shallow = deep.record( Deep.shallow );
+		assertThat( shallow.length(), is( 3 ) );
+		assertThat( shallow.value( Shallow.name ), is( "erni" ) );
 	}
 
 	@Test
-	public void itemsOfAListRecordsCanBeAccessed() {
+	public void itemsOfAListRecordsCanBeReadUsingDirectProperties() {
 		Map<Object> properties = Map.with.noEntries( Dataset.ORDER );
-		properties = properties.insert( key( "members:1." + Records.TYPE ), FlatObject.class );
+		properties = properties.insert( key( "members:1." + Records.TYPE ), Shallow.class );
 		properties = properties.insert( key( "members:1.name" ), "erni" );
 		properties = properties.insert( key( "members:1.total" ), 42 );
-		properties = properties.insert( key( "members:2." + Records.TYPE ), FlatObject.class );
+		properties = properties.insert( key( "members:2." + Records.TYPE ), Shallow.class );
 		properties = properties.insert( key( "members:2.name" ), "bert" );
 		properties = properties.insert( key( "members:2.total" ), 23 );
-		properties = properties.insert( key( "members:3." + Records.TYPE ), FlatObject.class );
+		properties = properties.insert( key( "members:3." + Records.TYPE ), Shallow.class );
 		properties = properties.insert( key( "members:3.name" ), "tiffi" );
 		properties = properties.insert( key( "members:3.total" ), 5 );
-		properties = properties.insert( key( "members:4." + Records.TYPE ), FlatObject.class );
+		properties = properties.insert( key( "members:4." + Records.TYPE ), Shallow.class );
 		properties = properties.insert( key( "members:4.name" ), "samson" );
 		properties = properties.insert( key( "members:4.total" ), 1 );
-		Dataset<RangeObject> obj = Datamap.object( properties );
-		Dataset<FlatObject> members = obj.record( RangeObject.members );
+		Dataset<ShallowItems> obj = Datamap.object( properties );
+		Dataset<Shallow> members = obj.record( ShallowItems.members );
 		assertThat( members.length(), is( 3 ) );
-		assertThat( members.value( FlatObject.name ), is( "erni" ) );
-		Dataset<FlatObject> second = members.items( Property.<FlatObject> each() ).at( 2 );
+		assertThat( members.value( Shallow.name ), is( "erni" ) );
+		Dataset<Shallow> second = members.items( each( Shallow.class ) ).at( 2 );
 		assertThat( second.length(), is( 3 ) );
-		assertThat( second.value( FlatObject.name ), is( "bert" ) );
-		Dataset<FlatObject> third = members.items( Property.<FlatObject> each() ).at( 3 );
+		assertThat( second.value( Shallow.name ), is( "bert" ) );
+		Dataset<Shallow> third = members.items( each( Shallow.class ) ).at( 3 );
 		assertThat( third.length(), is( 3 ) );
-		assertThat( third.value( FlatObject.name ), is( "tiffi" ) );
+		assertThat( third.value( Shallow.name ), is( "tiffi" ) );
+	}
+
+	@Test
+	public void normalRecordsCanBeTreatedAsItemsHavingOneItem() {
+		Map<Object> properties = Map.with.noEntries( Dataset.ORDER );
+		properties = properties.insert( key( "total" ), 2 );
+		properties = properties.insert( key( "name" ), "erni" );
+		Dataset<Shallow> obj = Datamap.object( properties );
+		Sequence<Dataset<Shallow>> items = obj.items( each( Shallow.class ) );
+		assertThat( items.isEmpty(), is( false ) );
+		assertThat( items.length(), is( 1 ) );
+		Dataset<Shallow> shallow = items.at( 0 );
+		assertThat( shallow.value( Shallow.total ), is( 2 ) );
+		assertThat( shallow.value( Shallow.name ), is( "erni" ) );
 	}
 }

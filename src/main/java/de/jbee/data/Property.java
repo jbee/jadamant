@@ -36,7 +36,7 @@ public class Property {
 				defaultValue );
 	}
 
-	public static <E> ItemProperty<E, Sequence<Dataset<E>>> each() {
+	public static <E> ItemProperty<E, Sequence<Dataset<E>>> each( Class<E> type ) {
 		return new EachItemProperty<E>();
 	}
 

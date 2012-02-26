@@ -157,6 +157,65 @@ public class Datamap {
 
 	}
 
+	private static final class VirtualItems<E, D extends Dataset<E> & Records>
+			implements Items<E> {
+
+		private final D dataset;
+
+		VirtualItems( D dataset ) {
+			super();
+			this.dataset = dataset;
+		}
+
+		@Override
+		public Items<E> drop( int count ) {
+			return count > 0
+				? Datamap.<E> noItems()
+				: this;
+		}
+
+		@Override
+		public Items<E> range( Path start, Path end ) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public Items<E> take( int count ) {
+			return count < 1
+				? Datamap.<E> noItems()
+				: this;
+		}
+
+		@Override
+		public int indexFor( Key key ) {
+			return dataset.indexFor( key );
+		}
+
+		@Override
+		public int indexFor( Key key, int startInclusive, int endExclusive ) {
+			return dataset.indexFor( key, startInclusive, endExclusive );
+		}
+
+		@Override
+		public boolean isEmpty() {
+			return false;
+		}
+
+		@Override
+		public int length() {
+			return 1;
+		}
+
+		@Override
+		public Dataset<E> at( int index ) {
+			return index == 0
+				? dataset
+				: Datamap.<E> empty();
+		}
+
+	}
+
 	private static final class NoItems<E>
 			implements Items<E> {
 
@@ -257,8 +316,9 @@ public class Datamap {
 
 		@Override
 		public <I> I items( ItemProperty<T, I> property ) {
-			//FIXME check if list or not
-			return property.resolveIn( new ListItems<T>( this ) );
+			return root.endsWithItem()
+				? property.resolveIn( new ListItems<T>( this ) )
+				: property.resolveIn( new VirtualItems<T, ObjectDataset<T>>( this ) );
 		}
 
 		@Override
