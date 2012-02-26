@@ -3,7 +3,6 @@ package de.jbee.data;
 import static de.jbee.data.Path.itemPath;
 import static de.jbee.data.Path.recordPath;
 import static de.jbee.lang.seq.IndexFor.exists;
-import static de.jbee.lang.seq.Sequences.key;
 import de.jbee.data.Dataset.ItemProperty;
 import de.jbee.data.Dataset.Items;
 import de.jbee.data.Dataset.RecordProperty;
@@ -163,8 +162,8 @@ public class Property {
 			return records.recordAt( format, type );
 		}
 
-		private boolean existsRecord( Path descriptor, Records records ) {
-			return exists( records.indexFor( key( descriptor ) ) );
+		private boolean existsRecord( Path format, Records records ) {
+			return exists( records.indexFor( format ) );
 		}
 
 		@Override
@@ -225,7 +224,7 @@ public class Property {
 
 		@Override
 		public T resolveIn( Path root, Values<? extends R> values ) {
-			final int index = values.indexFor( key( root.dot( name ) ) );
+			final int index = values.indexFor( root.dot( name ) );
 			if ( !exists( index ) ) {
 				return null;
 			}

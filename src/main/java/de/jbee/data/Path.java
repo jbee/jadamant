@@ -1,11 +1,13 @@
 package de.jbee.data;
 
 import static java.lang.Character.isDigit;
+import de.jbee.lang.Map;
 
 public final class Path
-		implements CharSequence {
+		implements Map.Key, CharSequence {
 
 	public static final Path ROOT = new Path( "" );
+	private static final Path LAST = new Path( Map.Key.PREFIX_TERMINATOR );
 
 	private final String path;
 
@@ -71,6 +73,10 @@ public final class Path
 			: this;
 	}
 
+	public Path last() {
+		return dot( LAST );
+	}
+
 	@Override
 	public Path subSequence( int start, int end ) {
 		return recordPath( path.substring( start, end ) );
@@ -78,5 +84,10 @@ public final class Path
 
 	public static Path itemPath( int index ) {
 		return new Path( index + "" );
+	}
+
+	@Override
+	public String path() {
+		return path;
 	}
 }

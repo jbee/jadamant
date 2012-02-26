@@ -2,7 +2,6 @@ package de.jbee.data;
 
 import static de.jbee.data.Path.itemPath;
 import static de.jbee.lang.seq.IndexFor.insertionIndex;
-import static de.jbee.lang.seq.Sequences.key;
 import de.jbee.data.Dataset.Itemised;
 import de.jbee.data.Dataset.Items;
 import de.jbee.data.Dataset.Records;
@@ -288,14 +287,13 @@ public class Datamap {
 		}
 
 		private <E> Dataset<E> recordAt( Path format, Class<E> type, int start, int end ) {
-			int formatIndex = properties.indexFor( key( format ) );
+			int formatIndex = properties.indexFor( format );
 			if ( formatIndex < start || formatIndex >= end
 					|| !isRecordOfType( type, properties.at( formatIndex ).value() ) ) {
 				return empty();
 			}
 			Path record = format.parent();
-			Key key = key( record.toString() + Path.SEPARATOR + "" + Map.Key.PREFIX_TERMINATOR );
-			int recordEnd = insertionIndex( properties.indexFor( key ) );
+			int recordEnd = insertionIndex( properties.indexFor( record.last() ) );
 			final int low = Math.min( start + formatIndex, end );
 			final int high = Math.min( start + recordEnd, end );
 			if ( low >= high ) {

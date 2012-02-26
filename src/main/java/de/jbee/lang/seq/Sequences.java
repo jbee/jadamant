@@ -423,7 +423,9 @@ public final class Sequences {
 	}
 
 	public static <V> Map.Key key( CharSequence key ) {
-		return new Sequences.Key( key.toString() );
+		return key instanceof Map.Key
+			? (Map.Key) key
+			: new Sequences.Key( key.toString() );
 	}
 
 	public static <V> Map.Key keyFirstStartsWith( CharSequence key ) {
