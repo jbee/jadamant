@@ -32,9 +32,13 @@ public final class Path
 	}
 
 	public Path parent() {
-		return path.isEmpty()
-			? this
-			: subSequence( 0, path.lastIndexOf( SEPARATOR ) );
+		if ( path.isEmpty() ) {
+			return this;
+		}
+		int separatorIndex = path.lastIndexOf( SEPARATOR );
+		return separatorIndex < 0
+			? ROOT
+			: subSequence( 0, separatorIndex );
 	}
 
 	@Override
@@ -57,13 +61,13 @@ public final class Path
 	}
 
 	public boolean endsWithItem() {
-		final int dotIndex = path.lastIndexOf( SEPARATOR );
+		final int dotIndex = path.lastIndexOf( ITEM_SEPARATOR );
 		return dotIndex >= 0 && isDigit( path.charAt( dotIndex + 1 ) );
 	}
 
 	public Path itemParent() {
 		return endsWithItem()
-			? subSequence( 0, path.lastIndexOf( SEPARATOR ) )
+			? subSequence( 0, path.lastIndexOf( ITEM_SEPARATOR ) )
 			: this;
 	}
 

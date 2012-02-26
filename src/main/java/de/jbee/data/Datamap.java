@@ -1,9 +1,12 @@
 package de.jbee.data;
 
+import static de.jbee.data.Path.itemPath;
 import static de.jbee.lang.seq.IndexFor.insertionIndex;
 import static de.jbee.lang.seq.Sequences.key;
+import de.jbee.data.Dataset.Itemised;
 import de.jbee.data.Dataset.Items;
 import de.jbee.data.Dataset.Records;
+import de.jbee.data.Dataset.Values;
 import de.jbee.lang.List;
 import de.jbee.lang.ListIndex;
 import de.jbee.lang.Map;
@@ -32,7 +35,7 @@ public class Datamap {
 	}
 
 	static final class EmptyDataset<T>
-			implements Dataset<T>, Records, de.jbee.data.Dataset.Values<T> {
+			implements Dataset<T>, Records, Values<T> {
 
 		@Override
 		public Object at( int index )
@@ -66,16 +69,6 @@ public class Datamap {
 		}
 
 		@Override
-		public <S> Dataset<S> record( RecordProperty<? super T, S> property ) {
-			return empty();
-		}
-
-		@Override
-		public <E> Dataset<E> recordAt( Path descriptor, Class<E> type ) {
-			return empty();
-		}
-
-		@Override
 		public <E> Dataset<E> noneAs( Class<E> type ) {
 			return empty();
 		}
@@ -83,6 +76,16 @@ public class Datamap {
 		@Override
 		public Ord<Object> order() {
 			return Order.inherent;
+		}
+
+		@Override
+		public <S> Dataset<S> record( RecordProperty<? super T, S> property ) {
+			return empty();
+		}
+
+		@Override
+		public <E> Dataset<E> recordAt( Path format, Class<E> type ) {
+			return empty();
 		}
 
 		@Override
@@ -100,45 +103,20 @@ public class Datamap {
 	private static final class ListItems<E>
 			implements Items<E> {
 
-		private final Dataset<E> dataset;
+		private final Itemised<E> items;
 
-		ListItems( Dataset<E> dataset ) {
+		ListItems( Itemised<E> items ) {
 			super();
-			this.dataset = dataset;
+			this.items = items;
 		}
 
 		@Override
-		public Dataset<E> at( int index )
-				throws IndexOutOfBoundsException {
-			// TODO Auto-generated method stub
-			return null;
+		public Dataset<E> at( int index ) {
+			return items.item( itemPath( index ) );
 		}
 
 		@Override
 		public Items<E> drop( int count ) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public boolean isEmpty() {
-			return false;
-		}
-
-		@Override
-		public int length() {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-
-		@Override
-		public Items<E> take( int count ) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public Items<E> range( Path start, Path end ) {
 			// TODO Auto-generated method stub
 			return null;
 		}
@@ -153,6 +131,29 @@ public class Datamap {
 		public int indexFor( Key key, int startInclusive, int endExclusive ) {
 			// TODO Auto-generated method stub
 			return 0;
+		}
+
+		@Override
+		public boolean isEmpty() {
+			return false;
+		}
+
+		@Override
+		public int length() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+
+		@Override
+		public Items<E> range( Path start, Path end ) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public Items<E> take( int count ) {
+			// TODO Auto-generated method stub
+			return null;
 		}
 
 	}
@@ -176,6 +177,16 @@ public class Datamap {
 		}
 
 		@Override
+		public int indexFor( Key key ) {
+			return ListIndex.NOT_CONTAINED;
+		}
+
+		@Override
+		public int indexFor( Key key, int startInclusive, int endExclusive ) {
+			return ListIndex.NOT_CONTAINED;
+		}
+
+		@Override
 		public boolean isEmpty() {
 			return true;
 		}
@@ -186,26 +197,13 @@ public class Datamap {
 		}
 
 		@Override
-		public Items<E> take( int count ) {
+		public Items<E> range( Path start, Path end ) {
 			return this;
 		}
 
 		@Override
-		public Items<E> range( Path start, Path end ) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public int indexFor( Key key ) {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-
-		@Override
-		public int indexFor( Key key, int startInclusive, int endExclusive ) {
-			// TODO Auto-generated method stub
-			return 0;
+		public Items<E> take( int count ) {
+			return this;
 		}
 
 	}
@@ -221,7 +219,7 @@ public class Datamap {
 	 * 
 	 */
 	private static final class ObjectDataset<T>
-			implements Dataset<T>, Records, de.jbee.data.Dataset.Values<T> {
+			implements Itemised<T>, Dataset<T>, Records, Values<T> {
 
 		private final Path root;
 		private final int start;
@@ -270,34 +268,6 @@ public class Datamap {
 		}
 
 		@Override
-		public <S> Dataset<S> record( RecordProperty<? super T, S> property ) {
-			return property.resolveIn( root, this );
-		}
-
-		@Override
-		public <E> Dataset<E> recordAt( Path descriptor, Class<E> type ) {
-			int descriptorIndex = indexFor( key( descriptor ) );
-			if ( descriptorIndex < start || descriptorIndex >= end
-					|| !isRecordOfType( type, at( descriptorIndex ) ) ) {
-				return empty();
-			}
-			Path recordRoot = descriptor.parent();
-			Key key = key( recordRoot.toString() + Path.SEPARATOR + "" + Map.Key.PREFIX_TERMINATOR );
-			int recordEnd = insertionIndex( indexFor( key ) );
-			final int low = Math.min( start + descriptorIndex, end );
-			final int high = Math.min( start + recordEnd, end );
-			if ( low >= high ) {
-				return empty();
-			}
-			return new ObjectDataset<E>( recordRoot, low, high, properties );
-		}
-
-		private <E> boolean isRecordOfType( Class<E> required, Object actual ) {
-			return actual instanceof RecordDescriptor
-					&& ( (RecordDescriptor) actual ).isAssured( required );
-		}
-
-		@Override
 		public <E> Dataset<E> noneAs( Class<E> type ) {
 			return empty();
 		}
@@ -305,6 +275,33 @@ public class Datamap {
 		@Override
 		public Ord<Object> order() {
 			return properties.order();
+		}
+
+		@Override
+		public <S> Dataset<S> record( RecordProperty<? super T, S> property ) {
+			return property.resolveIn( root, this );
+		}
+
+		@Override
+		public <E> Dataset<E> recordAt( Path format, Class<E> type ) {
+			return recordAt( format, type, start, end );
+		}
+
+		private <E> Dataset<E> recordAt( Path format, Class<E> type, int start, int end ) {
+			int formatIndex = properties.indexFor( key( format ) );
+			if ( formatIndex < start || formatIndex >= end
+					|| !isRecordOfType( type, properties.at( formatIndex ).value() ) ) {
+				return empty();
+			}
+			Path record = format.parent();
+			Key key = key( record.toString() + Path.SEPARATOR + "" + Map.Key.PREFIX_TERMINATOR );
+			int recordEnd = insertionIndex( properties.indexFor( key ) );
+			final int low = Math.min( start + formatIndex, end );
+			final int high = Math.min( start + recordEnd, end );
+			if ( low >= high ) {
+				return empty();
+			}
+			return new ObjectDataset<E>( record, low, high, properties );
 		}
 
 		@Override
@@ -322,6 +319,21 @@ public class Datamap {
 		@Override
 		public <V> V value( ValueProperty<? super T, V> property ) {
 			return property.resolveIn( root, this );
+		}
+
+		private <E> boolean isRecordOfType( Class<E> required, Object value ) {
+			return required == value
+					|| ( value instanceof Class<?> && ( (Class<?>) value ).isAssignableFrom( required ) );
+		}
+
+		@Override
+		public Dataset<T> item( Path item ) {
+			Object type = at( 0 );
+			if ( type instanceof Class<?> ) {
+				return recordAt( root.itemParent().dot( item ).dot( TYPE ), (Class<T>) type, 0,
+						properties.length() );
+			}
+			return empty();
 		}
 
 	}

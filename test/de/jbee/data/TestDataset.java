@@ -1,6 +1,5 @@
 package de.jbee.data;
 
-import static de.jbee.data.Property.type;
 import static de.jbee.lang.seq.Sequences.key;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -8,7 +7,6 @@ import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 
-import de.jbee.data.Dataset.RecordProperty;
 import de.jbee.data.Dataset.Records;
 import de.jbee.data.Dataset.ValueProperty;
 import de.jbee.lang.Map;
@@ -24,23 +22,26 @@ public class TestDataset {
 	static interface DeepObject {
 
 		ValueProperty<DeepObject, Float> percent = Property.value( "percent", Float.class, 0.1f );
-		RecordProperty<DeepObject, FlatObject> flat = Property.record( "flat", FlatObject.class );
+		Record<DeepObject, FlatObject> flat = Property.record( "flat", FlatObject.class );
 	}
 
 	static interface DeeperObject {
 
-		RecordProperty<DeeperObject, DeepObject> deep = Property.record( "deep", DeepObject.class );
+		Record<DeeperObject, DeepObject> deep = Property.record( "deep", DeepObject.class );
 	}
 
 	static interface RangeObject {
 
-		RecordProperty<RangeObject, FlatObject> members = Property.record( "members",
-				FlatObject.class );
+		Record<RangeObject, FlatObject> members = Property.record( "members", FlatObject.class );
 
 	}
 
+	public void test() {
+		Record<DeeperObject, FlatObject> deep_flat = DeeperObject.deep.child( DeepObject.flat );
+	}
+
 	@Test
-	public void testFlatObject() {
+	public void valuesInAFlatObjectCanBeAccessed() {
 		Dataset<FlatObject> obj = Datamap.empty();
 		assertThat( obj.value( FlatObject.total ), is( 1 ) );
 		assertThat( obj.value( FlatObject.name ), is( "unnamed" ) );
@@ -54,7 +55,7 @@ public class TestDataset {
 	}
 
 	@Test
-	public void testDeepObject() {
+	public void recordsAndItsValuesInADeepObjectCanBeAccessed() {
 		Dataset<DeepObject> obj = Datamap.empty();
 		assertThat( obj.record( DeepObject.flat ).value( FlatObject.total ), is( 1 ) );
 		assertThat( obj.value( DeepObject.percent ), is( 0.1f ) );
@@ -63,7 +64,7 @@ public class TestDataset {
 		properties = properties.insert( key( "percent" ), 100f );
 		properties = properties.insert( key( "flat.total" ), 2 );
 		properties = properties.insert( key( "flat.name" ), "erni" );
-		properties = properties.insert( key( "flat." + Records.TYPE ), type( FlatObject.class ) );
+		properties = properties.insert( key( "flat." + Records.TYPE ), FlatObject.class );
 		obj = Datamap.object( properties );
 		Dataset<FlatObject> flatObj = obj.record( DeepObject.flat );
 		assertFalse( flatObj.isEmpty() );
@@ -73,13 +74,13 @@ public class TestDataset {
 	}
 
 	@Test
-	public void testDeeperObject() {
+	public void recordsNestedInAnotherRecordAndTheirValuesCanBeAccessed() {
 		Map<Object> properties = Map.with.noEntries( Dataset.ORDER );
-		properties = properties.insert( key( "deep." + Records.TYPE ), type( DeepObject.class ) );
+		properties = properties.insert( key( "deep." + Records.TYPE ), DeepObject.class );
 		properties = properties.insert( key( "deep.percent" ), 100f );
 		properties = properties.insert( key( "deep.flat.total" ), 2 );
 		properties = properties.insert( key( "deep.flat.name" ), "erni" );
-		properties = properties.insert( key( "deep.flat." + Records.TYPE ), type( FlatObject.class ) );
+		properties = properties.insert( key( "deep.flat." + Records.TYPE ), FlatObject.class );
 
 		Dataset<DeeperObject> obj = Datamap.object( properties );
 		Dataset<DeepObject> deepObj = obj.record( DeeperObject.deep );
@@ -91,23 +92,29 @@ public class TestDataset {
 	}
 
 	@Test
-	public void testRangeObjects() {
+	public void itemsOfAListRecordsCanBeAccessed() {
 		Map<Object> properties = Map.with.noEntries( Dataset.ORDER );
-		properties = properties.insert( key( "members:1." + Records.TYPE ), type( FlatObject.class ) );
+		properties = properties.insert( key( "members:1." + Records.TYPE ), FlatObject.class );
 		properties = properties.insert( key( "members:1.name" ), "erni" );
 		properties = properties.insert( key( "members:1.total" ), 42 );
-		properties = properties.insert( key( "members:2." + Records.TYPE ), type( FlatObject.class ) );
+		properties = properties.insert( key( "members:2." + Records.TYPE ), FlatObject.class );
 		properties = properties.insert( key( "members:2.name" ), "bert" );
 		properties = properties.insert( key( "members:2.total" ), 23 );
-		properties = properties.insert( key( "members:3." + Records.TYPE ), type( FlatObject.class ) );
+		properties = properties.insert( key( "members:3." + Records.TYPE ), FlatObject.class );
 		properties = properties.insert( key( "members:3.name" ), "tiffi" );
 		properties = properties.insert( key( "members:3.total" ), 5 );
-		properties = properties.insert( key( "members:4." + Records.TYPE ), type( FlatObject.class ) );
+		properties = properties.insert( key( "members:4." + Records.TYPE ), FlatObject.class );
 		properties = properties.insert( key( "members:4.name" ), "samson" );
 		properties = properties.insert( key( "members:4.total" ), 1 );
 		Dataset<RangeObject> obj = Datamap.object( properties );
 		Dataset<FlatObject> members = obj.record( RangeObject.members );
 		assertThat( members.length(), is( 3 ) );
 		assertThat( members.value( FlatObject.name ), is( "erni" ) );
+		Dataset<FlatObject> second = members.items( Property.<FlatObject> each() ).at( 2 );
+		assertThat( second.length(), is( 3 ) );
+		assertThat( second.value( FlatObject.name ), is( "bert" ) );
+		Dataset<FlatObject> third = members.items( Property.<FlatObject> each() ).at( 3 );
+		assertThat( third.length(), is( 3 ) );
+		assertThat( third.value( FlatObject.name ), is( "tiffi" ) );
 	}
 }

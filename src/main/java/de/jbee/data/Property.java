@@ -6,12 +6,11 @@ import static de.jbee.lang.seq.IndexFor.exists;
 import static de.jbee.lang.seq.Sequences.key;
 import de.jbee.data.Dataset.ItemProperty;
 import de.jbee.data.Dataset.Items;
-import de.jbee.data.Dataset.RecordDescriptor;
 import de.jbee.data.Dataset.RecordProperty;
 import de.jbee.data.Dataset.Records;
-import de.jbee.data.Dataset.NotionalProperty;
 import de.jbee.data.Dataset.ValueProperty;
 import de.jbee.data.Dataset.Values;
+import de.jbee.data.Dataset.VirtualProperty;
 import de.jbee.lang.Sequence;
 import de.jbee.lang.dev.Nullsave;
 
@@ -23,12 +22,14 @@ import de.jbee.lang.dev.Nullsave;
  */
 public class Property {
 
-	public static RecordDescriptor type( Class<?> type ) {
-		return new InheritanceTypeDescriptor( type );
+	public static <R, T> Record<R, T> record( String name, Class<T> type ) {
+		return Record.record( new DynamicRecordProperty<R, T>( type, recordPath( name ),
+				itemPath( 1 ) ) );
 	}
 
-	public static <R, T> RecordProperty<R, T> record( String name, Class<T> type ) {
-		return new DynamicRecordProperty<R, T>( type, recordPath( name ), itemPath( 1 ) );
+	public static <R, T, M> RecordProperty<R, M> record( RecordProperty<R, T> parent,
+			RecordProperty<T, M> child ) {
+		return new ChildRecordProperty<R, T, M>( parent, child );
 	}
 
 	public static <R, T> ValueProperty<R, T> value( String name, Class<T> type, T defaultValue ) {
@@ -82,12 +83,12 @@ public class Property {
 	}
 
 	static class NotionalChainProperty<R, I, T>
-			implements NotionalProperty<R, T> {
+			implements VirtualProperty<R, T> {
 
-		private final NotionalProperty<R, I> parent;
-		private final NotionalProperty<I, T> sub;
+		private final VirtualProperty<R, I> parent;
+		private final VirtualProperty<I, T> sub;
 
-		NotionalChainProperty( NotionalProperty<R, I> parent, NotionalProperty<I, T> sub ) {
+		NotionalChainProperty( VirtualProperty<R, I> parent, VirtualProperty<I, T> sub ) {
 			super();
 			this.parent = parent;
 			this.sub = sub;
@@ -98,7 +99,7 @@ public class Property {
 			return sub.compute( parent.compute( value ) );
 		}
 
-		public <V> NotionalProperty<R, V> dot( NotionalProperty<T, V> subpath ) {
+		public <V> VirtualProperty<R, V> dot( VirtualProperty<T, V> subpath ) {
 			return new NotionalChainProperty<R, T, V>( this, subpath );
 		}
 
@@ -108,9 +109,9 @@ public class Property {
 			implements ValueProperty<R, T> {
 
 		private final ValueProperty<R, V> value;
-		private final NotionalProperty<V, T> notional;
+		private final VirtualProperty<V, T> notional;
 
-		NotionalValueProperty( ValueProperty<R, V> value, NotionalProperty<V, T> notional ) {
+		NotionalValueProperty( ValueProperty<R, V> value, VirtualProperty<V, T> notional ) {
 			super();
 			this.value = value;
 			this.notional = notional;
@@ -124,30 +125,13 @@ public class Property {
 	}
 
 	static class StringLengthProperty
-			implements NotionalProperty<String, Integer>, Nullsave {
+			implements VirtualProperty<String, Integer>, Nullsave {
 
 		@Override
 		public Integer compute( String value ) {
 			return value == null
 				? 0
 				: value.length();
-		}
-
-	}
-
-	static final class InheritanceTypeDescriptor
-			implements RecordDescriptor {
-
-		private final Class<?> type;
-
-		InheritanceTypeDescriptor( Class<?> type ) {
-			super();
-			this.type = type;
-		}
-
-		@Override
-		public boolean isAssured( Class<?> required ) {
-			return required == type || type.isAssignableFrom( required );
 		}
 
 	}
@@ -169,14 +153,14 @@ public class Property {
 		@Override
 		public Dataset<T> resolveIn( Path root, Records records ) {
 			final Path record = root.dot( name );
-			Path descriptor = record.dot( Records.TYPE );
-			if ( !existsRecord( descriptor, records ) ) {
-				descriptor = record.dot( defaultItem ).dot( Records.TYPE );
-				if ( !existsRecord( descriptor, records ) ) {
+			Path format = record.dot( Records.TYPE );
+			if ( !existsRecord( format, records ) ) {
+				format = record.dot( defaultItem ).dot( Records.TYPE );
+				if ( !existsRecord( format, records ) ) {
 					return records.noneAs( type );
 				}
 			}
-			return records.recordAt( descriptor, type );
+			return records.recordAt( format, type );
 		}
 
 		private boolean existsRecord( Path descriptor, Records records ) {
