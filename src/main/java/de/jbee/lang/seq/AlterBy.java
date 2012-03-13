@@ -3,9 +3,9 @@ package de.jbee.lang.seq;
 import static de.jbee.lang.seq.IndexFor.exists;
 import de.jbee.lang.Array;
 import de.jbee.lang.Bag;
+import de.jbee.lang.Calculate;
 import de.jbee.lang.Eq;
 import de.jbee.lang.Equal;
-import de.jbee.lang.Calculate;
 import de.jbee.lang.List;
 import de.jbee.lang.ListAlteration;
 import de.jbee.lang.ListIndex;
@@ -726,7 +726,7 @@ public class AlterBy
 		@Override
 		public <E> List<E> from( List<E> list ) {
 			final int s = start.in( list );
-			if ( !exists( s ) ) { //OPEN all or nothing ? nothing seams more convenient
+			if ( !exists( s ) ) {
 				return empty.from( list );
 			}
 			if ( s == 0 ) {

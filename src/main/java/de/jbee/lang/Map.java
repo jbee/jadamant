@@ -62,6 +62,12 @@ public interface Map<V>
 		//OPEN add start + end index to narrow search ? -> it doesn't make sense for insert
 	}
 
+	interface NumericalKey
+			extends Key {
+
+		int code();
+	}
+
 	interface Entry<V>
 			extends Element<V> {
 

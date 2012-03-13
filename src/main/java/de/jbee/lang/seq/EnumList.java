@@ -15,8 +15,6 @@ import de.jbee.lang.dev.Nonnull;
 final class EnumList<E>
 		implements List<E> {
 
-	//OPEN isn't a EnumList also a Set ?
-
 	static final EnumeratorFactory ENUMERATOR_FACTORY = new EnumListEnumeratorFactory();
 
 	static <T extends java.lang.Enum<?>> List<T> withElement( T e ) {

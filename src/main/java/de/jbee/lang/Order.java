@@ -180,6 +180,10 @@ public final class Order {
 	public static <E> int binarySearch( Sequence<E> list, int startInclusive, int endExcluisve,
 			Object key, Ord<Object> order ) {
 		int index = normalBinarySearch( list, startInclusive, endExcluisve, key, order );
+		return firstEqualToElementAt( index, list, order );
+	}
+
+	private static <E> int firstEqualToElementAt( int index, Sequence<E> list, Ord<Object> order ) {
 		while ( index > 0 && order.ord( list.at( index ), list.at( index - 1 ) ).isEq() ) {
 			index--;
 		}
@@ -206,7 +210,7 @@ public final class Order {
 				return mid; // key found
 			}
 		}
-		return - ( low + 1 ); // key not found.
+		return - ( low + 1 ); // key not found: return insert position hint
 	}
 
 	public static boolean used( Ord<Object> order, Object obj ) {

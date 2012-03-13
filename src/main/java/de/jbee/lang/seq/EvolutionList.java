@@ -3,6 +3,7 @@
  */
 package de.jbee.lang.seq;
 
+import static java.lang.Math.min;
 import de.jbee.lang.Array;
 import de.jbee.lang.List;
 import de.jbee.lang.Sequence;
@@ -68,15 +69,15 @@ abstract class EvolutionList<E>
 
 	@Override
 	public void traverse( int start, Traversal<? super E> traversal ) {
-		final int l = elemsLength();
+		final int len = elemsLength();
 		int i = start;
 		int inc = 0;
-		while ( inc >= 0 && i < l ) {
-			inc = traversal.incrementOn( element( i, l ) );
+		while ( inc >= 0 && i < len ) {
+			inc = traversal.incrementOn( element( i, len ) );
 			i += inc;
 		}
 		if ( inc >= 0 ) {
-			tail.traverse( i - l, traversal );
+			tail.traverse( i - len, traversal );
 		}
 	}
 
@@ -88,10 +89,10 @@ abstract class EvolutionList<E>
 
 	@Override
 	public final E at( int index ) {
-		final int l = elemsLength();
-		return index >= l
-			? tail.at( index - l )
-			: element( index, l );
+		final int len = elemsLength();
+		return index >= len
+			? tail.at( index - len )
+			: element( index, len );
 	}
 
 	@Override
@@ -104,20 +105,20 @@ abstract class EvolutionList<E>
 		if ( index < 0 ) {
 			return this;
 		}
-		final int l = elemsLength();
+		final int len = elemsLength();
 		if ( index == 0 ) { // first of this elems
-			return l == 1
+			return len == 1
 				? tail
 				: recessive( length - 1, offset(), elems, tail );
 		}
-		if ( index >= l ) { // not in this elems
-			return thisWith( length - 1, tail.deleteAt( index - l ) );
+		if ( index >= len ) { // not in this elems
+			return thisWith( length - 1, tail.deleteAt( index - len ) );
 		}
-		if ( index == l - 1 ) { // last of this elems
+		if ( index == len - 1 ) { // last of this elems
 			return recessive( length - 1, offset() + 1, elems, tail );
 		}
 		// somewhere in between our elems ;(
-		return recessive( length - 1, l - index, elems, recessive( length - 1 - index, offset(),
+		return recessive( length - 1, len - index, elems, recessive( length - 1 - index, offset(),
 				elems, tail ) );
 	}
 
@@ -129,24 +130,24 @@ abstract class EvolutionList<E>
 		if ( count >= length ) {
 			return empty();
 		}
-		final int l = elemsLength();
-		return count >= l
-			? tail.drop( count - l )
+		final int len = elemsLength();
+		return count >= len
+			? tail.drop( count - len )
 			: recessive( length - count, offset(), elems, tail );
 	}
 
 	@Override
-	public void fill( int offset, Object[] array, int start, int len ) {
-		final int l = elemsLength();
-		if ( start < l ) {
-			int srcPos = elems.length - l - offset() + start;
-			int copyLength = Math.min( len, l );
-			System.arraycopy( elems, srcPos, array, offset, copyLength );
-			if ( start + len > l ) {
-				tail.fill( offset + copyLength, array, 0, len - copyLength );
+	public void fill( int offset, Object[] array, int start, int upTolen ) {
+		final int len = elemsLength();
+		if ( start < len ) {
+			int srcPos = elems.length - len - offset() + start;
+			int copyedLength = min( upTolen, len );
+			System.arraycopy( elems, srcPos, array, offset, copyedLength );
+			if ( start + upTolen > len ) {
+				tail.fill( offset + copyedLength, array, 0, upTolen - copyedLength );
 			}
 		} else {
-			tail.fill( offset, array, start - l, len );
+			tail.fill( offset, array, start - len, upTolen );
 		}
 	}
 
@@ -155,13 +156,13 @@ abstract class EvolutionList<E>
 		if ( index == 0 ) {
 			return prepand( e );
 		}
-		final int l = elemsLength();
+		final int len = elemsLength();
 		if ( index == 1 ) { // avoid 'views' just using a single element (as first)
 			return List.with.element( e ).prepand( at( 0 ) ).concat( drop( index ) );
 		}
 		//TODO try to avoid inappropriate reuse of this stack -> especially for the recessive list
-		if ( index >= l ) {
-			return thisWith( length + 1, tail.insertAt( index - l, e ) );
+		if ( index >= len ) {
+			return thisWith( length + 1, tail.insertAt( index - len, e ) );
 		}
 		return take( index ).concat( drop( index ).prepand( e ) );
 	}
@@ -173,16 +174,16 @@ abstract class EvolutionList<E>
 
 	@Override
 	public List<E> replaceAt( int index, E e ) {
-		final int l = elemsLength();
-		if ( index >= l ) {
-			return thisWith( length, tail.replaceAt( index - l, e ) );
+		final int len = elemsLength();
+		if ( index >= len ) {
+			return thisWith( length, tail.replaceAt( index - len, e ) );
 		}
 		Nonnull.element( e );
 		if ( index == 0 ) {
 			return drop( 1 ).prepand( e );
 		}
-		if ( index == l - 1 ) {
-			return take( l - 1 ).concat( tail.prepand( e ) );
+		if ( index == len - 1 ) {
+			return take( len - 1 ).concat( tail.prepand( e ) );
 		}
 		return take( index ).concat( drop( index + 1 ).prepand( e ) );
 	}
@@ -200,22 +201,22 @@ abstract class EvolutionList<E>
 		if ( count >= length ) {
 			return this;
 		}
-		final int l = elemsLength();
-		if ( count == l ) { // took this elems without tail
-			return thisWith( l, empty() );
+		final int len = elemsLength();
+		if ( count == len ) { // took this elems without tail
+			return thisWith( len, empty() );
 		}
-		if ( count < l ) { // took parts of this elems
-			return recessive( count, ( l - count ) + offset(), elems, empty() );
+		if ( count < len ) { // took parts of this elems
+			return recessive( count, ( len - count ) + offset(), elems, empty() );
 		}
 		// took this hole elems and parts of the tails elements
-		return thisWith( count, tail.take( count - l ) );
+		return thisWith( count, tail.take( count - len ) );
 	}
 
 	@Override
 	public String toString() {
 		StringBuilder b = new StringBuilder();
-		final int l = elemsLength();
-		for ( int i = 0; i < l; i++ ) {
+		final int len = elemsLength();
+		for ( int i = 0; i < len; i++ ) {
 			b.append( ',' );
 			b.append( String.valueOf( at( i ) ) );
 		}
@@ -266,19 +267,21 @@ abstract class EvolutionList<E>
 
 		public List<E> prepand( E e ) {
 			Nonnull.element( e );
-			final int l = elemsLength();
-			int index = prepandIndex( l );
+			final int len = elemsLength();
+			int index = prepandIndex( len );
 			if ( index < 0 ) { // elems capacity exceeded
 				return grow1( Array.withLastElement( e, elems.length * 2 ), this );
 			}
 			if ( prepandedOccupying( e, index ) ) {
 				return grow1( elems, tail );
 			}
-			if ( l > elems.length / 2 ) {
+			// if more the halve of the elems is used do we recycle them as recessive tail and start a new clean head for the new list
+			if ( len > elems.length / 2 ) {
 				return grow1( Array.withLastElement( e, elems.length * 2 ), recessive( length,
 						elems, tail ) );
 			}
-			Object[] copy = Array.copy( elems, index + 1, l );
+			// otherwise we want to stay tidy so we copy our elements 
+			Object[] copy = Array.copy( elems, index + 1, len );
 			copy[index] = e;
 			return grow1( copy, tail );
 		}
@@ -286,16 +289,16 @@ abstract class EvolutionList<E>
 		@Override
 		public List<E> tidyUp() {
 			List<E> tidyTail = tail.tidyUp();
-			int l = elemsLength();
+			int len = elemsLength();
 			synchronized ( elems ) {
-				if ( notOccupied( prepandIndex( l ) ) ) {
+				if ( notOccupied( prepandIndex( len ) ) ) {
 					return tidyTail == tail
 						? this
 						: dominant( length, elems, tidyTail );
 				}
 
 			}
-			return dominant( length, Array.copy( elems, 0, l ), tail );
+			return dominant( length, Array.copy( elems, 0, len ), tail );
 		}
 
 		@SuppressWarnings ( "unchecked" )
@@ -369,15 +372,15 @@ abstract class EvolutionList<E>
 		@Override
 		public List<E> tidyUp() {
 			Object[] s = new Object[elems.length];
-			final int l = elemsLength();
-			System.arraycopy( elems, elems.length - l - offset, s, elems.length - l, l );
+			final int len = elemsLength();
+			System.arraycopy( elems, elems.length - len - offset, s, elems.length - len, len );
 			return dominant( length, s, tail.tidyUp() );
 		}
 
 		@SuppressWarnings ( "unchecked" )
 		@Override
-		E element( int index, int l ) {
-			return (E) elems[elems.length - l + index - offset];
+		E element( int index, int len ) {
+			return (E) elems[elems.length - len + index - offset];
 		}
 
 		@Override
