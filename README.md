@@ -4,8 +4,8 @@ A library enhancing the JRE with the core functionality it should have had for a
 
 The core ideas are: 
 
-* __Collections are value objects and therefore immutable__ (read-only; changes create new collections, the originating one kept unchanged)
-* `java.util.List` and the `util`-Collection-API just stays because of its wide spread not its quality - jadamant dares to start the revolution
+* __Collections are value objects and therefore immutable__ (persistent data stractures, changes create new collections, the originating one kept unchanged)
+* `java.util.List` and the `util`-Collection-API just  alive because of its wide spread not its quality
 * __Collections are thread-safe by concept__ (no additional API or impl., wrappers or runtime-exceptions)
 * Eager evaludation is (in most cases) the appropriate way to solve problems in Java (even tho' we work immutable)
 * `null` is avoided as far as possible - it is not considered as a valid value (e.g. as a collection's element)
@@ -20,9 +20,12 @@ The core ideas are:
 'jadamant' is a made-up word conbined out of 'Java' and 'Adamant'. Inspired by the Master of Orion II Adamantium plating. Adamant symbolises the immutable solid character and thereby the philosophy of this project.
 
 ### Status
-The 0.1 beta is planed to be released somewhen 2012. Until then there might be major changes to the API. Feal free to contact me and get to know more about the current state.
+The 0.1 beta is planed to be released somewhen 2012. Until then there might be major changes to the API. 
+But the core collection API is nearly stable pretty much done implemented and covered with tests.
 
-### Notable facts about collections
+__Feal free to contact me and get to know more about the current state.__
+
+### Notable facts about jadamant's persistent collections
 
 * All collections are __immutable__ (read-only; changes create new objects, the originating one kept unchanged)
 * All collections are __not__ `Iterable` ~ this concept got replaced too
