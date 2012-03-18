@@ -11,7 +11,7 @@ The core ideas are:
 * `null` is avoided as far as possible - it is not considered as a valid value (e.g. as a collection's element)
 * Interfaces should be narrow/minimal (1 method for most of em) - a rich set of utile functions comes from combining and composing minimal interfaces (maximized decoupling) 
 * functions should be combinable with a minimal use of generics (specialised interfaces + adapters over single general + multiple generics)
-* functions try to be stateless and are therefore often constants (code describes what to do when a value becomes available) 
+* favour __pure functions__ (stateless functions, therefore often constants - code describes what to do when a value becomes available) 
 * __Reflection is pain__ - concepts have to be compile-time save 
 * There is no natural order - order depends on the point of view (`Comparable` is not a satisfactory solution)
 * `Iterator` / `Iterable` is badly designed and needs a replacement (there is a 'legacy' support to integrate in common frameworks anyway)
