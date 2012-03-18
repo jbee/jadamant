@@ -7,6 +7,8 @@ import de.jbee.lang.Traversal;
 /**
  * A list maps to the {@link Element}'s values of any kind of list consists of {@link Element}s.
  * 
+ * @see ElementaryList
+ * 
  * @author Jan Bernitt (jan.bernitt@gmx.de)
  */
 class ElementList<E>

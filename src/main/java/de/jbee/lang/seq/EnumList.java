@@ -17,7 +17,7 @@ final class EnumList<E>
 
 	static final EnumeratorFactory ENUMERATOR_FACTORY = new EnumListEnumeratorFactory();
 
-	static <T extends java.lang.Enum<?>> List<T> withElement( T e ) {
+	static <T extends java.lang.Enum<?>> List<T> enumElement( T e ) {
 		Class<? extends java.lang.Enum<?>> c = e.getDeclaringClass();
 		@SuppressWarnings ( "unchecked" )
 		Enum<T> type = (Enum<T>) Enumerate.type( c );
@@ -48,15 +48,15 @@ final class EnumList<E>
 
 	@Override
 	public void traverse( int start, Traversal<? super E> traversal ) {
-		final int l = len();
+		final int len = len();
 		int i = start;
 		int inc = 0;
-		while ( inc >= 0 && i < l ) { //TODO here is some code duplication with stack list - its just the element access that differs
+		while ( inc >= 0 && i < len ) { //TODO here is some code duplication with stack list - its just the element access that differs
 			inc = traversal.incrementOn( type.toEnum( firstPlus( i ) ) );
 			i += inc;
 		}
 		if ( inc > 0 ) {
-			tail.traverse( i - l, traversal );
+			tail.traverse( i - len, traversal );
 		}
 	}
 
@@ -64,28 +64,25 @@ final class EnumList<E>
 	public List<E> append( E e ) {
 		Nonnull.element( e );
 		final int eOrdinal = type.toOrdinal( e );
-		if ( tail.isEmpty() ) {
+		if ( tail.isEmpty() ) { // ascending ?
 			final int nextOrdinal = lastPlus( 1 );
 			if ( eOrdinal == nextOrdinal ) {
-				return list( firstOrdinal, nextOrdinal );
+				return enumList( firstOrdinal, nextOrdinal );
 			}
 		}
 		final int length = length();
-		if ( length == 1 ) { // check for a desc sequence
-			return firstMinus( 1 ) == eOrdinal
-				? list( firstOrdinal, eOrdinal )
-				: ElementaryList.element( at( 0 ) ).append( e );
-		}
-		if ( len() == 1 ) {
-			return ElementaryList.element( at( 0 ), tail ).append( e );
+		if ( length == 1 ) { // descending ?
+			if ( firstMinus( 1 ) == eOrdinal ) {
+				return enumList( firstOrdinal, eOrdinal );
+			}
 		}
 		return thisWithTail( tail.append( e ) );
 	}
 
 	@Override
 	public void fill( int offset, Object[] array, int start, int length ) {
-		final int l = len();
-		if ( start < l ) {
+		final int len = len();
+		if ( start < len ) {
 			if ( ascending() ) {
 				int startOrd = firstOrdinal + start;
 				int endOrd = Math.min( lastOrdinal, startOrd + length - 1 );
@@ -99,55 +96,52 @@ final class EnumList<E>
 					array[offset++] = type.toEnum( ord );
 				}
 			}
-			if ( start + length > l ) {
-				tail.fill( offset, array, 0, length - ( l - start ) );
+			if ( start + length > len ) {
+				tail.fill( offset, array, 0, length - ( len - start ) );
 			}
 		} else {
-			tail.fill( offset, array, start - l, length );
+			tail.fill( offset, array, start - len, length );
 		}
 	}
 
 	@Override
 	public E at( int index ) {
-		final int l = len();
-		return index >= l
-			? tail.at( index - l )
+		final int len = len();
+		return index >= len
+			? tail.at( index - len )
 			: type.toEnum( firstPlus( index ) );
 	}
 
 	@Override
 	public List<E> concat( List<E> other ) {
-		if ( !tail.isEmpty() ) {
-			return tail.concat( other );
-		}
-		if ( other instanceof EnumList<?> ) {
+		if ( tail.isEmpty() && other instanceof EnumList<?> ) { // can we join 2 enum lists ?
 			EnumList<E> o = (EnumList<E>) other;
 			if ( ascending() == o.ascending() && o.firstOrdinal == lastPlus( 1 ) ) {
-				return list( firstOrdinal, o.lastOrdinal );
+				return enumList( firstOrdinal, o.lastOrdinal );
 			}
 		}
-		return thisWithTail( other );
+		return thisWithTail( tail.concat( other ) );
 	}
 
 	@Override
 	public List<E> deleteAt( int index ) {
-		final int length = len();
-		if ( index >= length ) { // its in the tail
-			return thisWithTail( tail.deleteAt( index - length ) );
+		final int len = len();
+		if ( index >= len ) { // its in the tail
+			return thisWithTail( tail.deleteAt( index - len ) );
 		}
 		if ( index == 0 ) { // first of this enum list
-			return length == 1
+			return len == 1
 				? tail
-				: list( firstPlus( 1 ), lastOrdinal );
+				: enumList( firstPlus( 1 ), lastOrdinal );
 		}
-		if ( index == length - 1 ) { // last of this enum list
-			return length == 1
+		if ( index == len - 1 ) { // last of this enum list
+			return len == 1
 				? tail
-				: list( firstOrdinal, lastMinus( 1 ) );
+				: enumList( firstOrdinal, lastMinus( 1 ) );
 		}
-		// sadly: in between this list
+		// sadly: in between this list -> we split it into 2 
 		final int indexOrdinal = type.toOrdinal( at( index ) );
-		return list( firstOrdinal, ordinalMinus( indexOrdinal, 1 ), list( ordinalPlus(
+		return enumList( firstOrdinal, ordinalMinus( indexOrdinal, 1 ), enumList( ordinalPlus(
 				indexOrdinal, 1 ), lastOrdinal, tail ) );
 	}
 
@@ -160,14 +154,15 @@ final class EnumList<E>
 		if ( count >= length ) {
 			return empty();
 		}
-		final int l = len();
-		if ( count == l ) {
+		final int len = len();
+		if ( count == len ) {
 			return tail;
 		}
-		if ( count > l ) {
-			return tail.drop( count - l );
+		if ( count > len ) {
+			return tail.drop( count - len );
 		}
-		return list( firstPlus( count ), lastOrdinal );
+		// some elements of this enumeration
+		return enumList( firstPlus( count ), lastOrdinal );
 	}
 
 	@Override
@@ -175,18 +170,18 @@ final class EnumList<E>
 		Nonnull.element( e );
 		if ( index == 0 ) {
 			final int eOrdinal = type.toOrdinal( e );
-			if ( eOrdinal == ordinalMinus( firstOrdinal, 1 ) ) {
-				return list( eOrdinal, lastOrdinal );
+			if ( eOrdinal == ordinalMinus( firstOrdinal, 1 ) ) { // can we extend the enum ?
+				return enumList( eOrdinal, lastOrdinal );
 			}
-			return ElementaryList.element( e, this );
+			return prepand( e );
 		}
-		final int l = len();
-		if ( index >= l ) {
-			return thisWithTail( tail.insertAt( index - l, e ) );
+		final int len = len();
+		if ( index >= len ) {
+			return thisWithTail( tail.insertAt( index - len, e ) );
 		}
 		// somewhere in between this enumeration
-		return list( firstOrdinal, firstPlus( index - 1 ), ElementaryList.element( e, list(
-				firstPlus( index ), lastOrdinal, tail ) ) );
+		return enumList( firstOrdinal, firstPlus( index - 1 ), List.with.element( e ).concat(
+				enumList( firstPlus( index ), lastOrdinal, tail ) ) );
 	}
 
 	@Override
@@ -200,34 +195,34 @@ final class EnumList<E>
 		final int priorOrdinal = firstMinus( 1 );
 		final int eOrdinal = type.toOrdinal( e );
 		if ( eOrdinal == priorOrdinal ) {
-			return list( priorOrdinal, lastOrdinal );
+			return enumList( priorOrdinal, lastOrdinal );
 		}
 		final int length = length();
 		if ( length == 1 ) { // check a descending sequence
-			return firstPlus( 1 ) == eOrdinal
-				? list( eOrdinal, lastOrdinal )
-				: ElementaryList.element( at( 0 ) ).prepand( e );
+			if ( firstPlus( 1 ) == eOrdinal ) {
+				return enumList( eOrdinal, lastOrdinal );
+			}
 		}
 		if ( len() == 1 ) {
-			return ElementaryList.element( at( 0 ), tail ).prepand( e );
+			return List.with.element( at( 0 ) ).concat( tail ).prepand( e );
 		}
-		return list( eOrdinal, eOrdinal, this );
+		return enumList( eOrdinal, eOrdinal, this );
 	}
 
 	@Override
 	public List<E> replaceAt( int index, E e ) {
-		final int l = len();
-		if ( index >= l ) {
-			thisWithTail( tail.replaceAt( index - l, e ) );
+		final int len = len();
+		if ( index >= len ) {
+			thisWithTail( tail.replaceAt( index - len, e ) );
 		}
 		E ei = at( index );
-		if ( ei == e ) { // not use equals - equality might be defined different
+		if ( ei == e ) { // not use equals - equality might be defined different but identity is safe 
 			return this;
 		}
 		if ( index == 0 ) {
 			return drop( 1 ).prepand( e );
 		}
-		return take( index ).concat( ElementaryList.element( e, drop( index + 1 ) ) );
+		return take( index ).concat( drop( index + 1 ).prepand( e ) );
 	}
 
 	@Override
@@ -243,13 +238,13 @@ final class EnumList<E>
 		if ( count >= length() ) {
 			return this;
 		}
-		final int l = len();
-		if ( count == l ) {
+		final int len = len();
+		if ( count == len ) {
 			return thisWithTail( empty() );
 		}
-		return count <= l
-			? list( firstOrdinal, firstPlus( count - 1 ), empty() )
-			: thisWithTail( tail.take( count - l ) );
+		return count <= len
+			? enumList( firstOrdinal, firstPlus( count - 1 ), empty() )
+			: thisWithTail( tail.take( count - len ) );
 	}
 
 	@Override
@@ -262,15 +257,15 @@ final class EnumList<E>
 
 	@Override
 	public String toString() {
-		int l = len();
+		int len = len();
 		String res = "[";
-		if ( l > 0 ) {
+		if ( len > 0 ) {
 			res += String.valueOf( type.toEnum( firstOrdinal ) );
 		}
-		if ( l > 2 ) {
+		if ( len > 2 ) {
 			res += "," + String.valueOf( at( 1 ) );
 		}
-		if ( l > 1 ) {
+		if ( len > 1 ) {
 			res += "..";
 			res += String.valueOf( type.toEnum( lastOrdinal ) );
 		}
@@ -297,11 +292,11 @@ final class EnumList<E>
 		return Math.abs( lastOrdinal - firstOrdinal ) + 1;
 	}
 
-	private List<E> list( int firstOrdinal, int lastOrdinal ) {
+	private List<E> enumList( int firstOrdinal, int lastOrdinal ) {
 		return new EnumList<E>( type, firstOrdinal, lastOrdinal, tail );
 	}
 
-	private List<E> list( int firstOrdianl, int lastOrdinal, List<E> tail ) {
+	private List<E> enumList( int firstOrdianl, int lastOrdinal, List<E> tail ) {
 		return new EnumList<E>( type, firstOrdianl, lastOrdinal, tail );
 	}
 

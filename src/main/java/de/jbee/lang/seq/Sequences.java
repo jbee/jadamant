@@ -279,7 +279,7 @@ public final class Sequences {
 
 		@SuppressWarnings ( "unchecked" )
 		private <E> List<E> elementEnum( E e ) {
-			return (List<E>) EnumList.withElement( (java.lang.Enum<?>) e );
+			return (List<E>) EnumList.enumElement( (java.lang.Enum<?>) e );
 		}
 
 		@Override
