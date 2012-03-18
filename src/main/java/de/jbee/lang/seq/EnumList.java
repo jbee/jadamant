@@ -3,6 +3,7 @@
  */
 package de.jbee.lang.seq;
 
+import static de.jbee.lang.Array.sequence;
 import de.jbee.lang.Enum;
 import de.jbee.lang.Enumerate;
 import de.jbee.lang.Enumerator;
@@ -30,7 +31,11 @@ final class EnumList<E>
 	private final int lastOrdinal;
 
 	EnumList( Enum<E> type, E first, E last ) {
-		this( type, type.toOrdinal( first ), type.toOrdinal( last ), List.with.<E> noElements() );
+		this( type, first, last, List.with.<E> noElements() );
+	}
+
+	EnumList( Enum<E> type, E first, E last, List<E> tail ) {
+		this( type, type.toOrdinal( first ), type.toOrdinal( last ), tail );
 	}
 
 	EnumList( Enum<E> type, int firstOrdianl, int lastOrdinal, List<E> tail ) {
@@ -204,7 +209,8 @@ final class EnumList<E>
 			}
 		}
 		if ( len() == 1 ) {
-			return List.with.element( at( 0 ) ).concat( tail ).prepand( e );
+			// we need to create a list that will not be a enum list because of endless loops
+			return List.with.elements( sequence( e, at( 0 ) ) ).concat( tail );
 		}
 		return enumList( eOrdinal, eOrdinal, this );
 	}

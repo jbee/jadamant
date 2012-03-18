@@ -271,15 +271,25 @@ public final class Sequences {
 
 		@Override
 		public <E> List<E> element( E e ) {
-			if ( e instanceof java.lang.Enum<?> ) {
-				return elementEnum( e );
+			if ( e instanceof Integer ) {
+				return integerList( e );
 			}
-			return ElementaryList.element( e );
+			if ( e.getClass().isEnum() ) {
+				return enumList( e );
+			}
+			return ElementaryList.element( e, this.<E> noElements() );
 		}
 
 		@SuppressWarnings ( "unchecked" )
-		private <E> List<E> elementEnum( E e ) {
+		private <E> List<E> enumList( E e ) {
 			return (List<E>) EnumList.enumElement( (java.lang.Enum<?>) e );
+		}
+
+		@SuppressWarnings ( "unchecked" )
+		private <E> List<E> integerList( E e ) {
+			Integer i = (Integer) e;
+			return (List<E>) new EnumList<Integer>( Enumerate.INTEGERS, i, i,
+					this.<Integer> noElements() );
 		}
 
 		@Override

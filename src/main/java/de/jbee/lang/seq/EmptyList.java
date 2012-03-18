@@ -3,7 +3,6 @@
  */
 package de.jbee.lang.seq;
 
-import de.jbee.lang.Enumerate;
 import de.jbee.lang.List;
 import de.jbee.lang.Traversal;
 import de.jbee.lang.dev.Nonnull;
@@ -75,25 +74,7 @@ final class EmptyList<E>
 	@Override
 	public List<E> prepand( E e ) {
 		Nonnull.element( e );
-		if ( e instanceof Integer ) {
-			return integerList( e );
-		}
-		if ( e.getClass().isEnum() ) {
-			return enumList( e );
-		}
-		return ElementaryList.element( e, this );
-	}
-
-	@SuppressWarnings ( "unchecked" )
-	private <T> List<E> enumList( E e ) {
-		java.lang.Enum<?> v = (java.lang.Enum<?>) e;
-		return (List<E>) EnumList.enumElement( v );
-	}
-
-	@SuppressWarnings ( "unchecked" )
-	private List<E> integerList( E e ) {
-		Integer i = (Integer) e;
-		return (List<E>) new EnumList<Integer>( Enumerate.INTEGERS, i, i );
+		return List.with.element( e );
 	}
 
 	@Override
