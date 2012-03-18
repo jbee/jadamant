@@ -18,6 +18,8 @@ public interface Bag<E>
 	BagAlteration refine = List.alterBy.refineToBag();
 	BagLister with = Sequences.BAG_LISTER;
 
+	Bag<Object> empty = Bag.with.noElements();
+
 	/**
 	 * Adds e at the correct index in this bag. The exact position a duplicate is inserted depends
 	 * on the {@link Ord}er used by this sorted list.

@@ -48,7 +48,7 @@ public class UtileLister
 	}
 
 	public <E> List<E> readonly( java.util.Collection<E> c ) {
-		return EvolutionList.dominant( c.size(), c.toArray() );
+		return EVolutionList.dominant( c.size(), c.toArray() );
 	}
 
 	public <E> List<E> readonly( java.util.Iterator<E> c ) {
@@ -83,6 +83,6 @@ public class UtileLister
 	public <E> List<E> replicate( int n, E e ) {
 		Object[] stack = new Object[Calculate.nextHighestPowerOf2( n )];
 		Array.fill( stack, e, stack.length - n, n );
-		return EvolutionList.dominant( n, stack );
+		return EVolutionList.dominant( n, stack );
 	}
 }

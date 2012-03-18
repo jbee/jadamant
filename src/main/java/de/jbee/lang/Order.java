@@ -130,7 +130,12 @@ public final class Order {
 	}
 
 	public static <S, T extends S> void sort( T[] array, Ord<S> order ) {
-		Arrays.sort( array, new OrderAdapterComparator<S>( order ) );
+		sort( array, order, 0, array.length );
+	}
+
+	public static <S, T extends S> void sort( T[] array, Ord<S> order, int startInclusive,
+			int endExclusive ) {
+		Arrays.sort( array, startInclusive, endExclusive, new OrderAdapterComparator<S>( order ) );
 	}
 
 	public static <T> Ord<T> sub( Ord<? super T> primary, Ord<? super T> secondary ) {

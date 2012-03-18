@@ -15,7 +15,6 @@ import de.jbee.lang.Lister;
 import de.jbee.lang.Map;
 import de.jbee.lang.PartialSequence;
 import de.jbee.lang.Sequence;
-import de.jbee.lang.seq.EvolutionList.DominantEvolutionList;
 
 /**
  * Acts as a API of this package. It 'publishes' the implementation (they are package local) though
@@ -259,7 +258,7 @@ public final class Sequences {
 
 	/**
 	 * A {@link Lister} uses the default implementations {@link EmptyList}, {@link ElementaryList},
-	 * {@link EvolutionList} and {@link EnumList}.
+	 * {@link EVolutionList} and {@link EnumList}.
 	 * 
 	 * @author Jan Bernitt (jan.bernitt@gmx.de)
 	 */
@@ -290,11 +289,11 @@ public final class Sequences {
 				return noElements();
 			}
 			if ( elems.getClass() == Object[].class && ( elems.length % 2 ) == 0 ) {
-				return EvolutionList.dominant( elems.length, elems );
+				return EVolutionList.dominant( elems.length, elems );
 			}
 			Object[] stack = new Object[Calculate.nextHighestPowerOf2( size )];
 			System.arraycopy( elems, 0, stack, stack.length - size, size );
-			return EvolutionList.dominant( size, stack );
+			return EVolutionList.dominant( size, stack );
 		}
 
 		@Override
@@ -315,7 +314,7 @@ public final class Sequences {
 					stack[index++] = elems.at( i );
 				}
 			}
-			return EvolutionList.dominant( size, stack );
+			return EVolutionList.dominant( size, stack );
 		}
 
 		@Override
@@ -367,7 +366,7 @@ public final class Sequences {
 							: type.succ( cur );
 					}
 				}
-				res = new DominantEvolutionList<E>( size, stack, res );
+				res = EVolutionList.dominant( size, stack, res );
 				capacity += capacity;
 			}
 			return res;

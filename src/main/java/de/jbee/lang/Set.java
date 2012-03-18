@@ -18,6 +18,8 @@ public interface Set<E>
 	SetLister with = Sequences.SET_LISTER;
 	SetAlteration refine = List.alterBy.refineToSet();
 
+	Set<Object> empty = Set.with.noElements();
+
 	//OPEN how to make the ListIndex work with the Ord from this Set (Sorted) for Ord or Eq depended indexes 
 	// idea: Oder.inherent means a Sorted object uses its order instead of the inherent one.
 

@@ -10,5 +10,5 @@ import org.junit.runners.Suite.SuiteClasses;
 		TestListIndex.class, TestListAlteration.class, TestListModification.class,
 		TestReverseList.class } )
 public class TestsSequences {
-
+	// suite for seq package
 }

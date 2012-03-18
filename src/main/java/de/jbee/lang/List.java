@@ -55,6 +55,8 @@ public interface List<E>
 	Range<Character> letters = Sequences.letters;
 	Range<Character> characters = Sequences.characters;
 
+	List<Object> empty = List.with.noElements();
+
 	//OPEN instead of contains use consistsOf ?
 
 	//TODO a util for string handling strings as list of characters

@@ -308,7 +308,7 @@ public class AlterBy
 			Object[] elems = new Object[Calculate.nextHighestPowerOf2( size )];
 			list.fill( elems.length - size, elems, 0, size );
 			rearrange( elems, elems.length - size );
-			return EvolutionList.dominant( list.length(), elems, list.take( 0 ) );
+			return EVolutionList.dominant( list.length(), elems, list.take( 0 ) );
 		}
 
 		protected abstract <E> void rearrange( Object[] list, int start );
@@ -494,7 +494,7 @@ public class AlterBy
 
 		private <E> List<E> evoList( int occupied, Object[] elems ) {
 			Array.push( elems.length - occupied, elems );
-			return EvolutionList.dominant( occupied, elems );
+			return EVolutionList.dominant( occupied, elems );
 		}
 
 		private <E> List<E> preOrderedNub( List<E> list ) {
@@ -707,7 +707,7 @@ public class AlterBy
 
 		@Override
 		public <E> void rearrange( Object[] list, int start ) {
-			Order.sort( list, order ); //FIXME consider start
+			Order.sort( list, order, start, list.length );
 		}
 	}
 

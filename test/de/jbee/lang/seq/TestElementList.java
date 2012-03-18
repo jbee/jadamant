@@ -1,5 +1,6 @@
 package de.jbee.lang.seq;
 
+import static de.jbee.lang.seq.Sequences.depth;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
@@ -31,13 +32,8 @@ public class TestElementList {
 		for ( int i = 0; i < 100; i++ ) {
 			l = l.append( rnd.nextInt( 100 ) );
 		}
-		List<Integer> s = l.subsequent();
-		int parts = 1;
-		while ( !s.isEmpty() ) {
-			s = s.subsequent();
-			parts++;
-		}
-		assertTrue( parts <= 51 ); //TODO reduce this number!
+		int depth = depth( l );
+		assertTrue( depth <= 7 ); // because 2^7 -> 128 and we use a reversed prepanded list
 	}
 
 	@Test
@@ -47,18 +43,12 @@ public class TestElementList {
 	}
 
 	@Test
-	public void testPrepand_NoCreationOfLinkedList() {
+	public void prepandShouldUseSubsequencesGrowingWithThePowerOf2() {
 		Random rnd = new Random();
 		List<Integer> l = ElementaryList.element( 1 );
 		for ( int i = 0; i < 100; i++ ) {
 			l = l.prepand( rnd.nextInt( 100 ) );
 		}
-		List<Integer> s = l.subsequent();
-		int parts = 1;
-		while ( !s.isEmpty() ) {
-			s = s.subsequent();
-			parts++;
-		}
-		assertTrue( parts <= 7 );
+		assertTrue( depth( l ) <= 7 ); // because 2^7 -> 128
 	}
 }

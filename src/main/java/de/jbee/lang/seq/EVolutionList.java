@@ -11,7 +11,7 @@ import de.jbee.lang.Traversal;
 import de.jbee.lang.dev.Nonnull;
 
 /**
- * The data-structure of the {@link EvolutionList} consists of a chain of partial lists (stored in
+ * The data-structure of the {@link EVolutionList} consists of a chain of partial lists (stored in
  * an array {@link #elems}). The capacity of each partial list is growing with the power of 2
  * starting with 1. If the capacity is exceeded a new partial list is created having the current
  * list as its {@link #tail} list. The created list has twice the capacity of the last partial list.
@@ -26,7 +26,7 @@ import de.jbee.lang.dev.Nonnull;
  * 
  * @author Jan Bernitt (jan.bernitt@gmx.de)
  */
-abstract class EvolutionList<E>
+abstract class EVolutionList<E>
 		implements List<E> {
 
 	static <E> List<E> dominant( int size, Object[] elements ) {
@@ -34,11 +34,11 @@ abstract class EvolutionList<E>
 	}
 
 	static <E> List<E> dominant( int size, Object[] elements, List<E> tail ) {
-		return new DominantEvolutionList<E>( size, elements, tail );
+		return new DominantEVolutionList<E>( size, elements, tail );
 	}
 
 	static <E> List<E> recessive( int size, int offset, Object[] elements, List<E> tail ) {
-		return new RecessiveEvolutionList<E>( size, offset, elements, tail );
+		return new RecessiveEVolutionList<E>( size, offset, elements, tail );
 	}
 
 	static <E> List<E> recessive( int size, Object[] elements, List<E> tail ) {
@@ -55,7 +55,7 @@ abstract class EvolutionList<E>
 	final Object[] elems;
 	final List<E> tail;
 
-	EvolutionList( int size, Object[] elements, List<E> tail ) {
+	EVolutionList( int size, Object[] elements, List<E> tail ) {
 		super();
 		this.length = size;
 		this.elems = elements;
@@ -162,6 +162,7 @@ abstract class EvolutionList<E>
 		}
 		//TODO try to avoid inappropriate reuse of this stack -> especially for the recessive list
 		if ( index >= len ) {
+			// TODO this might end up appending single elements all the time - check that - prevent it
 			return thisWith( length + 1, tail.insertAt( index - len, e ) );
 		}
 		return take( index ).concat( drop( index ).prepand( e ) );
@@ -245,8 +246,8 @@ abstract class EvolutionList<E>
 	abstract List<E> thisWith( int size, List<E> tail );
 
 	/**
-	 * The dominant {@link EvolutionList} tries to continue to use (fill) the element array
-	 * {@link EvolutionList#elems} referred by a list.
+	 * The dominant {@link EVolutionList} tries to continue to use (fill) the element array
+	 * {@link EVolutionList#elems} referred by a list.
 	 * 
 	 * <h3>Tidiness</h3>
 	 * <p>
@@ -258,27 +259,26 @@ abstract class EvolutionList<E>
 	 * 
 	 * @author Jan Bernitt (jan.bernitt@gmx.de)
 	 */
-	static final class DominantEvolutionList<E>
-			extends EvolutionList<E> {
+	private static final class DominantEVolutionList<E>
+			extends EVolutionList<E> {
 
-		DominantEvolutionList( int size, Object[] elements, List<E> tail ) {
+		DominantEVolutionList( int size, Object[] elements, List<E> tail ) {
 			super( size, elements, tail );
 		}
 
-		public List<E> prepand( E e ) {
+		public final List<E> prepand( E e ) {
 			Nonnull.element( e );
 			final int len = elemsLength();
 			int index = prepandIndex( len );
 			if ( index < 0 ) { // elems capacity exceeded
-				return grow1( Array.withLastElement( e, elems.length * 2 ), this );
+				return grow1( newGeneration( e ), this );
 			}
 			if ( prepandedOccupying( e, index ) ) {
 				return grow1( elems, tail );
 			}
 			// if more the halve of the elems is used do we recycle them as recessive tail and start a new clean head for the new list
 			if ( len > elems.length / 2 ) {
-				return grow1( Array.withLastElement( e, elems.length * 2 ), recessive( length,
-						elems, tail ) );
+				return grow1( newGeneration( e ), recessive( length, elems, tail ) );
 			}
 			// otherwise we want to stay tidy so we copy our elements 
 			Object[] copy = Array.copy( elems, index + 1, len );
@@ -286,19 +286,30 @@ abstract class EvolutionList<E>
 			return grow1( copy, tail );
 		}
 
+		private Object[] newGeneration( E e ) {
+			return Array.withLastElement( e, min( 65536, elems.length << 1 ) ); // grow with power of 2 until 65536
+		}
+
 		@Override
 		public List<E> tidyUp() {
 			List<E> tidyTail = tail.tidyUp();
 			int len = elemsLength();
+			if ( len == elems.length ) {
+				return thisWithChecked( tidyTail );
+			}
 			synchronized ( elems ) {
 				if ( notOccupied( prepandIndex( len ) ) ) {
-					return tidyTail == tail
-						? this
-						: dominant( length, elems, tidyTail );
+					return thisWithChecked( tidyTail );
 				}
 
 			}
-			return dominant( length, Array.copy( elems, 0, len ), tail );
+			return dominant( length, Array.copy( elems, elems.length - len, len ), tidyTail );
+		}
+
+		private List<E> thisWithChecked( List<E> sameTail ) {
+			return sameTail == tail
+				? this
+				: dominant( length, elems, sameTail );
 		}
 
 		@SuppressWarnings ( "unchecked" )
@@ -342,8 +353,8 @@ abstract class EvolutionList<E>
 	}
 
 	/**
-	 * A recessive {@link EvolutionList} already knew that it cannot occupy further elements from
-	 * the {@link EvolutionList#elems}. It is a *view* to a section of those elements.
+	 * A recessive {@link EVolutionList} already knew that it cannot occupy further elements from
+	 * the {@link EVolutionList#elems}. It is a *view* to a section of those elements.
 	 * 
 	 * <h3>Tidiness</h3>
 	 * <p>
@@ -354,12 +365,12 @@ abstract class EvolutionList<E>
 	 * @author Jan Bernitt (jan.bernitt@gmx.de)
 	 * 
 	 */
-	static final class RecessiveEvolutionList<E>
-			extends EvolutionList<E> {
+	private static final class RecessiveEVolutionList<E>
+			extends EVolutionList<E> {
 
 		private final int offset;
 
-		RecessiveEvolutionList( int size, int offset, Object[] elems, List<E> tail ) {
+		RecessiveEVolutionList( int size, int offset, Object[] elems, List<E> tail ) {
 			super( size, elems, tail );
 			this.offset = offset;
 		}

@@ -113,7 +113,7 @@ final class ElementaryList<E>
 		return index == 0
 			? prepand( e )
 			: index == 1
-				? EvolutionList.dominant( length() + 1, new Object[] { element, e }, tail )
+				? EVolutionList.dominant( length() + 1, new Object[] { element, e }, tail )
 				: thisWithTail( tail.insertAt( index - 1, e ) );
 	}
 
@@ -126,7 +126,7 @@ final class ElementaryList<E>
 	public List<E> prepand( E e ) {
 		Nonnull.element( e );
 		//TODO not use StackList directly - Lister has to be extended to support tail list arguments in some way
-		return EvolutionList.dominant( length() + 1, new Object[] { e, element }, tail );
+		return EVolutionList.dominant( length() + 1, new Object[] { e, element }, tail );
 	}
 
 	@Override

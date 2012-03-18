@@ -35,7 +35,7 @@ final class EmptyList<E>
 
 	@Override
 	public List<E> append( E e ) {
-		return prepand( e );
+		return List.alterBy.reverse().from( prepand( e ) );
 	}
 
 	@Override
