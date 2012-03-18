@@ -7,6 +7,12 @@ import de.jbee.lang.List;
 import de.jbee.lang.Traversal;
 import de.jbee.lang.dev.Nonnull;
 
+/**
+ * Behavior of an empty {@link List} using {@link List#with} to perform transition into a list with
+ * the first element.
+ * 
+ * @author Jan Bernitt (jan.bernitt@gmx.de)
+ */
 final class EmptyList<E>
 		implements List<E> {
 
@@ -15,6 +21,10 @@ final class EmptyList<E>
 	@SuppressWarnings ( "unchecked" )
 	public static <T> List<T> instance() {
 		return (List<T>) EMPTY;
+	}
+
+	private EmptyList() {
+		// enforce singleton
 	}
 
 	@Override

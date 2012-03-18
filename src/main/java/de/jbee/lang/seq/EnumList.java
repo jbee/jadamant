@@ -22,7 +22,7 @@ final class EnumList<E>
 		Class<? extends java.lang.Enum<?>> c = e.getDeclaringClass();
 		@SuppressWarnings ( "unchecked" )
 		Enum<T> type = (Enum<T>) Enumerate.type( c );
-		return new EnumList<T>( type, e, e );
+		return enumeration( type, e, e );
 	}
 
 	private final List<E> tail;
@@ -30,15 +30,15 @@ final class EnumList<E>
 	private final int firstOrdinal;
 	private final int lastOrdinal;
 
-	EnumList( Enum<E> type, E first, E last ) {
-		this( type, first, last, List.with.<E> noElements() );
+	static <E> List<E> enumeration( Enum<E> type, E first, E last ) {
+		return enumeration( type, first, last, List.with.<E> noElements() );
 	}
 
-	EnumList( Enum<E> type, E first, E last, List<E> tail ) {
-		this( type, type.toOrdinal( first ), type.toOrdinal( last ), tail );
+	static <E> List<E> enumeration( Enum<E> type, E first, E last, List<E> tail ) {
+		return new EnumList<E>( type, type.toOrdinal( first ), type.toOrdinal( last ), tail );
 	}
 
-	EnumList( Enum<E> type, int firstOrdianl, int lastOrdinal, List<E> tail ) {
+	private EnumList( Enum<E> type, int firstOrdianl, int lastOrdinal, List<E> tail ) {
 		super();
 		this.type = type;
 		this.tail = tail;
@@ -351,7 +351,7 @@ final class EnumList<E>
 
 		@Override
 		protected List<E> fromTo( E first, E last, Enum<E> type ) {
-			return new EnumList<E>( type, first, last );
+			return enumeration( type, first, last );
 		}
 
 	}

@@ -4,6 +4,8 @@ import static de.jbee.lang.Enumerate.CHARACTERS;
 import static de.jbee.lang.Enumerate.DIGITS;
 import static de.jbee.lang.Enumerate.INTEGERS;
 import static de.jbee.lang.Enumerate.LETTERS;
+import static de.jbee.lang.seq.EnumList.enumElement;
+import static de.jbee.lang.seq.EnumList.enumeration;
 import de.jbee.lang.Arrayable;
 import de.jbee.lang.Calculate;
 import de.jbee.lang.Enum;
@@ -282,14 +284,13 @@ public final class Sequences {
 
 		@SuppressWarnings ( "unchecked" )
 		private <E> List<E> enumList( E e ) {
-			return (List<E>) EnumList.enumElement( (java.lang.Enum<?>) e );
+			return (List<E>) enumElement( (java.lang.Enum<?>) e );
 		}
 
 		@SuppressWarnings ( "unchecked" )
 		private <E> List<E> integerList( E e ) {
 			Integer i = (Integer) e;
-			return (List<E>) new EnumList<Integer>( Enumerate.INTEGERS, i, i,
-					this.<Integer> noElements() );
+			return (List<E>) enumeration( Enumerate.INTEGERS, i, i, this.<Integer> noElements() );
 		}
 
 		@Override
