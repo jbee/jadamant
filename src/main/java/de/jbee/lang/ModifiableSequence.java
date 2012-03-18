@@ -1,5 +1,10 @@
 package de.jbee.lang;
 
+/**
+ * A {@link Sequence} that can be modified.
+ * 
+ * @author Jan Bernitt (jan.bernitt@gmx.de)
+ */
 public interface ModifiableSequence<E>
 		extends ReducibleSequence<E> {
 
