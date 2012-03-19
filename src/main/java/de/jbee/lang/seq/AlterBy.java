@@ -437,7 +437,7 @@ public class AlterBy
 
 		@Override
 		public <E> List<E> from( List<E> list ) {
-			final int index = List.indexFor.firstFalse( predicate ).in( list );
+			final int index = List.indexFor.isNot( predicate ).in( list );
 			return exists( index )
 				? list.drop( index )
 				: empty.from( list );
@@ -810,7 +810,7 @@ public class AlterBy
 
 		@Override
 		public <E> List<E> from( List<E> list ) {
-			final int index = List.indexFor.firstFalse( predicate ).in( list );
+			final int index = List.indexFor.isNot( predicate ).in( list );
 			return exists( index )
 				? list.take( index )
 				: list;

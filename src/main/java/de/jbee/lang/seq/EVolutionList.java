@@ -262,6 +262,8 @@ abstract class EVolutionList<E>
 	private static final class DominantEVolutionList<E>
 			extends EVolutionList<E> {
 
+		private static final int GENERATION_MAX_LENGTH = 1 << 17;
+
 		DominantEVolutionList( int size, Object[] elements, List<E> tail ) {
 			super( size, elements, tail );
 		}
@@ -287,7 +289,7 @@ abstract class EVolutionList<E>
 		}
 
 		private Object[] newGeneration( E e ) {
-			return Array.withLastElement( e, min( 65536, elems.length << 1 ) ); // grow with power of 2 until 65536
+			return Array.withLastElement( e, min( GENERATION_MAX_LENGTH, elems.length << 1 ) ); // grow with power of 2 until 65536
 		}
 
 		@Override

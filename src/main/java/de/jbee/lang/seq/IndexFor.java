@@ -92,17 +92,15 @@ public class IndexFor {
 				: new OnPositionListIndex( pos );
 	}
 
-	//TODO better naming
-	public ListIndex firstFalse( Predicate<Object> predicate ) {
-		return nthTrue( 1, Is.not( predicate ) );
+	public ListIndex isNot( Predicate<Object> predicate ) {
+		return nthIs( 1, Is.not( predicate ) );
 	}
 
-	//TODO better naming
-	public ListIndex firstTrue( Predicate<Object> predicate ) {
-		return nthTrue( 1, predicate );
+	public ListIndex is( Predicate<Object> predicate ) {
+		return nthIs( 1, predicate );
 	}
 
-	public ListIndex nthTrue( int n, Predicate<Object> predicate ) {
+	public ListIndex nthIs( int n, Predicate<Object> predicate ) {
 		return new NthFulfilledListIndex( n, predicate, 1 );
 	}
 
@@ -138,6 +136,11 @@ public class IndexFor {
 
 	public ListIndex nthElemBy( int n, Object e, Ord<Object> order ) {
 		return nthElemBy( n, Is.fulfilledBy( Operator.eqBy( order ), e ) );
+	}
+
+	//TODO test this method
+	public ListIndex nthSubsequence( int n, Eq<Object> equality, Sequence<?> subsequence ) {
+		return new NthSubSequenceListIndex( n, equality, subsequence );
 	}
 
 	public ListIndex duplicate() {
@@ -188,7 +191,7 @@ public class IndexFor {
 		return new MaximimElementListIndex( order );
 	}
 
-	static final class RelativListIndex
+	private static final class RelativListIndex
 			implements ListIndex {
 
 		private final int offset;
@@ -206,7 +209,7 @@ public class IndexFor {
 		}
 	}
 
-	static final class InsertionListIndex
+	private static final class InsertionListIndex
 			implements ListIndex {
 
 		private final Object key;
@@ -272,7 +275,7 @@ public class IndexFor {
 		abstract <E> boolean improving( Ordering ordering );
 	}
 
-	static final class LimitedHighestListIndex
+	private static final class LimitedHighestListIndex
 			implements ListIndex {
 
 		private final ListIndex index;
@@ -291,7 +294,7 @@ public class IndexFor {
 
 	}
 
-	static final class MinimumElementListIndex
+	private static final class MinimumElementListIndex
 			extends OrderingListIndex {
 
 		MinimumElementListIndex( Ord<Object> order ) {
@@ -305,7 +308,7 @@ public class IndexFor {
 
 	}
 
-	static final class MaximimElementListIndex
+	private static final class MaximimElementListIndex
 			extends OrderingListIndex {
 
 		MaximimElementListIndex( Ord<Object> ord ) {
@@ -319,8 +322,12 @@ public class IndexFor {
 
 	}
 
-	static final class NotContainedListIndex
+	private static final class NotContainedListIndex
 			implements ListIndex {
+
+		NotContainedListIndex() {
+			// make visible locally
+		}
 
 		@Override
 		public <E> int in( Sequence<E> list ) {
@@ -329,7 +336,7 @@ public class IndexFor {
 
 	}
 
-	static final class DuplicateForIndexListIndex
+	private static final class DuplicateForIndexListIndex
 			implements ListIndex {
 
 		private final int index;
@@ -357,7 +364,7 @@ public class IndexFor {
 
 	}
 
-	static final class DuplicateListIndex
+	private static final class DuplicateListIndex
 			implements ListIndex {
 
 		private final int start;
@@ -382,7 +389,7 @@ public class IndexFor {
 		}
 	}
 
-	static final class OnPositionListIndex
+	private static final class OnPositionListIndex
 			implements ListIndex {
 
 		private final int pos;
@@ -403,7 +410,7 @@ public class IndexFor {
 		}
 	}
 
-	static final class NthFulfilledListIndex
+	private static final class NthFulfilledListIndex
 			implements ListIndex {
 
 		private final int n;
@@ -439,6 +446,52 @@ public class IndexFor {
 					}
 				}
 				idx += step;
+			}
+			return NOT_CONTAINED;
+		}
+	}
+
+	// TODO nth can be separated from the other ListIndex classes 
+
+	private static final class NthSubSequenceListIndex
+			implements ListIndex {
+
+		private final int n;
+		private final Eq<Object> equality;
+		private final Sequence<?> subsequence;
+
+		NthSubSequenceListIndex( int n, Eq<Object> equality, Sequence<?> subsequence ) {
+			super();
+			this.n = n;
+			this.equality = equality;
+			this.subsequence = subsequence;
+		}
+
+		@Override
+		public <E> int in( Sequence<E> list ) {
+			int seqLen = subsequence.length();
+			if ( list.isEmpty() || subsequence.isEmpty() || list.length() < seqLen ) {
+				return NOT_CONTAINED;
+			}
+			int length = list.length();
+			int idx = 0;
+			int fulfilled = 0;
+			int end = length - seqLen;
+			while ( idx <= end ) {
+				int elemIndex = 0;
+				while ( elemIndex < seqLen
+						&& equality.holds( list.at( idx + elemIndex ), subsequence.at( elemIndex ) ) ) {
+					elemIndex++;
+				}
+				if ( elemIndex >= seqLen ) {
+					fulfilled++;
+					if ( fulfilled == n ) {
+						return idx;
+					}
+					idx += seqLen;
+				} else {
+					idx++;
+				}
 			}
 			return NOT_CONTAINED;
 		}

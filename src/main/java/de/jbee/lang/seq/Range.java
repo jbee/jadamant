@@ -48,11 +48,8 @@ public class Range<E>
 	}
 
 	public List<E> fromToCircular( E first, E last ) {
-		int lastOrd = type.toOrdinal( last );
 		int firstOrd = type.toOrdinal( first );
-		if ( lastOrd == firstOrd ) {
-			return fromTo( type.minBound(), type.maxBound() );
-		}
+		int lastOrd = type.toOrdinal( last );
 		if ( lastOrd > firstOrd ) {
 			return fromTo( first, type.minBound() ).concat( fromTo( type.maxBound(), last ) );
 		}

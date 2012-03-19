@@ -17,8 +17,8 @@ public class TestListModification {
 		List<Character> natt = List.with.charactersIn( "natt" );
 		List<Character> midnatt = mid.concat( natt );
 		List<Character> sommar = List.with.charactersIn( "sommar" );
-		ListIndex indexForN = List.indexFor.elem( 'n' );
-		ListModification<Character> insertSommarAtN = List.modifyBy.insertAt( indexForN, sommar );
+		ListIndex firstN = List.indexFor.elem( 'n' );
+		ListModification<Character> insertSommarAtN = List.modifyBy.insertAt( firstN, sommar );
 		assertThat( insertSommarAtN.in( midnatt ), hasEqualCharactersAsIn( "midsommarnatt" ) );
 		assertThat( insertSommarAtN.in( mid ), hasEqualCharactersAsIn( "mid" ) );
 		assertThat( insertSommarAtN.in( natt ), hasEqualCharactersAsIn( "sommarnatt" ) );

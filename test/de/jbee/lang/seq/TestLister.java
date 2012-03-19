@@ -5,6 +5,13 @@ import static de.jbee.lang.Enumerate.numbers;
 import static de.jbee.lang.Enumerate.stepwise;
 import static de.jbee.lang.seq.ListMatcher.hasEqualElementsAsIn;
 import static de.jbee.lang.seq.Sequences.list;
+import static de.jbee.lang.seq.TestLister.Weekday.Friday;
+import static de.jbee.lang.seq.TestLister.Weekday.Monday;
+import static de.jbee.lang.seq.TestLister.Weekday.Saturday;
+import static de.jbee.lang.seq.TestLister.Weekday.Sunday;
+import static de.jbee.lang.seq.TestLister.Weekday.Thursday;
+import static de.jbee.lang.seq.TestLister.Weekday.Tuesday;
+import static de.jbee.lang.seq.TestLister.Weekday.Wednesday;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -12,7 +19,6 @@ import static org.junit.Assert.assertThat;
 import org.junit.Test;
 
 import de.jbee.lang.List;
-import de.jbee.lang.Sequence;
 
 public class TestLister {
 
@@ -79,64 +85,49 @@ public class TestLister {
 
 	@Test
 	public void testFromTo() {
-		List<Integer> l = List.numbers.fromTo( 3, 12 );
-		System.out.println( l );
-		List<Integer> l2 = List.numbers.fromTo( 12, 3 );
-		System.out.println( l2 );
+		assertThat( List.numbers.fromTo( 3, 12 ), hasEqualElementsAsIn( 3, 4, 5, 6, 7, 8, 9, 10,
+				11, 12 ) );
+		assertThat( List.numbers.fromTo( 12, 3 ), hasEqualElementsAsIn( 12, 11, 10, 9, 8, 7, 6, 5,
+				4, 3 ) );
 
 		Range<Integer> every3 = List.rangeTo.enumerate( stepwise( INTEGERS, 3, 3 ) );
-		System.out.println( every3.fromTo( 3, 12 ) );
+		assertThat( every3.fromTo( 3, 12 ), hasEqualElementsAsIn( 3, 6, 9, 12 ) );
 
-		System.out.println( List.numbers.stepwiseFromTo( 3, 12, 4 ) );
-		System.out.println( List.numbers.fromThenTo( 3, 5, 12 ) );
-		System.out.println( List.numbers.fromThenTo( 12, 9, 3 ) );
-		System.out.println( List.numbers.fromThenTo( 11, 9, 2 ) );
+		assertThat( List.numbers.stepwiseFromTo( 3, 12, 4 ), hasEqualElementsAsIn( 3, 7, 11 ) );
+		assertThat( List.numbers.fromThenTo( 3, 5, 12 ), hasEqualElementsAsIn( 3, 5, 7, 9, 11 ) );
+		assertThat( List.numbers.fromThenTo( 12, 9, 3 ), hasEqualElementsAsIn( 12, 9, 6, 3 ) );
+		assertThat( List.numbers.fromThenTo( 11, 9, 2 ), hasEqualElementsAsIn( 11, 9, 7, 5, 3 ) );
 
 		Range<Integer> zeroToTen = List.rangeTo.enumerate( numbers( 0, 10 ) );
-		System.out.println( zeroToTen.from( 3 ) );
-		System.out.println( zeroToTen.fromThen( 2, 4 ) );
-		System.out.println( zeroToTen.stepwisefrom( 1, 3 ) );
-		System.out.println( zeroToTen.stepwiseFromTo( 1, 6, 3 ) );
+		assertThat( zeroToTen.from( 3 ), hasEqualElementsAsIn( 3, 4, 5, 6, 7, 8, 9, 10 ) );
+		assertThat( zeroToTen.fromThen( 2, 4 ), hasEqualElementsAsIn( 2, 4, 6, 8, 10 ) );
+		assertThat( zeroToTen.stepwisefrom( 1, 3 ), hasEqualElementsAsIn( 1, 4, 7, 10 ) );
+		assertThat( zeroToTen.stepwiseFromTo( 1, 7, 3 ), hasEqualElementsAsIn( 1, 4, 7 ) );
 
-		System.out.println( List.letters.from( 'B' ) );
-		System.out.println( List.letters.fromTo( 'B', 'F' ) );
-		System.out.println( List.letters.stepwisefrom( 'A', 3 ) );
+		assertThat( List.letters.from( 'T' ), hasEqualElementsAsIn( 'T', 'U', 'V', 'W', 'X', 'Y',
+				'Z' ) );
+		assertThat( List.letters.fromTo( 'B', 'F' ), hasEqualElementsAsIn( 'B', 'C', 'D', 'E', 'F' ) );
+		assertThat( List.letters.stepwisefrom( 'S', 3 ), hasEqualElementsAsIn( 'S', 'V', 'Y' ) );
 
-		System.out.println( List.characters.fromTo( 'C', '0' ) );
-
-		Range<Weekday> weekdays = List.rangeTo.enumerate( Weekday.class );
-		List<Weekday> l3 = weekdays.fromTo( Weekday.Monday, Weekday.Friday );
-		System.out.println( l3 );
-		List<Weekday> l4 = weekdays.fromTo( Weekday.Friday, Weekday.Tuesday );
-		System.out.println( l4 );
-		System.out.println( weekdays.fromToCircular( Weekday.Friday, Weekday.Tuesday ) );
-		System.out.println( weekdays.fromToCircular( Weekday.Friday, Weekday.Friday ) );
-		System.out.println( weekdays.fromToCircular( Weekday.Tuesday, Weekday.Friday ) );
+		assertThat( List.characters.fromTo( 'C', 'A' ), hasEqualElementsAsIn( 'C', 'B', 'A' ) );
 	}
 
 	@Test
-	public void testElementsCluster() {
-		List<Integer> l = List.with.elements( new Sequence<Integer>() {
+	public void fromToShouldWorkWithAllEnums() {
+		Range<Weekday> weekdays = List.rangeTo.enumerate( Weekday.class );
 
-			@Override
-			public boolean isEmpty() {
-				return false;
-			}
+		assertThat( weekdays.fromTo( Monday, Friday ), //
+				hasEqualElementsAsIn( Monday, Tuesday, Wednesday, Thursday, Friday ) );
+		assertThat( weekdays.fromTo( Friday, Tuesday ), // 
+				hasEqualElementsAsIn( Friday, Thursday, Wednesday, Tuesday ) );
 
-			@Override
-			public int length() {
-				return 3;
-			}
-
-			@Override
-			public Integer at( int index ) {
-				return new int[] { 1, 2, 3 }[index];
-			}
-
-		} );
-		assertThat( l.length(), is( 3 ) );
-		assertThat( l.at( 0 ), is( 1 ) );
-		assertThat( l.at( 1 ), is( 2 ) );
-		assertThat( l.at( 2 ), is( 3 ) );
+		assertThat( weekdays.fromToCircular( Friday, Tuesday ), //
+				hasEqualElementsAsIn( Friday, Saturday, Sunday, Monday, Tuesday ) );
+		assertThat( weekdays.fromToCircular( Friday, Friday ), //
+				hasEqualElementsAsIn( Friday, Saturday, Sunday, Monday, Tuesday, Wednesday,
+						Thursday, Friday ) );
+		assertThat( weekdays.fromToCircular( Tuesday, Friday ), //
+				hasEqualElementsAsIn( Tuesday, Monday, Sunday, Saturday, Friday ) );
 	}
+
 }

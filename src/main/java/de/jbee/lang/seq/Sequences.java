@@ -50,16 +50,16 @@ public final class Sequences {
 	private static final ProxyEnumerator<Character> charactersProxy = proxy( CHARACTERS );
 	private static final ProxyEnumerator<Character> lettersProxy = proxy( LETTERS );
 
-	public static final Range<Integer> numbers = utile( numbersProxy, INTEGERS );
-	public static final Range<Integer> digits = utile( digitsProxy, DIGITS );
-	public static final Range<Character> characters = utile( charactersProxy, CHARACTERS );
-	public static final Range<Character> letters = utile( lettersProxy, LETTERS );
+	public static final Range<Integer> numbers = range( numbersProxy, INTEGERS );
+	public static final Range<Integer> digits = range( digitsProxy, DIGITS );
+	public static final Range<Character> characters = range( charactersProxy, CHARACTERS );
+	public static final Range<Character> letters = range( lettersProxy, LETTERS );
 
 	private static <T> ProxyEnumerator<T> proxy( Enum<T> type ) {
 		return new ProxyEnumerator<T>( enumerator.enumerate( type ) );
 	}
 
-	private static <T> Range<T> utile( Enumerator<T> e, Enum<T> type ) {
+	private static <T> Range<T> range( Enumerator<T> e, Enum<T> type ) {
 		return new Range<T>( e, type );
 	}
 
@@ -402,8 +402,8 @@ public final class Sequences {
 	private static final class Entry<V>
 			implements Map.Entry<V> {
 
-		final Map.Key key;
-		final V value;
+		private final Map.Key key;
+		private final V value;
 
 		Entry( Map.Key key, V value ) {
 			super();
@@ -449,21 +449,21 @@ public final class Sequences {
 	private static final class Key
 			implements Map.Key {
 
-		private final String pattern;
+		private final String path;
 
-		Key( String pattern ) {
+		Key( String path ) {
 			super();
-			this.pattern = pattern;
+			this.path = path;
 		}
 
 		@Override
 		public String path() {
-			return pattern;
+			return path;
 		}
 
 		@Override
 		public String toString() {
-			return pattern;
+			return path;
 		}
 
 	}
