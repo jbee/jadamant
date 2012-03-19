@@ -13,20 +13,20 @@ import org.junit.Test;
 import de.jbee.lang.List;
 
 /**
- * Tests validating especially the {@link ElementaryList} implementation.
+ * Tests validating the correct use of the different {@link List} implementations.
  * 
  * @author Jan Bernitt (jan.bernitt@gmx.de)
  */
-public class TestElementList {
+public class TestListComposition {
 
 	@Test
-	public void testAppend_NoCreationOfLinkedListOnSecondElement() {
+	public void appendingToASingleElementListShouldNotChainTwoSingleElementLists() {
 		List<Integer> l = ElementaryList.element( 1 );
 		assertThat( l.append( 2 ), not( instanceOf( ElementaryList.class ) ) );
 	}
 
 	@Test
-	public void testAppend_NoCreationOfLinkedList() {
+	public void appendShouldUseSubsequencesGrowingWithThePowerOf2() {
 		Random rnd = new Random();
 		List<Integer> l = ElementaryList.element( 1 );
 		for ( int i = 0; i < 100; i++ ) {
@@ -37,7 +37,7 @@ public class TestElementList {
 	}
 
 	@Test
-	public void testPrepand_NoCreationOfLinkedListOnSecondElement() {
+	public void prepandingToASingleElementListShouldNotChainTwoSingleElementLists() {
 		List<Integer> l = ElementaryList.element( 1 );
 		assertThat( l.prepand( 2 ), not( instanceOf( ElementaryList.class ) ) );
 	}
