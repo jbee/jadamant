@@ -83,6 +83,18 @@ public class ModifyBy {
 		return concat( tail );
 	}
 
+	public <E> ListModification<E> embed( E before, E after ) {
+		return chain( prepand( before ), append( after ) );
+	}
+
+	public <E> ListModification<E> embed( List<E> before, List<E> after ) {
+		return embed( constant( before ), constant( after ) );
+	}
+
+	public <E> ListModification<E> embed( ListModification<E> init, ListModification<E> tail ) {
+		return chain( prepand( init ), concat( tail ) );
+	}
+
 	public <E> ListModification<E> concat( List<E> tail ) {
 		return concat( constant( tail ) );
 	}
@@ -99,6 +111,16 @@ public class ModifyBy {
 		return new AlterationModification<E>( alteration );
 	}
 
+	public <E> ListModification<E> chain( ListModification<E> fst, ListModification<E> snd ) {
+		if ( fst == NONE ) {
+			return snd;
+		}
+		if ( snd == NONE ) {
+			return fst;
+		}
+		return new ConsecutiveListModification<E>( fst, snd );
+	}
+
 	/**
 	 * The NO-OP {@link ListModification}.
 	 */
@@ -112,6 +134,25 @@ public class ModifyBy {
 		@Override
 		public List<E> in( List<E> list ) {
 			return list;
+		}
+
+	}
+
+	private static final class ConsecutiveListModification<E>
+			implements ListModification<E> {
+
+		private final ListModification<E> fst;
+		private final ListModification<E> snd;
+
+		ConsecutiveListModification( ListModification<E> fst, ListModification<E> snd ) {
+			super();
+			this.fst = fst;
+			this.snd = snd;
+		}
+
+		@Override
+		public List<E> in( List<E> list ) {
+			return snd.in( fst.in( list ) );
 		}
 
 	}
