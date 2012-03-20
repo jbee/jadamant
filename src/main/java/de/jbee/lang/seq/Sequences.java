@@ -6,17 +6,21 @@ import static de.jbee.lang.Enumerate.INTEGERS;
 import static de.jbee.lang.Enumerate.LETTERS;
 import static de.jbee.lang.seq.EnumList.enumElement;
 import static de.jbee.lang.seq.EnumList.enumeration;
+
+import com.sun.xml.internal.bind.v2.runtime.reflect.Lister;
+
 import de.jbee.lang.Arrayable;
+import de.jbee.lang.Bag;
 import de.jbee.lang.Calculate;
 import de.jbee.lang.Enum;
 import de.jbee.lang.Enumerate;
 import de.jbee.lang.Enumerator;
 import de.jbee.lang.EnumeratorFactory;
 import de.jbee.lang.List;
-import de.jbee.lang.Lister;
 import de.jbee.lang.Map;
 import de.jbee.lang.PartialSequence;
 import de.jbee.lang.Sequence;
+import de.jbee.lang.Set;
 
 /**
  * Acts as a API of this package. It 'publishes' the implementation (they are package local) though
@@ -30,13 +34,13 @@ import de.jbee.lang.Sequence;
  */
 public final class Sequences {
 
-	static final Lister LISTER = new DefaultLister();
+	static final List.Lister LISTER = new DefaultLister();
 	static final EnumeratorFactory ENUMERATOR_FACTORY = EnumList.ENUMERATOR_FACTORY;
 	static final EnumeratorFactory LISTER_ENUMERATOR_FACTORY = new ListerEnumeratorFactory();
 
 	//TODO should be private
-	public static final Lister.BagLister BAG_LISTER = new UtileBagLister();
-	public static final Lister.SetLister SET_LISTER = new UtileSetLister();
+	public static final Bag.BagLister BAG_LISTER = new UtileBagLister();
+	public static final Set.SetLister SET_LISTER = new UtileSetLister();
 
 	private static final ProxyLister listProxy = new ProxyLister();
 	public static final UtileLister list = new UtileLister( listProxy );
@@ -66,7 +70,7 @@ public final class Sequences {
 	/**
 	 * Change the list implementation used by changing the general list factory.
 	 */
-	static void setUp( Lister lister ) {
+	static void setUp( List.Lister lister ) {
 		listProxy.factory = lister;
 	}
 
@@ -228,9 +232,9 @@ public final class Sequences {
 	}
 
 	static final class ProxyLister
-			implements Lister {
+			implements List.Lister {
 
-		Lister factory = Sequences.LISTER;
+		List.Lister factory = Sequences.LISTER;
 
 		ProxyLister() {
 			// hide for singleton
@@ -265,7 +269,7 @@ public final class Sequences {
 	 * @author Jan Bernitt (jan.bernitt@gmx.de)
 	 */
 	private static final class DefaultLister
-			implements Lister {
+			implements List.Lister {
 
 		DefaultLister() {
 			// make visible

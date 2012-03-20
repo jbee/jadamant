@@ -2,7 +2,6 @@ package de.jbee.lang.seq;
 
 import de.jbee.lang.Bag;
 import de.jbee.lang.List;
-import de.jbee.lang.Lister;
 import de.jbee.lang.Ord;
 import de.jbee.lang.Order;
 import de.jbee.lang.Ordered;
@@ -10,7 +9,7 @@ import de.jbee.lang.Sequence;
 import de.jbee.lang.Set;
 
 public class UtileSetLister
-		implements Lister.SetLister {
+		implements Set.SetLister {
 
 	public <E> Set<E> elements( List<E> elems ) {
 		return elements( Order.inherent, elems );

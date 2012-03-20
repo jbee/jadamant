@@ -9,7 +9,6 @@ import de.jbee.lang.Equal;
 import de.jbee.lang.List;
 import de.jbee.lang.ListAlteration;
 import de.jbee.lang.ListIndex;
-import de.jbee.lang.Lister;
 import de.jbee.lang.Ord;
 import de.jbee.lang.Order;
 import de.jbee.lang.Predicate;
@@ -683,7 +682,7 @@ public class AlterBy
 	}
 
 	/**
-	 * We cannot just create a {@link Bag} using the {@link Lister.BagLister} since the
+	 * We cannot just create a {@link Bag} using the {@link Bag.BagLister} since the
 	 * implementation might use this alteration to ensure bag ordering constraint.
 	 */
 	private static final class SortingAlteration

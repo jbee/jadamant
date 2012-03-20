@@ -1,7 +1,6 @@
 package de.jbee.lang;
 
 import de.jbee.lang.ListAlteration.SetAlteration;
-import de.jbee.lang.Lister.SetLister;
 import de.jbee.lang.seq.Sequences;
 
 /**
@@ -46,6 +45,28 @@ public interface Set<E>
 
 	@Override
 	Set<E> tidyUp();
+
+	interface SetLister
+			extends BagLister {
+
+		@Override
+		<E> Set<E> noElements();
+
+		@Override
+		<E> Set<E> noElements( Ord<Object> order );
+
+		@Override
+		<E> Set<E> element( E e );
+
+		@Override
+		<E> Set<E> elements( E... elems );
+
+		@Override
+		<E> Set<E> elements( Sequence<E> elems );
+
+		@Override
+		<E> Set<E> elements( Ord<Object> order, List<E> elems );
+	}
 
 	//OPEN union/intersection as methods or SetTransition ? 
 }

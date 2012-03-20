@@ -132,7 +132,7 @@ public class ModifyBy {
 		}
 
 		@Override
-		public List<E> in( List<E> list ) {
+		public List<E> on( List<E> list ) {
 			return list;
 		}
 
@@ -151,8 +151,8 @@ public class ModifyBy {
 		}
 
 		@Override
-		public List<E> in( List<E> list ) {
-			return snd.in( fst.in( list ) );
+		public List<E> on( List<E> list ) {
+			return snd.on( fst.on( list ) );
 		}
 
 	}
@@ -174,7 +174,7 @@ public class ModifyBy {
 		}
 
 		@Override
-		public List<E> in( List<E> list ) {
+		public List<E> on( List<E> list ) {
 			return constant;
 		}
 	}
@@ -196,7 +196,7 @@ public class ModifyBy {
 		}
 
 		@Override
-		public List<E> in( List<E> list ) {
+		public List<E> on( List<E> list ) {
 			return alteration.from( list );
 		}
 
@@ -216,8 +216,8 @@ public class ModifyBy {
 		}
 
 		@Override
-		public List<E> in( List<E> list ) {
-			return init.in( list ).concat( list );
+		public List<E> on( List<E> list ) {
+			return init.on( list ).concat( list );
 		}
 	}
 
@@ -235,8 +235,8 @@ public class ModifyBy {
 		}
 
 		@Override
-		public List<E> in( List<E> list ) {
-			return list.concat( tail.in( list ) );
+		public List<E> on( List<E> list ) {
+			return list.concat( tail.on( list ) );
 		}
 
 	}
@@ -255,7 +255,7 @@ public class ModifyBy {
 		}
 
 		@Override
-		public List<E> in( List<E> list ) {
+		public List<E> on( List<E> list ) {
 			return list.append( element );
 		}
 
@@ -275,7 +275,7 @@ public class ModifyBy {
 		}
 
 		@Override
-		public List<E> in( List<E> list ) {
+		public List<E> on( List<E> list ) {
 			return list.prepand( element );
 		}
 
@@ -294,7 +294,7 @@ public class ModifyBy {
 		}
 
 		@Override
-		public List<E> in( List<E> list ) {
+		public List<E> on( List<E> list ) {
 			int index = replaceAt.in( list );
 			return !exists( index )
 				? list
@@ -319,7 +319,7 @@ public class ModifyBy {
 		}
 
 		@Override
-		public List<E> in( List<E> list ) {
+		public List<E> on( List<E> list ) {
 			int index = insertAt.in( list );
 			return !exists( index )
 				? list
@@ -343,12 +343,12 @@ public class ModifyBy {
 		}
 
 		@Override
-		public List<E> in( List<E> list ) {
+		public List<E> on( List<E> list ) {
 			final int index = insertAt.in( list );
 			if ( !exists( index ) ) { // insertion index not defined -> do not insert
 				return list;
 			}
-			List<E> insertedList = inserted.in( list );
+			List<E> insertedList = inserted.on( list );
 			if ( index == 0 ) {
 				return insertedList.concat( list );
 			}

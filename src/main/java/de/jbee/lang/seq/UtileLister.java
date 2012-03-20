@@ -3,15 +3,14 @@ package de.jbee.lang.seq;
 import de.jbee.lang.Array;
 import de.jbee.lang.Calculate;
 import de.jbee.lang.List;
-import de.jbee.lang.Lister;
 import de.jbee.lang.Sequence;
 
 public class UtileLister
-		implements Lister {
+		implements List.Lister {
 
-	private final Lister utilised;
+	private final List.Lister utilised;
 
-	public UtileLister( Lister utilised ) {
+	public UtileLister( List.Lister utilised ) {
 		super();
 		this.utilised = utilised;
 	}

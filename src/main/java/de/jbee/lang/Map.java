@@ -2,7 +2,6 @@ package de.jbee.lang;
 
 import static de.jbee.lang.Order.entryKeysBy;
 import static de.jbee.lang.Order.typeaware;
-import de.jbee.lang.Lister.MapLister;
 import de.jbee.lang.seq.UtileMapLister;
 
 /**
@@ -78,5 +77,10 @@ public interface Map<V>
 
 		Key key();
 
+	}
+
+	interface MapLister {
+
+		<E> Map<E> noEntries( Ord<Object> order );
 	}
 }

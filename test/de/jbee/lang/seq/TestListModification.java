@@ -19,38 +19,38 @@ public class TestListModification {
 		List<Character> sommar = List.with.charactersIn( "sommar" );
 		ListIndex firstN = List.indexFor.elem( 'n' );
 		ListModification<Character> insertSommarAtN = List.modifyBy.insertAt( firstN, sommar );
-		assertThat( insertSommarAtN.in( midnatt ), hasEqualCharactersAsIn( "midsommarnatt" ) );
-		assertThat( insertSommarAtN.in( mid ), hasEqualCharactersAsIn( "mid" ) );
-		assertThat( insertSommarAtN.in( natt ), hasEqualCharactersAsIn( "sommarnatt" ) );
+		assertThat( insertSommarAtN.on( midnatt ), hasEqualCharactersAsIn( "midsommarnatt" ) );
+		assertThat( insertSommarAtN.on( mid ), hasEqualCharactersAsIn( "mid" ) );
+		assertThat( insertSommarAtN.on( natt ), hasEqualCharactersAsIn( "sommarnatt" ) );
 	}
 
 	@Test
 	public void prepandModificationShouldBeSameAsUsingListPrepand() {
-		assertThat( List.modifyBy.prepand( 'O' ).in( List.with.element( 'K' ) ),
+		assertThat( List.modifyBy.prepand( 'O' ).on( List.with.element( 'K' ) ),
 				hasEqualCharactersAsIn( "OK" ) );
 	}
 
 	@Test
 	public void appendModificationShouldBeSameAsUsingListPrepand() {
-		assertThat( List.modifyBy.append( 'K' ).in( List.with.element( 'O' ) ),
+		assertThat( List.modifyBy.append( 'K' ).on( List.with.element( 'O' ) ),
 				hasEqualCharactersAsIn( "OK" ) );
 	}
 
 	@Test
 	public void concatModificationShouldBeCombinableWithOtherModification() {
-		assertThat( List.modifyBy.concat( List.modifyBy.prepand( 'O' ) ).in(
+		assertThat( List.modifyBy.concat( List.modifyBy.prepand( 'O' ) ).on(
 				List.with.element( 'K' ) ), hasEqualCharactersAsIn( "KOK" ) );
 	}
 
 	@Test
 	public void concatModificationShouldBeSameAsUsingListConcat() {
-		assertThat( List.modifyBy.concat( List.with.elements( 'D', 'C' ) ).in(
+		assertThat( List.modifyBy.concat( List.with.elements( 'D', 'C' ) ).on(
 				List.with.elements( 'A', 'C' ) ), hasEqualCharactersAsIn( "ACDC" ) );
 	}
 
 	@Test
 	public void embedShouldWorkAsQuoteFunction() {
-		assertThat( List.modifyBy.embed( '<', '>' ).in( List.with.charactersIn( "hey!" ) ),
+		assertThat( List.modifyBy.embed( '<', '>' ).on( List.with.charactersIn( "hey!" ) ),
 				hasEqualCharactersAsIn( "<hey!>" ) );
 	}
 }

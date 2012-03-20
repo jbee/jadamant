@@ -3,14 +3,13 @@ package de.jbee.lang.seq;
 import de.jbee.lang.Array;
 import de.jbee.lang.Bag;
 import de.jbee.lang.List;
-import de.jbee.lang.Lister;
 import de.jbee.lang.Ord;
 import de.jbee.lang.Order;
 import de.jbee.lang.Ordered;
 import de.jbee.lang.Sequence;
 
 class UtileBagLister
-		implements Lister.BagLister {
+		implements Bag.BagLister {
 
 	@Override
 	public <E> Bag<E> element( E e ) {
