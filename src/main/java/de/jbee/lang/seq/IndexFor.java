@@ -451,6 +451,29 @@ public class IndexFor {
 		}
 	}
 
+	static final class FromListIndex
+			implements ListIndex {
+
+		private final ListIndex from;
+		private final ListIndex index;
+
+		FromListIndex( ListIndex from, ListIndex index ) {
+			super();
+			this.from = from;
+			this.index = index;
+		}
+
+		@Override
+		public <E> int in( Sequence<E> list ) {
+			int fromIndex = from.in( list );
+			if ( exists( fromIndex ) ) {
+				//FIXME we need to use traverse or act as a sequence ourselfs to drop up to fromIndex 
+			}
+			return NOT_CONTAINED;
+		}
+
+	}
+
 	// TODO nth can be separated from the other ListIndex classes 
 
 	private static final class NthSubSequenceListIndex

@@ -58,7 +58,6 @@ public interface Map<V>
 
 		String path();
 
-		//OPEN add start + end index to narrow search ? -> it doesn't make sense for insert
 	}
 
 	interface NumericalKey

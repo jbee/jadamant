@@ -13,11 +13,13 @@ package de.jbee.lang;
  * @param <E>
  *            The type of the list's elements.
  */
-public interface ListModification<E> {
+public interface ListModification<E>
+		extends ListTransformation<E, List<E>> {
 
 	/**
 	 * @return the list results from applying the this modifications to the argument
 	 *         <code>list</code>.
 	 */
+	@Override
 	List<E> on( List<E> list );
 }

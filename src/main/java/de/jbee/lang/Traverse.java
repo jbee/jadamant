@@ -35,10 +35,27 @@ public final class Traverse {
 		return res;
 	}
 
-	public static <E> E fold( List<E> l, Op<E> op, E init ) {
+	//TODO find a way to model fold by a ListTransformation<E,E> 
+	public static <E> ListTransformation<E, E> fold( Op<E> op, E init ) {
 		Res<E> res = Res.of( init );
-		l.traverse( 0, new FoldByOperatorTraversal<E>( op, res ) );
-		return res.value;
+		//l.traverse( 0, new FoldByOperatorTraversal<E>( op, res ) );
+		return null;
+	}
+
+	private static class FoldL<E>
+			implements ListTransformation<E, E> {
+
+		@Override
+		public E on( List<E> list ) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+	}
+
+	static interface Accumulator<E> {
+
+		void accumulate( E element );
 	}
 
 	//OPEN how can a traverse build up a list and return it ? maybe traverse needs a second method and generic ? -> or some kind of ListBuilder passed into and feeded by the Traversal

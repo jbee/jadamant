@@ -45,6 +45,8 @@ abstract class EVolutionList<E>
 		return recessive( size, 0, elements, tail );
 	}
 
+	//TODO a variant that has a max len value and grows with powers of 2 till that until a new part in prepanded- it always copies on growth and also when its not tidy 
+
 	/**
 	 * list's size in total with {@link #tail}-list elements
 	 */
