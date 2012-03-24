@@ -21,7 +21,7 @@ public class IndexAccess {
 
 	public static <E> Iterator<E> iterator( PartialSequence<E> sequence, int start, int end,
 			int increment ) {
-		return new ForwardIterator<E>( sequence, start, end, increment );
+		return new ForwardsIterator<E>( sequence, start, end, increment );
 	}
 
 	public static <E> Iterable<E> iterable( final Sequence<E> seq ) {
@@ -32,7 +32,15 @@ public class IndexAccess {
 		return new IndexAccessIterable<E>( seq, seq.length(), -1, -1 );
 	}
 
-	private static final class ForwardIterator<E>
+	/**
+	 * A {@link Iterator} utilizes {@link PartialSequence#subsequent()}-method so that the index
+	 * access used to read the {@link #next()} element will not require a dispatch to a subsequent
+	 * tail list. This is achieved by change the referred {@link #sequence} to the next subsequent
+	 * list as soon as the index points to its first element.
+	 * 
+	 * @author Jan Bernitt (jan.bernitt@gmx.de)
+	 */
+	private static final class ForwardsIterator<E>
 			implements Iterator<E> {
 
 		private final int increment;
@@ -42,7 +50,7 @@ public class IndexAccess {
 		private int length;
 		private int index;
 
-		ForwardIterator( PartialSequence<? extends E> seq, int start, int end, int increment ) {
+		ForwardsIterator( PartialSequence<? extends E> seq, int start, int end, int increment ) {
 			super();
 			this.sequence = seq;
 			this.length = end - start;
@@ -53,7 +61,7 @@ public class IndexAccess {
 
 		@Override
 		public boolean hasNext() {
-			return index + increment < length;
+			return index < length;
 		}
 
 		@Override
@@ -118,14 +126,14 @@ public class IndexAccess {
 		@Override
 		public boolean hasNext() {
 			return increment < 0
-				? index + increment > end
-				: index + increment < end;
+				? index > end
+				: index < end;
 		}
 
 		@Override
 		public E next() {
 			E res = sequence.at( index );
-			index = index + increment;
+			index += increment;
 			return res;
 		}
 

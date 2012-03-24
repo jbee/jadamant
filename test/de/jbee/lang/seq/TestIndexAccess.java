@@ -1,8 +1,9 @@
 package de.jbee.lang.seq;
 
-import static junit.framework.Assert.assertFalse;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Iterator;
 
@@ -19,4 +20,17 @@ public class TestIndexAccess {
 		assertThat( forwards.next(), is( 2 ) );
 		assertFalse( forwards.hasNext() );
 	}
+
+	@Test
+	public void forwardsIteratorShouldWorkWithPartialLists() {
+		List<Integer> l = List.with.elements( 1, 2 );
+		l = l.concat( List.with.elements( 3, 4 ) );
+		Iterator<Integer> forwards = List.iterate.forwards( l ).iterator();
+		for ( int i = 0; i < l.length(); i++ ) {
+			assertTrue( forwards.hasNext() );
+			assertThat( forwards.next(), is( i + 1 ) );
+		}
+		assertFalse( forwards.hasNext() );
+	}
+
 }
