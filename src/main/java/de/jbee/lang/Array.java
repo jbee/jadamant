@@ -8,16 +8,29 @@ import de.jbee.lang.dev.Nonnull;
 /**
  * My array util.
  * 
+ * TODO the name Array should be a interface for objects that represent logical arrays of something.
+ * 
  * @author Jan Bernitt (jan.bernitt@gmx.de)
  */
 public final class Array {
 
 	private static Random rnd;
 
-	public static Object[] copy( Object[] src, int start, int length ) {
-		Object[] copy = new Object[src.length];
-		System.arraycopy( src, start, copy, start, length );
-		return copy;
+	/**
+	 * Does a 'partial' clone of the source array. The result has the same length but contains just
+	 * the elements between start and end (exclusive) given by start +length. All other cells of the
+	 * result will be <code>null</code>.
+	 */
+	public static Object[] clone( Object[] src, int start, int length ) {
+		Object[] clone = new Object[src.length];
+		System.arraycopy( src, start, clone, start, length );
+		return clone;
+	}
+
+	public static Object[] segment( Object[] src, int start, int length ) {
+		Object[] segment = new Object[length];
+		System.arraycopy( src, start, segment, 0, length );
+		return segment;
 	}
 
 	/**
@@ -104,7 +117,8 @@ public final class Array {
 	}
 
 	public static <E> Sequence<E> sequence( E[] elems ) {
-		//FIXME check for null elements
+		//FIXME check for null elements 
+		// OPEN do a copy ? -> to be save it would be needed
 		return new ArraySequence<E>( elems );
 	}
 
@@ -177,6 +191,7 @@ public final class Array {
 			}
 			if ( obj instanceof Sequence<?> ) {
 				Sequence<?> other = (Sequence<?>) obj;
+				//TODO move t a util-method: equal(Sequence, Sequence)
 				if ( other.length() != length() ) {
 					return false;
 				}

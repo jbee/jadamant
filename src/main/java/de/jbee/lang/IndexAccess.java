@@ -14,12 +14,12 @@ public class IndexAccess {
 
 	public static <E> Iterator<E> iterator( IndexAccessible<E> sequence, int start, int end,
 			int increment ) {
-		return sequence instanceof PartialSequence<?>
-			? iterator( (PartialSequence<E>) sequence, start, end, increment )
+		return sequence instanceof Segment<?>
+			? iterator( (Segment<E>) sequence, start, end, increment )
 			: new IndexAccessIterator<E>( sequence, start, end, increment );
 	}
 
-	public static <E> Iterator<E> iterator( PartialSequence<E> sequence, int start, int end,
+	public static <E> Iterator<E> iterator( Segment<E> sequence, int start, int end,
 			int increment ) {
 		return new ForwardsIterator<E>( sequence, start, end, increment );
 	}
@@ -33,7 +33,7 @@ public class IndexAccess {
 	}
 
 	/**
-	 * A {@link Iterator} utilizes {@link PartialSequence#subsequent()}-method so that the index
+	 * A {@link Iterator} utilizes {@link Segment#subsequent()}-method so that the index
 	 * access used to read the {@link #next()} element will not require a dispatch to a subsequent
 	 * tail list. This is achieved by change the referred {@link #sequence} to the next subsequent
 	 * list as soon as the index points to its first element.
@@ -45,12 +45,12 @@ public class IndexAccess {
 
 		private final int increment;
 
-		private PartialSequence<? extends E> sequence;
+		private Segment<? extends E> sequence;
 		private int partialLength;
 		private int length;
 		private int index;
 
-		ForwardsIterator( PartialSequence<? extends E> seq, int start, int end, int increment ) {
+		ForwardsIterator( Segment<? extends E> seq, int start, int end, int increment ) {
 			super();
 			this.sequence = seq;
 			this.length = end - start;

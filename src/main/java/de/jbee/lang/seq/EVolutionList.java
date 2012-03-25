@@ -3,6 +3,7 @@
  */
 package de.jbee.lang.seq;
 
+import static de.jbee.lang.Calculate.nextHighestPowerOf2;
 import static java.lang.Math.min;
 import de.jbee.lang.Array;
 import de.jbee.lang.List;
@@ -29,58 +30,45 @@ import de.jbee.lang.dev.Nonnull;
 abstract class EVolutionList<E>
 		implements List<E> {
 
-	static <E> List<E> dominant( int size, Object[] elements ) {
-		return dominant( size, elements, List.with.<E> noElements() );
+	/**
+	 * The maximum count of elements contained in a single generation.
+	 */
+	static final int GENERATION_MAX_LENGTH = 1 << 16;
+
+	static final Object LOCK = new Object();
+
+	static <E> List<E> dominant( int length, Object[] elements ) {
+		return dominant( length, elements, List.with.<E> noElements() );
 	}
 
-	static <E> List<E> dominant( int size, Object[] elements, List<E> tail ) {
-		return new DominantEVolutionList<E>( size, elements, tail );
+	static <E> List<E> dominant( int length, Object[] elements, List<E> tail ) {
+		return new DominantList<E>( length, elements, tail );
 	}
 
-	static <E> List<E> recessive( int size, int offset, Object[] elements, List<E> tail ) {
-		return new RecessiveEVolutionList<E>( size, offset, elements, tail );
+	static <E> List<E> recessive( int length, int offset, Object[] elements, List<E> tail ) {
+		return new RecessiveList<E>( length, offset, elements, tail );
 	}
 
-	static <E> List<E> recessive( int size, Object[] elements, List<E> tail ) {
-		return recessive( size, 0, elements, tail );
+	static <E> List<E> growth( int length, int generationSize, Object[] elements, List<E> tail ) {
+		return new GrowthList<E>( length, generationSize, elements, tail );
 	}
-
-	//TODO a variant that has a max len value and grows with powers of 2 till that until a new part in prepanded- it always copies on growth and also when its not tidy 
 
 	/**
 	 * list's size in total with {@link #tail}-list elements
 	 */
 	final int length;
 	/**
-	 * Is filled with elements from highest to lowest index using {@link #prepand(Object)}.
+	 * Is filled with elements from highest to lowest index using {@link #prepand(Object)}. The
+	 * element used are forming the {@link #population()}.
 	 */
 	final Object[] elems;
 	final List<E> tail;
 
-	EVolutionList( int size, Object[] elements, List<E> tail ) {
+	EVolutionList( int length, Object[] elements, List<E> tail ) {
 		super();
-		this.length = size;
+		this.length = length;
 		this.elems = elements;
 		this.tail = tail;
-	}
-
-	@Override
-	public List<E> subsequent() {
-		return tail;
-	}
-
-	@Override
-	public void traverse( int start, Traversal<? super E> traversal ) {
-		final int len = elemsLength();
-		int i = start;
-		int inc = 0;
-		while ( inc >= 0 && i < len ) {
-			inc = traversal.incrementOn( element( i, len ) );
-			i += inc;
-		}
-		if ( inc >= 0 ) {
-			tail.traverse( i - len, traversal );
-		}
 	}
 
 	@Override
@@ -91,7 +79,7 @@ abstract class EVolutionList<E>
 
 	@Override
 	public final E at( int index ) {
-		final int len = elemsLength();
+		final int len = population();
 		return index >= len
 			? tail.at( index - len )
 			: element( index, len );
@@ -107,21 +95,21 @@ abstract class EVolutionList<E>
 		if ( index < 0 ) {
 			return this;
 		}
-		final int len = elemsLength();
+		final int len = population();
 		if ( index == 0 ) { // first of this elems
 			return len == 1
 				? tail
-				: recessive( length - 1, offset(), elems, tail );
+				: sectorWith( length - 1, tail );
 		}
 		if ( index >= len ) { // not in this elems
 			return thisWith( length - 1, tail.deleteAt( index - len ) );
 		}
 		if ( index == len - 1 ) { // last of this elems
-			return recessive( length - 1, offset() + 1, elems, tail );
+			return sectorWith( length - 1, +1, tail );
 		}
 		// somewhere in between our elems ;(
-		return recessive( length - 1, len - index, elems, recessive( length - 1 - index, offset(),
-				elems, tail ) );
+		return sectorWith( length - 1, len - index, // tail:
+				sectorWith( length - 1 - index, tail ) );
 	}
 
 	@Override
@@ -132,24 +120,24 @@ abstract class EVolutionList<E>
 		if ( count >= length ) {
 			return empty();
 		}
-		final int len = elemsLength();
+		final int len = population();
 		return count >= len
 			? tail.drop( count - len )
-			: recessive( length - count, offset(), elems, tail );
+			: sectorWith( length - count, tail );
 	}
 
 	@Override
-	public void fill( int offset, Object[] array, int start, int upTolen ) {
-		final int len = elemsLength();
+	public void fill( int offset, Object[] array, int start, int upToLen ) {
+		final int len = population();
 		if ( start < len ) {
-			int srcPos = elems.length - len - offset() + start;
-			int copyedLength = min( upTolen, len );
-			System.arraycopy( elems, srcPos, array, offset, copyedLength );
-			if ( start + upTolen > len ) {
-				tail.fill( offset + copyedLength, array, 0, upTolen - copyedLength );
+			final int srcPos = elems.length - len - offset() + start;
+			final int copiedLength = min( upToLen, len - start );
+			System.arraycopy( elems, srcPos, array, offset, copiedLength );
+			if ( copiedLength < upToLen ) {
+				tail.fill( offset + copiedLength, array, 0, upToLen - copiedLength );
 			}
 		} else {
-			tail.fill( offset, array, start - len, upTolen );
+			tail.fill( offset, array, start - len, upToLen );
 		}
 	}
 
@@ -158,7 +146,7 @@ abstract class EVolutionList<E>
 		if ( index == 0 ) {
 			return prepand( e );
 		}
-		final int len = elemsLength();
+		final int len = population();
 		if ( index == 1 ) { // avoid 'views' just using a single element (as first)
 			return List.with.element( e ).prepand( at( 0 ) ).concat( drop( index ) );
 		}
@@ -176,8 +164,13 @@ abstract class EVolutionList<E>
 	}
 
 	@Override
+	public final int length() {
+		return length;
+	}
+
+	@Override
 	public List<E> replaceAt( int index, E e ) {
-		final int len = elemsLength();
+		final int len = population();
 		if ( index >= len ) {
 			return thisWith( length, tail.replaceAt( index - len, e ) );
 		}
@@ -192,24 +185,24 @@ abstract class EVolutionList<E>
 	}
 
 	@Override
-	public final int length() {
-		return length;
+	public List<E> subsequent() {
+		return tail;
 	}
 
 	@Override
-	public final List<E> take( int count ) {
+	public List<E> take( int count ) {
 		if ( count <= 0 ) {
 			return empty();
 		}
 		if ( count >= length ) {
 			return this;
 		}
-		final int len = elemsLength();
+		final int len = population();
 		if ( count == len ) { // took this elems without tail
 			return thisWith( len, empty() );
 		}
 		if ( count < len ) { // took parts of this elems
-			return recessive( count, ( len - count ) + offset(), elems, empty() );
+			return sectorWith( count, len - count, empty() );
 		}
 		// took this hole elems and parts of the tails elements
 		return thisWith( count, tail.take( count - len ) );
@@ -218,7 +211,7 @@ abstract class EVolutionList<E>
 	@Override
 	public String toString() {
 		StringBuilder b = new StringBuilder();
-		final int len = elemsLength();
+		final int len = population();
 		for ( int i = 0; i < len; i++ ) {
 			b.append( ',' );
 			b.append( String.valueOf( at( i ) ) );
@@ -226,26 +219,83 @@ abstract class EVolutionList<E>
 		return "[" + b.substring( 1 ) + "]" + Sequence.CONCAT_OPERATOR_SYMBOL + tail.toString();
 	}
 
-	abstract E element( int index, int l );
+	@Override
+	public void traverse( int start, Traversal<? super E> traversal ) {
+		final int len = population();
+		int i = start;
+		int inc = 0;
+		while ( inc >= 0 && i < len ) {
+			inc = traversal.incrementOn( element( i, len ) );
+			i += inc;
+		}
+		if ( inc >= 0 ) {
+			tail.traverse( i - len, traversal );
+		}
+	}
+
+	final boolean canOccupy( int index ) {
+		return elems[index] == null;
+	}
+
+	abstract E element( int index, int len );
 
 	final List<E> empty() {
 		return List.with.noElements();
 	}
 
-	/**
-	 * @return The count of {@link #elems} that are attributed to this lists.
-	 */
-	final int elemsLength() {
-		return length - tail.length();
+	final Object[] nextGeneration( E e ) {
+		return Array.withLastElement( e, min( GENERATION_MAX_LENGTH, elems.length << 1 ) ); // grow with power of 2 until 65536
 	}
 
 	abstract int offset();
 
 	/**
+	 * @return The count of {@link #elems} that are used by this lists.
+	 */
+	final int population() {
+		return length - tail.length();
+	}
+
+	final boolean prepandedOccupying( E e, int index ) {
+		synchronized ( elems ) {
+			if ( canOccupy( index ) ) {
+				elems[index] = e;
+				return true;
+			}
+			return false;
+		}
+	}
+
+	/**
+	 * @return The index at which the next element would be prepanded. Expects offset to be zero.
+	 */
+	final int prepandIndex( final int len ) {
+		return elems.length - 1 - len;
+	}
+
+	/**
+	 * A 'view' upon the {@link #elems} of this list that just uses some of its elements. They
+	 * should just be used as temporary objects since further (not used) elements are referred from
+	 * the same array used for the segment.
+	 */
+	abstract List<E> sectorWith( int length, int additionalOffset, List<E> tail );
+
+	/**
+	 * Same as {@link #sectorWith(int, int, List)} but no additional offset given. This is just a
+	 * optimization so that we save pushing a zero on the stack.
+	 */
+	abstract List<E> sectorWith( int length, List<E> tail );
+
+	/**
+	 * The usage of the elements in this segment/generation doesn't change but the tail does and
+	 * therefore sometimes the overall length too.
+	 * 
 	 * keeps tidy or untidy since the change is in the tail. just replace the tail and reduce
 	 * overall size by one. The elements and length of this elems are reused as before.
 	 */
-	abstract List<E> thisWith( int size, List<E> tail );
+	abstract List<E> thisWith( int length, List<E> tail );
+
+	abstract Object[] copyTailEnd( int length );
 
 	/**
 	 * The dominant {@link EVolutionList} tries to continue to use (fill) the element array
@@ -261,97 +311,160 @@ abstract class EVolutionList<E>
 	 * 
 	 * @author Jan Bernitt (jan.bernitt@gmx.de)
 	 */
-	private static final class DominantEVolutionList<E>
+	private static final class DominantList<E>
 			extends EVolutionList<E> {
 
-		private static final int GENERATION_MAX_LENGTH = 1 << 17;
-
-		DominantEVolutionList( int size, Object[] elements, List<E> tail ) {
-			super( size, elements, tail );
+		DominantList( int length, Object[] elements, List<E> tail ) {
+			super( length, elements, tail );
 		}
 
+		@Override
 		public final List<E> prepand( E e ) {
 			Nonnull.element( e );
-			final int len = elemsLength();
+			final int len = population();
 			int index = prepandIndex( len );
 			if ( index < 0 ) { // elems capacity exceeded
-				return grow1( newGeneration( e ), this );
+				return enlarge1( nextGeneration( e ), this );
 			}
 			if ( prepandedOccupying( e, index ) ) {
-				return grow1( elems, tail );
+				return enlarge1( elems, tail );
 			}
 			// if more the halve of the elems is used do we recycle them as recessive tail and start a new clean head for the new list
 			if ( len > elems.length / 2 ) {
-				return grow1( newGeneration( e ), recessive( length, elems, tail ) );
+				return enlarge1( nextGeneration( e ), sectorWith( length, tail ) );
 			}
 			// otherwise we want to stay tidy so we copy our elements 
-			Object[] copy = Array.copy( elems, index + 1, len );
+			Object[] copy = Array.clone( elems, index + 1, len );
 			copy[index] = e;
-			return grow1( copy, tail );
-		}
-
-		private Object[] newGeneration( E e ) {
-			return Array.withLastElement( e, min( GENERATION_MAX_LENGTH, elems.length << 1 ) ); // grow with power of 2 until 65536
+			return enlarge1( copy, tail );
 		}
 
 		@Override
 		public List<E> tidyUp() {
-			List<E> tidyTail = tail.tidyUp();
-			int len = elemsLength();
-			if ( len == elems.length ) {
-				return thisWithChecked( tidyTail );
+			final int len = population();
+			if ( len == elems.length ) { // all available elements are occupied - this is always save
+				return thisWith( tail.tidyUp() );
 			}
-			synchronized ( elems ) {
-				if ( notOccupied( prepandIndex( len ) ) ) {
-					return thisWithChecked( tidyTail );
+			final int index = prepandIndex( len );
+			if ( elems[index] == LOCK ) { // the next used element is the lock so we are sure nobody will occupy further cells with real data 
+				return thisWith( tail.tidyUp() );
+			}
+			if ( length < 16 ) { // for short lists we are also contract the tail to a single tidy segment 
+				Object[] tidy = new Object[length];
+				fill( 0, tidy, 0, length );
+				return growth( length, nextHighestPowerOf2( length ), tidy, empty() );
+			}
+			if ( len > 16 && len > elems.length / 2 ) { // just try to reuse if length is worth a try 
+				synchronized ( elems ) {
+					if ( canOccupy( index ) ) {
+						elems[index] = LOCK;
+						return thisWith( tail.tidyUp() );
+					}
 				}
-
 			}
-			return dominant( length, Array.copy( elems, elems.length - len, len ), tidyTail );
+			return growth( length, elems.length, copyTailEnd( len ), tail.tidyUp() );
 		}
 
-		private List<E> thisWithChecked( List<E> sameTail ) {
-			return sameTail == tail
-				? this
-				: dominant( length, elems, sameTail );
+		@Override
+		Object[] copyTailEnd( int length ) {
+			return Array.segment( elems, elems.length - length, length );
 		}
 
 		@SuppressWarnings ( "unchecked" )
 		@Override
-		final E element( int index, int l ) {
-			return (E) elems[elems.length - l + index];
+		E element( int index, int len ) {
+			return (E) elems[elems.length - len + index];
 		}
 
 		@Override
-		final int offset() {
+		int offset() {
 			return 0;
 		}
 
 		@Override
-		final List<E> thisWith( int size, List<E> tail ) {
-			return dominant( size, elems, tail );
+		List<E> sectorWith( int length, int additionalOffset, List<E> tail ) {
+			return recessive( length, additionalOffset, elems, tail );
 		}
 
-		private List<E> grow1( Object[] elems, List<E> tail ) {
+		@Override
+		List<E> sectorWith( int length, List<E> tail ) {
+			return recessive( length, 0, elems, tail );
+		}
+
+		@Override
+		List<E> thisWith( int length, List<E> tail ) {
+			return dominant( length, elems, tail );
+		}
+
+		private List<E> enlarge1( Object[] elems, List<E> tail ) {
 			return dominant( length + 1, elems, tail );
 		}
 
-		private boolean notOccupied( int index ) {
-			return elems[index] == null;
+		private List<E> thisWith( List<E> maybeSameTail ) {
+			return maybeSameTail == tail
+				? this
+				: dominant( length, elems, maybeSameTail );
 		}
 
-		private int prepandIndex( final int len ) {
-			return elems.length - 1 - len;
+	}
+
+	private static final class GrowthList<E>
+			extends EVolutionList<E> {
+
+		/**
+		 * The next generation will be created when the length of this reaches/exceeds this size.
+		 * The size is a power of 2.
+		 */
+		private final int generationSize;
+
+		GrowthList( int length, int generationSize, Object[] elements, List<E> tail ) {
+			super( length, elements, tail );
+			this.generationSize = generationSize;
 		}
 
-		private boolean prepandedOccupying( E e, int index ) {
-			synchronized ( elems ) {
-				if ( notOccupied( index ) ) {
-					elems[index] = e;
-					return true;
-				}
-				return false;
-			}
+		@Override
+		public List<E> prepand( E e ) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public List<E> tidyUp() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@SuppressWarnings ( "unchecked" )
+		@Override
+		E element( int index, int len ) {
+			return (E) elems[elems.length - len + index];
+		}
+
+		@Override
+		int offset() {
+			return 0;
+		}
+
+		@Override
+		List<E> sectorWith( int length, int additionalOffset, List<E> tail ) {
+			final int len = length - tail.length();
+			Object[] segment = Array.segment( elems, elems.length - len - additionalOffset, len );
+			return growth( length, elems.length, segment, tail );
+		}
+
+		@Override
+		List<E> sectorWith( int length, List<E> tail ) {
+			return sectorWith( length, 0, tail );
+		}
+
+		@Override
+		List<E> thisWith( int length, List<E> tail ) {
+			return growth( length, generationSize, elems, tail );
+		}
+
+		@Override
+		Object[] copyTailEnd( int length ) {
+			return Array.segment( elems, elems.length - length, length );
 		}
 
 	}
@@ -369,27 +482,25 @@ abstract class EVolutionList<E>
 	 * @author Jan Bernitt (jan.bernitt@gmx.de)
 	 * 
 	 */
-	private static final class RecessiveEVolutionList<E>
+	private static final class RecessiveList<E>
 			extends EVolutionList<E> {
 
 		private final int offset;
 
-		RecessiveEVolutionList( int size, int offset, Object[] elems, List<E> tail ) {
-			super( size, elems, tail );
+		RecessiveList( int length, int offset, Object[] elems, List<E> tail ) {
+			super( length, elems, tail );
 			this.offset = offset;
 		}
 
 		@Override
 		public List<E> prepand( E e ) {
+			//OPEN better get tidy again by copying the sector part ?
 			return dominant( length + 1, Array.withLastElement( e, elems.length ), this );
 		}
 
 		@Override
 		public List<E> tidyUp() {
-			Object[] s = new Object[elems.length];
-			final int len = elemsLength();
-			System.arraycopy( elems, elems.length - len - offset, s, elems.length - len, len );
-			return dominant( length, s, tail.tidyUp() );
+			return growth( length, elems.length, copyTailEnd( population() ), tail.tidyUp() );
 		}
 
 		@SuppressWarnings ( "unchecked" )
@@ -399,13 +510,28 @@ abstract class EVolutionList<E>
 		}
 
 		@Override
-		final int offset() {
+		int offset() {
 			return offset;
 		}
 
 		@Override
-		List<E> thisWith( int size, List<E> tail ) {
-			return recessive( size, offset, elems, tail );
+		List<E> sectorWith( int length, int additionalOffset, List<E> tail ) {
+			return recessive( length, offset + additionalOffset, elems, tail );
+		}
+
+		@Override
+		List<E> sectorWith( int length, List<E> tail ) {
+			return recessive( length, offset, elems, tail );
+		}
+
+		@Override
+		List<E> thisWith( int length, List<E> tail ) {
+			return recessive( length, offset, elems, tail );
+		}
+
+		@Override
+		Object[] copyTailEnd( int length ) {
+			return Array.segment( elems, elems.length - length - offset, length );
 		}
 
 	}

@@ -18,7 +18,7 @@ import de.jbee.lang.Enumerator;
 import de.jbee.lang.EnumeratorFactory;
 import de.jbee.lang.List;
 import de.jbee.lang.Map;
-import de.jbee.lang.PartialSequence;
+import de.jbee.lang.Segment;
 import de.jbee.lang.Sequence;
 import de.jbee.lang.Set;
 
@@ -192,10 +192,10 @@ public final class Sequences {
 				e4 ).prepand( e3 ).prepand( e2 ).prepand( e1 );
 	}
 
-	public static int depth( PartialSequence<?> seq ) {
-		return seq.isEmpty()
+	public static int segmentation( Segment<?> segment ) {
+		return segment.isEmpty()
 			? 0
-			: 1 + depth( seq.subsequent() );
+			: 1 + segmentation( segment.subsequent() );
 	}
 
 	static final class ProxyEnumeratorFactory

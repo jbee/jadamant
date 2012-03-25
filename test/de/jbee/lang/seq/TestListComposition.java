@@ -1,6 +1,6 @@
 package de.jbee.lang.seq;
 
-import static de.jbee.lang.seq.Sequences.depth;
+import static de.jbee.lang.seq.Sequences.segmentation;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
@@ -26,14 +26,13 @@ public class TestListComposition {
 	}
 
 	@Test
-	public void appendShouldUseSubsequencesGrowingWithThePowerOf2() {
+	public void appendShouldUseSegmentsGrowingWithThePowerOf2() {
 		Random rnd = new Random();
 		List<Integer> l = ElementaryList.element( 1 );
 		for ( int i = 0; i < 100; i++ ) {
 			l = l.append( rnd.nextInt( 100 ) );
 		}
-		int depth = depth( l );
-		assertTrue( depth <= 7 ); // because 2^7 -> 128 and we use a reversed prepanded list
+		assertTrue( segmentation( l ) <= 7 ); // because 2^7 -> 128 and we use a reversed prepanded list
 	}
 
 	@Test
@@ -43,12 +42,12 @@ public class TestListComposition {
 	}
 
 	@Test
-	public void prepandShouldUseSubsequencesGrowingWithThePowerOf2() {
+	public void prepandShouldUseSegmentsGrowingWithThePowerOf2() {
 		Random rnd = new Random();
 		List<Integer> l = ElementaryList.element( 1 );
 		for ( int i = 0; i < 100; i++ ) {
 			l = l.prepand( rnd.nextInt( 100 ) );
 		}
-		assertTrue( depth( l ) <= 7 ); // because 2^7 -> 128
+		assertTrue( segmentation( l ) <= 7 ); // because 2^7 -> 128
 	}
 }

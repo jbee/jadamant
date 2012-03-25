@@ -32,7 +32,7 @@ import de.jbee.lang.seq.Range.RangeTo;
  * Thereby the overuse of generic type arguments is avoided when dealing with lists since the index
  * has no generic. Since all {@linkplain List} implementations are {@link RandomAccess}able by
  * definition using indexes will not make a relevant difference in performance. Because Lists are in
- * general chained sublists ({@link PartialSequence}s) the decision over random access is a general
+ * general chained sublists ({@link Segment}s) the decision over random access is a general
  * one that cannot be different from implementation to implementation.
  * </p>
  * 
@@ -40,7 +40,7 @@ import de.jbee.lang.seq.Range.RangeTo;
  * 
  */
 public interface List<E>
-		extends Prepandable<E>, Appendable<E>, PartialSequence<E>, Sequence<E>,
+		extends Prepandable<E>, Appendable<E>, Segment<E>, Sequence<E>,
 		ModifiableSequence<E>, Arrayable, Traversable<E>, RandomAccess, Serializable {
 
 	UtileLister with = Sequences.list;

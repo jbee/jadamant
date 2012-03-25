@@ -12,23 +12,6 @@ public final class Traverse {
 		// singleton
 	}
 
-	static final class Res<T> {
-
-		public static <T> Res<T> of( T init ) {
-			return new Res<T>( init );
-		}
-
-		public static <T> Res<T> newInstance() {
-			return new Res<T>( null );
-		}
-
-		public T value;
-
-		private Res( T init ) {
-			this.value = init;
-		}
-	}
-
 	public <E> E[] toArray( List<E> t, Class<E> elementType ) {
 		E[] res = Array.newInstance( elementType, t.length() );
 		t.traverse( 0, new ToArrayTraversal<E>( res, 0 ) );
@@ -37,7 +20,6 @@ public final class Traverse {
 
 	//TODO find a way to model fold by a ListTransformation<E,E> 
 	public static <E> ListTransformation<E, E> fold( Op<E> op, E init ) {
-		Res<E> res = Res.of( init );
 		//l.traverse( 0, new FoldByOperatorTraversal<E>( op, res ) );
 		return null;
 	}
@@ -47,15 +29,9 @@ public final class Traverse {
 
 		@Override
 		public E on( List<E> list ) {
-			// TODO Auto-generated method stub
 			return null;
 		}
 
-	}
-
-	static interface Accumulator<E> {
-
-		void accumulate( E element );
 	}
 
 	//OPEN how can a traverse build up a list and return it ? maybe traverse needs a second method and generic ? -> or some kind of ListBuilder passed into and feeded by the Traversal
@@ -224,34 +200,6 @@ public final class Traverse {
 				dest[index++] = e;
 			}
 			return STOP_TRAVERSAL;
-		}
-
-	}
-
-	/**
-	 * Folds by applying a binary operator to all elements.
-	 */
-	static class FoldByOperatorTraversal<E>
-			implements Traversal<E>, Nullproof {
-
-		private final Op<E> op;
-		private final Res<E> res;
-
-		FoldByOperatorTraversal( Op<E> op, Res<E> init ) {
-			super();
-			this.op = op;
-			this.res = init;
-		}
-
-		@Override
-		public int incrementOn( E e ) {
-			res.value = op.operate( res.value, e );
-			return 1;
-		}
-
-		@Override
-		public boolean isNullsave() {
-			return Null.isSave( op );
 		}
 
 	}
