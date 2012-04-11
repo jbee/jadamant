@@ -85,27 +85,27 @@ final class EnumList<E>
 	}
 
 	@Override
-	public void fill( int offset, Object[] array, int start, int length ) {
+	public void fill( int offset, Object[] dest, int start, int length ) {
 		final int len = len();
 		if ( start < len ) {
 			if ( ascending() ) {
 				int startOrd = firstOrdinal + start;
 				int endOrd = Math.min( lastOrdinal, startOrd + length - 1 );
 				for ( int ord = startOrd; ord <= endOrd; ord++ ) {
-					array[offset++] = type.toEnum( ord );
+					dest[offset++] = type.toEnum( ord );
 				}
 			} else {
 				int startOrd = firstOrdinal - start;
 				int endOrd = Math.max( lastOrdinal, startOrd - length + 1 );
 				for ( int ord = startOrd; ord >= endOrd; ord-- ) {
-					array[offset++] = type.toEnum( ord );
+					dest[offset++] = type.toEnum( ord );
 				}
 			}
 			if ( start + length > len ) {
-				tail.fill( offset, array, 0, length - ( len - start ) );
+				tail.fill( offset, dest, 0, length - ( len - start ) );
 			}
 		} else {
-			tail.fill( offset, array, start - len, length );
+			tail.fill( offset, dest, start - len, length );
 		}
 	}
 

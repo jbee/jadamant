@@ -28,7 +28,7 @@ final class EmptyList<E>
 	}
 
 	@Override
-	public void fill( int offset, Object[] array, int start, int length ) {
+	public void fill( int offset, Object[] dest, int start, int length ) {
 		// no elements to fill - done without any action
 	}
 

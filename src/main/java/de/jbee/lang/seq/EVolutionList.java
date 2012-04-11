@@ -127,17 +127,17 @@ abstract class EVolutionList<E>
 	}
 
 	@Override
-	public void fill( int offset, Object[] array, int start, int upToLen ) {
+	public void fill( int offset, Object[] dest, int start, int upToLen ) {
 		final int len = population();
 		if ( start < len ) {
 			final int srcPos = elems.length - len - offset() + start;
 			final int copiedLength = min( upToLen, len - start );
-			System.arraycopy( elems, srcPos, array, offset, copiedLength );
+			System.arraycopy( elems, srcPos, dest, offset, copiedLength );
 			if ( copiedLength < upToLen ) {
-				tail.fill( offset + copiedLength, array, 0, upToLen - copiedLength );
+				tail.fill( offset + copiedLength, dest, 0, upToLen - copiedLength );
 			}
 		} else {
-			tail.fill( offset, array, start - len, upToLen );
+			tail.fill( offset, dest, start - len, upToLen );
 		}
 	}
 
@@ -354,7 +354,7 @@ abstract class EVolutionList<E>
 				fill( 0, tidy, 0, length );
 				return growth( length, nextHighestPowerOf2( length ), tidy, empty() );
 			}
-			if ( len > 16 && len > elems.length / 2 ) { // just try to reuse if length is worth a try 
+			if ( len > 16 && len > elems.length / 2 ) { // just try to reuse by locking if length is worth a try 
 				synchronized ( elems ) {
 					if ( canOccupy( index ) ) {
 						elems[index] = LOCK;
@@ -412,7 +412,10 @@ abstract class EVolutionList<E>
 			extends EVolutionList<E> {
 
 		/**
-		 * The next generation will be created when the length of this reaches/exceeds this size.
+		 * The next generation will be created when the length of this elements reaches/exceeds this
+		 * size. Until then this will grow by double the capacity of the elements and copy existing
+		 * into the new.
+		 * 
 		 * The size is a power of 2.
 		 */
 		private final int generationSize;
@@ -424,14 +427,52 @@ abstract class EVolutionList<E>
 
 		@Override
 		public List<E> prepand( E e ) {
-			// TODO Auto-generated method stub
-			return null;
+			Nonnull.element( e );
+			final int len = population();
+			int index = prepandIndex( len );
+			if ( index < 0 ) { // elems capacity exceeded
+				if ( elems.length < generationSize ) {
+					return enlarge1( e );
+				}
+				return dominant( length + 1, Array.withLastElement( e, generationSize * 2 ), this );
+			}
+			if ( prepandedOccupying( e, index ) ) {
+				return thisWith( length + 1, tail );
+			}
+			return enlarge1( e );
+		}
+
+		private List<E> enlarge1( E e ) {
+			Object[] enlarged = Array.segment( elems, 0, nextHighestPowerOf2( elems.length ) );
+			enlarged[enlarged.length - 1 - population()] = e;
+			return growth( length + 1, generationSize, enlarged, tail );
 		}
 
 		@Override
 		public List<E> tidyUp() {
-			// TODO Auto-generated method stub
-			return null;
+			//OPEN use locking for growth lists ?
+			final int len = population();
+			if ( len == elems.length ) { // all available elements are occupied - this is always save
+				return thisWith( tail.tidyUp() );
+			}
+			final int index = prepandIndex( len );
+			if ( elems[index] == LOCK ) { // the next used element is the lock so we are sure nobody will occupy further cells with real data 
+				return thisWith( tail.tidyUp() );
+			}
+			if ( length < 16 ) { // for short lists we are also contract the tail to a single tidy segment 
+				Object[] tidy = new Object[length];
+				fill( 0, tidy, 0, length );
+				return growth( length, nextHighestPowerOf2( length ), tidy, empty() );
+			}
+			if ( len > 16 && len > elems.length / 2 ) { // just try to reuse by locking if length is worth a try 
+				synchronized ( elems ) {
+					if ( canOccupy( index ) ) {
+						elems[index] = LOCK;
+						return thisWith( tail.tidyUp() );
+					}
+				}
+			}
+			return growth( length, elems.length, copyTailEnd( len ), tail.tidyUp() );
 		}
 
 		@SuppressWarnings ( "unchecked" )
@@ -455,6 +496,12 @@ abstract class EVolutionList<E>
 		@Override
 		List<E> sectorWith( int length, List<E> tail ) {
 			return sectorWith( length, 0, tail );
+		}
+
+		private List<E> thisWith( List<E> maybeSameTail ) {
+			return maybeSameTail == tail
+				? this
+				: growth( length, generationSize, elems, maybeSameTail );
 		}
 
 		@Override

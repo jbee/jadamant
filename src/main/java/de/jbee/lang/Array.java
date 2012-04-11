@@ -9,6 +9,7 @@ import de.jbee.lang.dev.Nonnull;
  * My array util.
  * 
  * TODO the name Array should be a interface for objects that represent logical arrays of something.
+ * OPEN maybe have a Copy-class that is about Object[] that are copied ?
  * 
  * @author Jan Bernitt (jan.bernitt@gmx.de)
  */
@@ -17,9 +18,9 @@ public final class Array {
 	private static Random rnd;
 
 	/**
-	 * Does a 'partial' clone of the source array. The result has the same length but contains just
-	 * the elements between start and end (exclusive) given by start +length. All other cells of the
-	 * result will be <code>null</code>.
+	 * @return Does a 'partial' clone of the source array. The result has the same length but
+	 *         contains just the elements between start and end (exclusive) given by start +length.
+	 *         All other cells of the result will be <code>null</code>.
 	 */
 	public static Object[] clone( Object[] src, int start, int length ) {
 		Object[] clone = new Object[src.length];
@@ -27,9 +28,17 @@ public final class Array {
 		return clone;
 	}
 
+	/**
+	 * @return Copies a segment of length starting at the given start from the src array. This
+	 *         segment will have a length equal to the given length. If the length given is larger
+	 *         than the length of the source all its elements will be copied to the end of the
+	 *         result array.
+	 */
 	public static Object[] segment( Object[] src, int start, int length ) {
 		Object[] segment = new Object[length];
-		System.arraycopy( src, start, segment, 0, length );
+		int destStart = Math.max( 0, length - src.length );
+		int destLength = Math.min( length, src.length - start );
+		System.arraycopy( src, start, segment, destStart, destLength );
 		return segment;
 	}
 
@@ -170,8 +179,8 @@ public final class Array {
 		}
 
 		@Override
-		public void fill( int offset, Object[] array, int start, int length ) {
-			System.arraycopy( elems, start, array, offset, Math.min( length, elems.length - start ) );
+		public void fill( int offset, Object[] dest, int start, int length ) {
+			System.arraycopy( elems, start, dest, offset, Math.min( length, elems.length - start ) );
 		}
 
 		@Override

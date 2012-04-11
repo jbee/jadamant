@@ -104,10 +104,10 @@ class ElementList<E>
 	}
 
 	@Override
-	public void fill( int offset, Object[] array, int start, int length ) {
+	public void fill( int offset, Object[] dest, int start, int length ) {
 		int l = length();
 		for ( int i = start; i < Math.min( l, start + length ); i++ ) {
-			array[offset++] = at( i );
+			dest[offset++] = at( i );
 		}
 	}
 

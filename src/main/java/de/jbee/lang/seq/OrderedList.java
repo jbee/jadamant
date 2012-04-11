@@ -128,8 +128,8 @@ abstract class OrderedList<E, L extends Ordered & List<E>>
 	}
 
 	@Override
-	public final void fill( int offset, Object[] array, int start, int length ) {
-		elems.fill( offset, array, start, length );
+	public final void fill( int offset, Object[] dest, int start, int length ) {
+		elems.fill( offset, dest, start, length );
 	}
 
 	@Override

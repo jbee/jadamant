@@ -99,12 +99,12 @@ final class ElementaryList<E>
 	}
 
 	@Override
-	public void fill( int offset, Object[] array, int start, int length ) {
+	public void fill( int offset, Object[] dest, int start, int length ) {
 		if ( start == 0 ) {
-			array[offset] = element;
-			tail.fill( offset + 1, array, 0, length - 1 );
+			dest[offset] = element;
+			tail.fill( offset + 1, dest, 0, length - 1 );
 		} else {
-			tail.fill( offset, array, start - 1, length );
+			tail.fill( offset, dest, start - 1, length );
 		}
 	}
 

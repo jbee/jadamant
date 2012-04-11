@@ -579,11 +579,11 @@ public class AlterBy
 		}
 
 		@Override
-		public void fill( int offset, Object[] array, int start, int length ) {
+		public void fill( int offset, Object[] dest, int start, int length ) {
 			int size = list.length();
 			if ( start < size ) {
 				for ( int i = start; i < start + length; i++ ) {
-					array[offset++] = at( i );
+					dest[offset++] = at( i );
 				}
 			}
 		}
