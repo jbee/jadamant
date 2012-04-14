@@ -198,6 +198,19 @@ public final class Sequences {
 			: 1 + segmentation( segment.subsequent() );
 	}
 
+	public static boolean equal( Sequence<?> one, Sequence<?> other ) {
+		final int length = one.length();
+		if ( other.length() != length ) {
+			return false;
+		}
+		for ( int i = 0; i < length; i++ ) {
+			if ( !one.at( i ).equals( other.at( i ) ) ) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	static final class ProxyEnumeratorFactory
 			implements EnumeratorFactory {
 

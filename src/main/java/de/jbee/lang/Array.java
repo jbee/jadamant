@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Random;
 
 import de.jbee.lang.dev.Nonnull;
+import de.jbee.lang.seq.Sequences;
 
 /**
  * My array util.
@@ -116,28 +117,28 @@ public final class Array {
 		return (T[]) java.lang.reflect.Array.newInstance( elementType, length );
 	}
 
-	public static <E> Sequence<E> sequence( E e1 ) {
+	public static <E> List<E> sequence( E e1 ) {
 		Nonnull.element( e1 );
-		return new ArraySequence<E>( new Object[] { e1 } );
+		return new ArrayList<E>( new Object[] { e1 } );
 	}
 
-	public static <E> Sequence<E> sequence( E e1, E e2 ) {
+	public static <E> List<E> sequence( E e1, E e2 ) {
 		Nonnull.element( e1 );
 		Nonnull.element( e2 );
-		return new ArraySequence<E>( new Object[] { e1, e2 } );
+		return new ArrayList<E>( new Object[] { e1, e2 } );
 	}
 
-	public static <E> Sequence<E> sequence( E e1, E e2, E e3 ) {
+	public static <E> List<E> sequence( E e1, E e2, E e3 ) {
 		Nonnull.element( e1 );
 		Nonnull.element( e2 );
 		Nonnull.element( e3 );
-		return new ArraySequence<E>( new Object[] { e1, e2, e3 } );
+		return new ArrayList<E>( new Object[] { e1, e2, e3 } );
 	}
 
-	public static <E> Sequence<E> sequence( E[] elems ) {
+	public static <E> List<E> sequence( E[] elems ) {
 		//FIXME check for null elements 
 		// OPEN do a copy ? -> to be save it would be needed
-		return new ArraySequence<E>( elems );
+		return new ArrayList<E>( elems );
 	}
 
 	public static void shuffle( Object[] a ) {
@@ -166,16 +167,16 @@ public final class Array {
 	}
 
 	/**
-	 * A simple wrapper to be able to handle arrays as {@link Sequence}s.
+	 * A simple wrapper to be able to handle arrays as {@link List} s.
 	 * 
 	 * @author Jan Bernitt (jan.bernitt@gmx.de)
 	 */
-	private static final class ArraySequence<E>
-			implements Arrayable, Sequence<E> {
+	private static final class ArrayList<E>
+			implements List<E> {
 
 		private final Object[] elems;
 
-		ArraySequence( Object[] elems ) {
+		ArrayList( Object[] elems ) {
 			super();
 			this.elems = elems;
 		}
@@ -204,21 +205,11 @@ public final class Array {
 
 		@Override
 		public boolean equals( Object obj ) {
-			if ( obj instanceof ArraySequence<?> ) {
-				return Arrays.equals( elems, ( (ArraySequence<?>) obj ).elems );
+			if ( obj instanceof ArrayList<?> ) {
+				return Arrays.equals( elems, ( (ArrayList<?>) obj ).elems );
 			}
 			if ( obj instanceof Sequence<?> ) {
-				Sequence<?> other = (Sequence<?>) obj;
-				//TODO move t a util-method: equal(Sequence, Sequence)
-				if ( other.length() != length() ) {
-					return false;
-				}
-				for ( int i = 0; i < elems.length; i++ ) {
-					if ( !elems[i].equals( other.at( i ) ) ) {
-						return false;
-					}
-				}
-				return true;
+				return Sequences.equal( this, (Sequence<?>) obj );
 			}
 			return false;
 		}
@@ -232,5 +223,145 @@ public final class Array {
 		public String toString() {
 			return Arrays.toString( elems );
 		}
+
+		@Override
+		public List<E> append( E e ) {
+			Nonnull.element( e );
+			final int len = elems.length;
+			Object[] res = new Object[len + 1];
+			System.arraycopy( elems, 0, res, 0, len );
+			res[len] = e;
+			return arraylist( res );
+		}
+
+		@Override
+		public List<E> concat( List<E> other ) {
+			if ( other.isEmpty() ) {
+				return this;
+			}
+			Object[] res = new Object[elems.length + other.length()];
+			System.arraycopy( elems, 0, res, 0, elems.length );
+			other.fill( elems.length, res, 0, other.length() );
+			return arraylist( res );
+		}
+
+		@Override
+		public List<E> deleteAt( int index ) {
+			checkIndex( index );
+			int len = elems.length;
+			if ( len == 1 ) {
+				return subsequent();
+			}
+			if ( index == 0 ) {
+				return drop( 1 );
+			}
+			int shortenedBy1 = len - 1;
+			if ( index == shortenedBy1 ) {
+				return take( shortenedBy1 );
+			}
+			Object[] res = new Object[shortenedBy1];
+			System.arraycopy( elems, 0, res, 0, index );
+			System.arraycopy( elems, index + 1, res, index, elems.length - index );
+			return arraylist( res );
+		}
+
+		@Override
+		public List<E> drop( int count ) {
+			if ( count <= 0 ) {
+				return this;
+			}
+			if ( count >= elems.length ) {
+				return subsequent();
+			}
+			Object[] res = new Object[elems.length - count];
+			System.arraycopy( elems, count, res, 0, res.length );
+			return arraylist( res );
+		}
+
+		@Override
+		public List<E> insertAt( int index, E e ) {
+			checkIndexExclusive( index );
+			if ( index == 0 ) {
+				return prepand( e );
+			}
+			if ( index == elems.length ) {
+				return append( e );
+			}
+			Object[] res = new Object[elems.length + 1];
+			System.arraycopy( elems, 0, res, 0, index );
+			res[index] = e;
+			System.arraycopy( elems, index, res, index + 1, elems.length - index );
+			return arraylist( res );
+		}
+
+		@Override
+		public List<E> prepand( E e ) {
+			Nonnull.element( e );
+			final int len = elems.length;
+			Object[] res = new Object[len + 1];
+			System.arraycopy( elems, 0, res, 1, len );
+			res[0] = e;
+			return arraylist( res );
+		}
+
+		@Override
+		public List<E> replaceAt( int index, E e ) {
+			checkIndex( index );
+			Object[] res = elems.clone();
+			res[index] = e;
+			return arraylist( res );
+		}
+
+		private void checkIndex( int index ) {
+			if ( index < 0 || index >= elems.length ) {
+				throw outOfBounds( index );
+			}
+		}
+
+		private void checkIndexExclusive( int index ) {
+			if ( index < 0 || index > elems.length ) {
+				throw outOfBounds( index );
+			}
+		}
+
+		@Override
+		public List<E> subsequent() {
+			return List.with.noElements();
+		}
+
+		@Override
+		public List<E> take( int count ) {
+			if ( count <= 0 ) {
+				return subsequent();
+			}
+			if ( count >= elems.length ) {
+				return this;
+			}
+			Object[] res = new Object[count];
+			System.arraycopy( elems, 0, res, 0, count );
+			return arraylist( res );
+		}
+
+		@Override
+		public List<E> tidyUp() {
+			return this;
+		}
+
+		@Override
+		public void traverse( int start, Traversal<? super E> traversal ) {
+			int inc = 0;
+			while ( inc >= 0 && start < elems.length ) {
+				inc = traversal.incrementOn( at( start ) );
+				start += inc;
+			}
+		}
+
+		private static <E> ArrayList<E> arraylist( Object[] res ) {
+			return new ArrayList<E>( res );
+		}
+	}
+
+	static IndexOutOfBoundsException outOfBounds( int index ) {
+		return new IndexOutOfBoundsException( "No such element: " + index );
 	}
 }
