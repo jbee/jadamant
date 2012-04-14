@@ -35,11 +35,20 @@ public final class Array {
 	 *         result array.
 	 */
 	public static Object[] segment( Object[] src, int start, int length ) {
-		Object[] segment = new Object[length];
-		int destStart = Math.max( 0, length - src.length );
-		int destLength = Math.min( length, src.length - start );
-		System.arraycopy( src, start, segment, destStart, destLength );
-		return segment;
+		return segment( src, start, length, new Object[length] );
+	}
+
+	public static Object[] segment( Object[] src, int start, int length, Object[] dest ) {
+		final int copyLength = Math.min( length, src.length - start );
+		final int destStart = dest.length - copyLength;
+		if ( destStart < 0 ) {
+			// dest is shorter than the copied segment - we copy as much as possible into dest from start
+			System.arraycopy( src, start, dest, 0, dest.length );
+		} else {
+			// copy from length elements from start into end of dest
+			System.arraycopy( src, start, dest, destStart, copyLength );
+		}
+		return dest;
 	}
 
 	/**
