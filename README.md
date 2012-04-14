@@ -6,6 +6,7 @@ The core ideas are:
 
 * __Collections are value objects and therefore immutable__ (persistent data stractures, changes create new collections, the originating one kept unchanged)
 * `java.util.List` and the `util`-Collection-API just stay alive because of its wide spread not its quality
+* __Collections are fully type-safe!__ (no `contains(Object)` and such)
 * __Collections are thread-safe by concept__ (no additional API or impl., wrappers or runtime-exceptions)
 * Eager evaludation is (in most cases) the appropriate way to solve problems in Java (even tho' we work immutable)
 * `null` is avoided as far as possible - it is not considered as a valid value (e.g. as a collection's element)
