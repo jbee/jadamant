@@ -32,16 +32,16 @@ import de.jbee.lang.seq.Range.RangeTo;
  * Thereby the overuse of generic type arguments is avoided when dealing with lists since the index
  * has no generic. Since all {@linkplain List} implementations are {@link RandomAccess}able by
  * definition using indexes will not make a relevant difference in performance. Because Lists are in
- * general chained sublists ({@link Segment}s) the decision over random access is a general
- * one that cannot be different from implementation to implementation.
+ * general chained sublists ({@link Segment}s) the decision over random access is a general one that
+ * cannot be different from implementation to implementation.
  * </p>
  * 
  * @author Jan Bernitt (jan.bernitt@gmx.de)
  * 
  */
 public interface List<E>
-		extends Prepandable<E>, Appendable<E>, Segment<E>, Sequence<E>,
-		ModifiableSequence<E>, Arrayable, Traversable<E>, RandomAccess, Serializable {
+		extends Prepandable<E>, Appendable<E>, Segment<E>, Sequence<E>, ModifiableSequence<E>,
+		Arrayable, Traversable<E>, RandomAccess, Serializable {
 
 	UtileLister with = Sequences.list;
 	RangeTo rangeTo = Sequences.enumerator;
@@ -64,28 +64,36 @@ public interface List<E>
 	/**
 	 * <h5>What does {@link #tidyUp()} do ?</h5>
 	 * <p>
-	 * It can avoids possible memory leaks. Persistent data-structures use something that can be
-	 * described as 'shared memory'. A list that is still alive (reachable) may refer also to
-	 * elements that would be dead (not reachable) if this list woundn't exists. Thereby elements
-	 * refereed in list may no be garbage collected as long as the list referring it is alive or
-	 * tidied up. The operation will make sure, that only those elements are refereed further on
-	 * which are part of the list alive. In some cases therefore array copies as necessary so this
-	 * is *not* a cheap operation in every case.
+	 * <b>It can avoid possible memory leaks</b> that can be caused by references to other objects
+	 * than just the elements of the current list and the list structure itself. Any kind of lazy
+	 * evaluated wrapper could introduce or cause such references.
+	 * </p>
+	 * <p>
+	 * Persistent data-structures might also use something that can be described as 'shared memory'.
+	 * A list that is still reachable may internally refer to elements that aren't members of the
+	 * actual list and wouldn't be reachable if this list woundn't exists. Thereby those elements
+	 * aren't garbage collected as long as the list referring itself is reachable as it is.
+	 * </p>
+	 * <p>
+	 * This operation will make sure, that only those elements are refereed further on which are
+	 * part of the reachable list and that any operation on that list cannot introduce references to
+	 * non-member elements. Often this requires to restructure the list internally. This can be a
+	 * expensive operation in some cases.
 	 * </p>
 	 * <br/>
 	 * <h5>When is it necessary to do a {@link #tidyUp()} ?</h5>
 	 * <p>
-	 * As long as you just use {@link #append(Object)}, {@link #prepand(Object)} or
-	 * {@link #concat(List)} to construct a list you are fine. You don't need to tidy-up and if you
-	 * do anyway (just to be save) it will be a cheap operation.
+	 * As a simple rule of thumb you can call {@link #tidyUp()} always when a list becomes
+	 * <i>state</i>, that is when assigning it to a field / constant. This will definitely avoid
+	 * memory leaks but might be unnecessary in a lot of cases.
 	 * </p>
 	 * <p>
-	 * But as soon as you make use of any of the other 'modifying' operations from
-	 * {@link ModifiableSequence} the resulting list might such a case but doesn't have to be. To be
-	 * save you should *alawys* call {@link #tidyUp()} once when you are finished changing a list
-	 * (end of method call that calls those methods and returns a changed list). Of cause you don't
-	 * have to tidy-up if all lists result from such operations are temporary objects which itself
-	 * will be dead soon and garbage-collected themselfs.
+	 * If one of the following is true, it is normally not necessary to tidy up on assignment:
+	 * <ul>
+	 * <li>The elements are simple value objects (like primitive type wrappers)</li>
+	 * <li>It is known that the object containing the field will have a short lifetime</li>
+	 * <li>It is known that the list is constructed once and will not be modified further on</li>
+	 * </ul>
 	 * </p>
 	 */
 	List<E> tidyUp();
@@ -113,9 +121,7 @@ public interface List<E>
 	List<E> prepand( E e );
 
 	/**
-	 * Expect this to be much slower than {@link #prepand(Object)}. Only use this when
-	 * {@link CoreList#reverse(List)} a list so a <code>append</code> is in fact a
-	 * <code>prepand</code>.
+	 * Expect this to be slower than using {@link #prepand(Object)}.
 	 */
 	@Override
 	List<E> append( E e );
@@ -148,5 +154,9 @@ public interface List<E>
 		<E> List<E> elements( E... elems );
 
 		<E> List<E> elements( Sequence<E> elems );
+	}
+
+	interface ListBuilder<E> {
+
 	}
 }

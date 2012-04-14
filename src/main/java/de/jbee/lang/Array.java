@@ -169,6 +169,8 @@ public final class Array {
 	/**
 	 * A simple wrapper to be able to handle arrays as {@link List} s.
 	 * 
+	 * This is meant to be a reference implementation the 'real' lists can be validated against.
+	 * 
 	 * @author Jan Bernitt (jan.bernitt@gmx.de)
 	 */
 	private static final class ArrayList<E>
