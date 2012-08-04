@@ -14,13 +14,12 @@ public class IndexAccess {
 
 	public static <E> Iterator<E> iterator( IndexAccessible<E> sequence, int start, int end,
 			int increment ) {
-		return sequence instanceof Segment<?>
+		return increment > 0 && sequence instanceof Segment<?>
 			? iterator( (Segment<E>) sequence, start, end, increment )
 			: new IndexAccessIterator<E>( sequence, start, end, increment );
 	}
 
-	public static <E> Iterator<E> iterator( Segment<E> sequence, int start, int end,
-			int increment ) {
+	public static <E> Iterator<E> iterator( Segment<E> sequence, int start, int end, int increment ) {
 		return new ForwardsIterator<E>( sequence, start, end, increment );
 	}
 
@@ -29,14 +28,14 @@ public class IndexAccess {
 	}
 
 	public static <E> Iterable<E> reverseIterable( final Sequence<E> seq ) {
-		return new IndexAccessIterable<E>( seq, seq.length(), -1, -1 );
+		return new IndexAccessIterable<E>( seq, seq.length() - 1, -1, -1 );
 	}
 
 	/**
-	 * A {@link Iterator} utilizes {@link Segment#subsequent()}-method so that the index
-	 * access used to read the {@link #next()} element will not require a dispatch to a subsequent
-	 * tail list. This is achieved by change the referred {@link #sequence} to the next subsequent
-	 * list as soon as the index points to its first element.
+	 * A {@link Iterator} utilizes {@link Segment#subsequent()}-method so that the index access used
+	 * to read the {@link #next()} element will not require a dispatch to a subsequent tail list.
+	 * This is achieved by change the referred {@link #sequence} to the next subsequent list as soon
+	 * as the index points to its first element.
 	 * 
 	 * @author Jan Bernitt (jan.bernitt@gmx.de)
 	 */

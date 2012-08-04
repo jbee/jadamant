@@ -34,9 +34,9 @@ abstract class EVolutionList<E>
 	/**
 	 * The maximum count of elements contained in a single generation.
 	 */
-	static final int GENERATION_MAX_LENGTH = 1 << 16;
+	private static final int GENERATION_MAX_LENGTH = 1 << 16;
 
-	static final Object LOCK = new Object();
+	private static final Object LOCK = new Object();
 
 	static <E> List<E> dominant( int length, Object[] elements ) {
 		return dominant( length, elements, List.with.<E> noElements() );
